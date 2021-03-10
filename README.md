@@ -1,4 +1,4 @@
-# CE434 Project Group7
+# Project G7
 
 # Group members:
 - 18521568 - Nguyễn Quốc Trưởng
