@@ -1,0 +1,20 @@
+module DataPath(H, S, V, In, clk);
+output [31:0] H, S, V;
+input [95:0] In;
+//input [2:0] tri_En;
+input clk; //s0, Cmax_En, Cmin_En, delta_En;
+wire [31:0] r_temp, g_temp, b_temp, Cmax, Cmin,delta;
+				//out_H, out_S;
+//_reg inst [2:0] ({r, g, b}, In, clk, En);
+FindRGB_temp inst1(r_temp, g_temp, b_temp, In[95:64], In[63:32], In[31:0]);
+//mux2to1 ins [2:0] ({w1, w2, w3}, In, {r_temp, g_temp, b_temp}, s0);
+FindMaxMin inst3(Cmax, Cmin, r_temp, g_temp, b_temp);
+//_reg inst4(out_max, Cmax, clk, Cmax_En);
+//_reg inst5(out_min, Cmin, clk, Cmin_En);
+Find_delta inst6(delta,Cmax, Cmin);
+//_reg inst7(out_delta, delta, clk, delta_En);
+Find_H inst8(H, r_temp, g_temp, b_temp, Cmax, delta);
+Find_S inst9(S, Cmax, delta);
+//_reg insts [2:0]({H, S, V}, {out_H, out_S, Cmax}, tri_En);
+assign V = Cmax;
+endmodule
