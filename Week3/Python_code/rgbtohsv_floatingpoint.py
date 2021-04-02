@@ -1,14 +1,21 @@
+# Chuong trinh python dung de tao data_input cho modelsim
+# Ket hop voi hien thuc thuat toan chuyen doi RGB -> HSB bang python
+# Sau do ghi lai ket qua cua thuat toan tren de so sanh voi ket qua modelsim
+
 import cv2
 import numpy as np
 import ctypes
 
 def de2hex_floating_point(x):
    return hex(ctypes.c_uint.from_buffer(ctypes.c_float(x)).value)
-img_rgb = cv2.imread('hoa-dep-1.jpg')
+
+img_rgb = cv2.imread('/v_env/ce434/W2/meomeo.jpg')
 # Lay thong tin cua anh
 (h, w, d) = img_rgb.shape
 print("width={}, height={}, depth={}".format(w, h, d))
-f = open('text.txt', 'w')
+
+####### Dung python tao data input cho modelsim
+f = open('data_input.txt', 'w')
 for i in range (h):
   for j in range (w):
     b, g, r = img_rgb[i][j]
@@ -20,6 +27,9 @@ for i in range (h):
     else: b = '00000000'
     string = r + g + b + '\n'
     f.write(string)
+f.close()
+
+####### Chay thuat toan chuyen doi RGB -> HSV bang python
 def rgb2hsv(r, g, b):
   r_d = r / 255
   g_d = g / 255
@@ -32,7 +42,7 @@ def rgb2hsv(r, g, b):
 
   #Hue calculation:
   if(denta == 0):
-      h = 0;
+      h = 0
   elif(Cmax == r_d):
       h = 60*(((g_d - b_d)/denta)%6)
   elif(Cmax == g_d):
@@ -51,7 +61,8 @@ def rgb2hsv(r, g, b):
   #Return result
   return h, s, v
 
-f1 = open('text1.txt', 'w')
+####### Ghi lai ket qua cua thuat toan python de so sanh voi ket qua modelsim
+f1 = open('data_out_python.txt', 'w')
 for i in range (h):
   for j in range (w):
     b, g, r = img_rgb[i][j]
@@ -64,8 +75,7 @@ for i in range (h):
     else: v = '00000000'
     string = h + s + v + '\n'
     f1.write(string)
-#print(img_rgb)
-f.close()
 f1.close()
-cv2.imshow("flower", img_rgb)
+
+cv2.imshow("image python", img_rgb)
 cv2.waitKey(0)
