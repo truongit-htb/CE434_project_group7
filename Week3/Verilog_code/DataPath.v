@@ -1,12 +1,13 @@
-module DataPath(H, S, V, Valid_Out, In, Enable);
+module DataPath(H, S, V, /*Valid_In,*/ Valid_Out, In, clk, write_en, sel_out);
 output [31:0] H, S, V;
 output Valid_Out;
+//output Valid_In;
 input [95:0] In;
-input Enable;
+input clk, write_en, sel_out;
 
 wire [31:0] r_temp, g_temp, b_temp, Cmax, Cmin, delta;
-wire [31:0] w_h, w_s;
-wire Valid_In;
+wire [31:0] w_h, w_s, r_h, r_s, r_v;
+//wire Valid_In;
 
 // Check valid input
 check_Valid_In check_input(Valid_In, In);
@@ -21,12 +22,13 @@ Find_delta cal_delta(delta,Cmax, Cmin);
 Find_H cal_h(w_h, r_temp, g_temp, b_temp, Cmax, delta);
 Find_S cal_s(w_s, Cmax, delta);
 
-//assign V = Cmax; ###############
+register reg_hsv[2:0]({r_h, r_s, r_v}, {w_h, w_s, Cmax}, clk, write_en);
 
 // Check valid output to write
-check_Valid_Out check_output(Valid_Out, {H, S, Cmax});
+check_Valid_Out check_output(Valid_Out, {r_h, r_s, r_v});
 
-assign H = (Enable) ? w_h : 32'bz;
-assign S = (Enable) ? w_s : 32'bz;
-assign V = (Enable) ? Cmax : 32'bz;
+assign H = (sel_out) ? r_h : 32'bz;
+assign S = (sel_out) ? r_s : 32'bz;
+assign V = (sel_out) ? r_v : 32'bz;
+
 endmodule

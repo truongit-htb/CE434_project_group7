@@ -10,6 +10,9 @@ def de2hex_floating_point(x):
    return hex(ctypes.c_uint.from_buffer(ctypes.c_float(x)).value)
 
 img_rgb = cv2.imread('/v_env/ce434/W2/meomeo.jpg')
+
+#img_rgb = cv2.imread('/v_env/ce434/W2/image_resized.png')
+
 # Lay thong tin cua anh
 (h, w, d) = img_rgb.shape
 print("width={}, height={}, depth={}".format(w, h, d))
