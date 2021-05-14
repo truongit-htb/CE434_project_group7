@@ -67,7 +67,7 @@ Sunflower_flower_dir = '/content/flowers/flowers/sunflower'
 
 images = []
 labels = []
-img_size = 150
+img_size = 56
 
 def image_data(flower_name, DIR):
     for i in tqdm(os.listdir(DIR)):
@@ -145,7 +145,7 @@ rn.seed(40)
 
 """Preparing Base model"""
 
-Base_model = VGG16(include_top= False, weights='imagenet',input_shape=(150,150,3), pooling='max')
+Base_model = VGG16(include_top= False, weights='imagenet',input_shape=(56,56,3), pooling='max')
 Base_model.summary()
 
 """Add own fully connected Layers"""
@@ -193,6 +193,8 @@ History = model.fit_generator(datagen.flow(X_train,y_train, batch_size=batch_siz
                               epochs = 20, validation_data = (X_test,y_test),
                               verbose = 1, steps_per_epoch=X_train.shape[0] // batch_size)
 
+model.save("model.h5")
+
 """Model Accuracy"""
 
 plt.plot(History.epoch, History.history['accuracy'])
@@ -210,3 +212,19 @@ plt.title('Model Loss')
 plt.legend(['train', 'test'])
 plt.xlabel('No. of Epochs')
 plt.ylabel('Loss')
+
+"""Test model"""
+
+import numpy as np
+
+from keras.preprocessing import image
+test_image = image.load_img('/content/flowers/sunflower/10386503264_e05387e1f7_m.jpg', target_size = (56, 56))
+test_image = image.img_to_array(test_image)
+test_image = np.expand_dims(test_image, axis = 0)
+result = model.predict(test_image)
+cv2.imshow('réult', test_image)
+if result[0][0] == 1:
+  prediction = 'daisy'
+else:
+  prediction = 'sunflower'
+print(prediction)
