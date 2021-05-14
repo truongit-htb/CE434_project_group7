@@ -216,13 +216,13 @@ plt.ylabel('Loss')
 """Test model"""
 
 import numpy as np
-
 from keras.preprocessing import image
+
 test_image = image.load_img('/content/flowers/sunflower/10386503264_e05387e1f7_m.jpg', target_size = (56, 56))
 test_image = image.img_to_array(test_image)
 test_image = np.expand_dims(test_image, axis = 0)
 result = model.predict(test_image)
-cv2.imshow('réult', test_image)
+
 if result[0][0] == 1:
   prediction = 'daisy'
 else:
