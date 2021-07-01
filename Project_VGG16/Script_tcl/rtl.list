@@ -1,0 +1,10 @@
+#../Verilog/conv2d_kernel_size_3.v
+#../Verilog/conv3d_8_kernel_3_channel_size_3.v
+#../Verilog/conv3d_kernel_3_channel_size_3.v
+../Verilog/conv3d_kernel_8_channel_size_3.v
+../Verilog/max_pooling.v
+../Verilog/max_pooling_tb.v
+../Verilog/tb_conv2d_1kernel_1channel.v
+../Verilog/tb_conv3d_1kernel_3channel.v
+../Verilog/tb_floating_point.v
+../Verilog/block1_conv1_8kernel_3channel.v
