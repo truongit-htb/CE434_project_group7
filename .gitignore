@@ -1,0 +1,4 @@
+*.bak
+Project_VGG16/Dataset/
+Project_VGG16/Dataset/Flower/
+Project_VGG16/Dataset/Weight_bias/
