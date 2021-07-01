@@ -5,8 +5,8 @@ module tb_conv2d_1kernel_1channel;
     // parameter Infile    = "E:/LAB/LAB_20_21_HK_II/CE434-ChuyenDeTKVM/git_vgg16/VGG16/CodePythonCNN/data_image_fp.txt";
     // parameter Outfile   = "E:/LAB/LAB_20_21_HK_II/CE434-ChuyenDeTKVM/git_vgg16/VGG16/CodePythonCNN/modelsim_out_conv2d_1kernel_1channel-02.txt";
     // // path on Ubuntu
-    parameter Infile    = "/home/truong/Desktop/git_vgg16/Data/data_fp_image_111.txt";
-    parameter Outfile   = "/home/truong/Desktop/git_vgg16/Data/modelsim_conv2d_1kernel_1channel_1XX.txt";
+    parameter Infile    = "../Data/data_fp_image_111.txt";
+    parameter Outfile   = "../Data/modelsim_conv2d_1kernel_1channel_000000.txt";
 
     parameter k = 20;
 

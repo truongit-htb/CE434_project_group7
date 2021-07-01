@@ -1,5 +1,4 @@
-+incdir+../Verilog
-+incdir+./Verilog/
+#+incdir+../Verilog
+#+incdir+../Verilog/tb/
 
--f rtl.list
-# -f tb.list
+-f compile.list

@@ -20,6 +20,7 @@ def create_rand_matrix(mode, dim):
         img = np.random.uniform(low = -255, high = 255, size = dim)
     return img
 
+
 # Ham chuyen so decimal sang so hexa floating point
 def dec2hex_fp(x):
     if (x != 0):
@@ -47,9 +48,9 @@ def hex2dec(x):
         return struct.unpack('!f', bytes.fromhex(x))[0]
 
 
-
 def bin2hex(input):
     return hex(int(input, 2))[2:]
+
 
 # Ham tinh conv2d tren 1 kernel 1 channel
 def conv2d(img, filter):
@@ -82,6 +83,7 @@ def conv2d(img, filter):
             
             sobel_matrix[i-1, j-1] = new_value
     return sobel_matrix  
+
 
 # Ham tinh conv3d tren 1 kernel n channel
 def conv3d(img, filter, bias):
@@ -117,25 +119,24 @@ def conv3d(img, filter, bias):
     return sobel_matrix
 
 
-# #----------------- Doc data cho CONVOLUTION 3D #-----------------
+# # #----------------- Doc data cho CONVOLUTION 3D #-----------------
 
-img = np.zeros((20, 20, 3))
-img_dim = img.shape
-# with open('E:\LAB\LAB_20_21_HK_II\CE434-ChuyenDeTKVM\git_vgg16\VGG16\CodePythonCNN\data_image_decimal.txt') as f:
-for i in range(img_dim[2]):
-    file_name = 'data_fp_image_channel_00{0}.txt'.format(i)
-    with open('/home/truong/Desktop/git_vgg16/Data/' + file_name) as f:
-        if f.mode == 'r':
-            data = f.readlines()
-            # print(type(data))
-            for h in range(img_dim[0]):
-                for w in range(img_dim[1]):
-                    temp = data[h*img_dim[1] + w][:-1]
-                    img[h, w, i] = hex2dec(temp)
-        else:
-            print("can't read file" + file_name )
-    f.close()
-# # print(img.dtype)
+# img = np.zeros((20, 20, 3))
+# img_dim = img.shape
+# # with open('E:\LAB\LAB_20_21_HK_II\CE434-ChuyenDeTKVM\git_vgg16\VGG16\CodePythonCNN\data_image_decimal.txt') as f:
+# for i in range(img_dim[2]):
+#     file_name = 'data_fp_image_channel_00{0}.txt'.format(i)
+#     with open('/home/truong/Desktop/git_vgg16/Data/' + file_name) as f:
+#         if f.mode == 'r':
+#             data = f.readlines()
+#             # print(type(data))
+#             for h in range(img_dim[0]):
+#                 for w in range(img_dim[1]):
+#                     temp = data[h*img_dim[1] + w][:-1]
+#                     img[h, w, i] = hex2dec(temp)
+#         else:
+#             print("can't read file" + file_name )
+#     f.close()
 
 
 
@@ -149,25 +150,25 @@ for i in range(img_dim[2]):
 # img[:,:,0] = img2
 # img[:,:,1] = img2
 
-# #----------------- Doc data cho CONVOLUTION 2D #-----------------
-# img = np.zeros((56, 56))
-# img_dim = img.shape
-# file_name = 'data_fp_image_111.txt'
-# with open('/home/truong/Desktop/git_vgg16/Data/' + file_name) as f:
-#     if f.mode == 'r':
-#         data = f.readlines()
-#         for h in range(img_dim[0]):
-#             for w in range(img_dim[1]):
-#                 temp = data[h*img_dim[1] + w][:-1]
-#                 img[h, w] = hex2dec(temp)
-#     else:
-#         print("can't read file" + file_name )
-# f.close()
+#----------------- Doc data cho CONVOLUTION 2D #-----------------
+img = np.zeros((56, 56))
+img_dim = img.shape
+file_name = 'data_fp_image_111.txt'
+with open('/home/truong/Desktop/CE434_project_group7/Project_VGG16/Data/' + file_name) as f:
+    if f.mode == 'r':
+        data = f.readlines()
+        for h in range(img_dim[0]):
+            for w in range(img_dim[1]):
+                temp = data[h*img_dim[1] + w][:-1]
+                img[h, w] = hex2dec(temp)
+    else:
+        print("can't read file" + file_name )
+f.close()
 # # print("Anh dau vao\n ",img)
 
 
 
-#----------------- Doc ket qua modelsim #-----------------
+# #----------------- Doc ket qua modelsim #-----------------
 # pixels = []
 # # with open("E:/LAB/LAB_20_21_HK_II/CE434-ChuyenDeTKVM/git_vgg16/VGG16/CodePythonCNN/modelsim_out_floating_point.txt") as file:
 # # with open("/home/truong/Desktop/git_vgg16/VGG16/CodePythonCNN/modelsim_out_conv3d_1kernel_3channel.txt") as file:
@@ -178,82 +179,101 @@ for i in range(img_dim[2]):
 #             if (line.find("//") == -1):
 #                 pixels.append(line)
 # file.close()
-pixels = np.zeros((img_dim[0], img_dim[1], 8))
+# #----------------- Doc ket qua 2D #-----------------
+pixels = np.zeros((img_dim[0], img_dim[1]))
 pixels_dim = pixels.shape
-for kernel in range(pixels_dim[2]):
-    file_name = 'modelsim_conv3D_8kernel_3channel_00{0}.txt'.format(kernel)
-    with open('/home/truong/Desktop/git_vgg16/Data/' + file_name) as f:
-        if f.mode == 'r':
-            data = f.readlines()
-            for h in range(img_dim[0]):
-                for w in range(img_dim[1]):
-                    temp = data[3 + h*img_dim[1] + w][:-1]
-                    pixels[h, w, kernel] = hex2dec(temp)
-        else:
-            print("can't read file" + file_name )
-    f.close()
+# for kernel in range(pixels_dim[2]):
+file_name = 'modelsim_conv2d_1kernel_1channel_000000.txt'
+with open('/home/truong/Desktop/CE434_project_group7/Project_VGG16/Data/' + file_name) as f:
+    if f.mode == 'r':
+        data = f.readlines()
+        for h in range(img_dim[0]):
+            for w in range(img_dim[1]):
+                temp = data[3 + h*img_dim[1] + w][:-1]
+                pixels[h, w] = hex2dec(temp)
+    else:
+        print("can't read file" + file_name )
+f.close()
+
+# #----------------- Doc ket qua 3D #-----------------
+# pixels = np.zeros((img_dim[0], img_dim[1], 8))
+# pixels_dim = pixels.shape
+# for kernel in range(pixels_dim[2]):
+#     file_name = 'modelsim_conv3D_8kernel_3channel_00{0}.txt'.format(kernel)
+#     with open('/home/truong/Desktop/git_vgg16/Data/' + file_name) as f:
+#         if f.mode == 'r':
+#             data = f.readlines()
+#             for h in range(img_dim[0]):
+#                 for w in range(img_dim[1]):
+#                     temp = data[3 + h*img_dim[1] + w][:-1]
+#                     pixels[h, w, kernel] = hex2dec(temp)
+#         else:
+#             print("can't read file" + file_name )
+#     f.close()
 
 
 
-# #----------------- Thuc hien conv2d tren anh dau vao 1 channel #-----------------
-# # Lay thong tin anh img
-# h, w = img.shape[0:2]
-# # Thuc hien padding cho ma tran img 
-# img_padding = np.zeros((h+2, w+2))
-# img_padding[1:h+1, 1:w+1] = img[:, :]
-# # print("Anh Padding\n ",img_padding)
-
-# # Filer Gx
-# filter_Gx = np.array(
-#     [[  1,  1.1,  1],
-#     [   0,    0,  0],
-#     [  -1, -1.1, -1]])
-
-# # Sobel Gx
-# out_Gx = conv2d(img_padding.copy(), filter_Gx)
-
-
-
-#----------------- Thuc hien conv3D tren anh dau vao n Channel #-----------------
+#----------------- Thuc hien conv2d tren anh dau vao 1 channel #-----------------
 # Lay thong tin anh img
-h, w, d = img.shape
+h, w = img.shape[0:2]
 # Thuc hien padding cho ma tran img 
-img_padding = np.zeros((h+2, w+2, d))
-img_padding[1:h+1, 1:w+1, :] = img[:, :, :]
+img_padding = np.zeros((h+2, w+2))
+img_padding[1:h+1, 1:w+1] = img[:, :]
+# print("Anh Padding\n ",img_padding)
 
-out_Gx = np.zeros((h, w, 8))
+# Filer Gx
+filter_Gx = np.array(
+    [[  1,  1.1,  1],
+    [   0,    0,  0],
+    [  -1, -1.1, -1]])
 
-# ------- Doc cac file trong so WEIGHT
-for kernel in range(8):
-    filter_Gx = np.zeros((3, 3, 3))
-    filter_dim = filter_Gx.shape
-    # with open('E:\LAB\LAB_20_21_HK_II\CE434-ChuyenDeTKVM\git_vgg16\VGG16\CodePythonCNN\data_image_decimal.txt') as f:
-    for channel in range(filter_dim[2]):
-        weight_name = 'block1_conv1_3chanel_8filter_channel_{0}filter_{1}.txt'.format(channel, kernel)
-        with open('/home/truong/Desktop/git_vgg16/Data/1_weight/' + weight_name) as f:
-            if f.mode == 'r':
-                data = f.readlines()
-                # print(type(data))
-                for h in range(filter_dim[0]):
-                    for w in range(filter_dim[1]):
-                        temp = data[h*filter_dim[1] + w][:-1]
-                        filter_Gx[h, w, channel] = hex2dec(bin2hex(temp))
-            else:
-                print("can't read file" + weight_name )
-        f.close()
+# Sobel Gx
+out_Gx = conv2d(img_padding.copy(), filter_Gx)
 
-    # ----- Doc file trong so BIAS
-    bias_name = 'block1_conv1_3chanel_8filter_bias.txt'
-    with open('/home/truong/Desktop/git_vgg16/Data/0_bias/' + bias_name) as f:
-        if f.mode == 'r':
-            data_bias = f.readlines()
-        else:
-            print("can't read file" + bias_name )
-    f.close()
 
-    bias_weight = hex2dec(bin2hex(data_bias[kernel]))
 
-    out_Gx[:, :, kernel] = conv3d(img_padding.copy(), filter_Gx, bias_weight)
+# #----------------- Thuc hien conv3D tren anh dau vao n Channel #-----------------
+# # Lay thong tin anh img
+# h, w, d = img.shape
+# # Thuc hien padding cho ma tran img 
+# img_padding = np.zeros((h+2, w+2, d))
+# img_padding[1:h+1, 1:w+1, :] = img[:, :, :]
+
+# out_Gx = np.zeros((h, w, 8))
+
+# # ------- Doc cac file trong so WEIGHT
+# for kernel in range(8):
+#     filter_Gx = np.zeros((3, 3, 3))
+#     filter_dim = filter_Gx.shape
+#     # with open('E:\LAB\LAB_20_21_HK_II\CE434-ChuyenDeTKVM\git_vgg16\VGG16\CodePythonCNN\data_image_decimal.txt') as f:
+#     for channel in range(filter_dim[2]):
+#         weight_name = 'block1_conv1_3chanel_8filter_channel_{0}filter_{1}.txt'.format(channel, kernel)
+#         with open('/home/truong/Desktop/git_vgg16/Data/1_weight/' + weight_name) as f:
+#             if f.mode == 'r':
+#                 data = f.readlines()
+#                 # print(type(data))
+#                 for h in range(filter_dim[0]):
+#                     for w in range(filter_dim[1]):
+#                         temp = data[h*filter_dim[1] + w][:-1]
+#                         filter_Gx[h, w, channel] = hex2dec(bin2hex(temp))
+#             else:
+#                 print("can't read file" + weight_name )
+#         f.close()
+
+#     # ----- Doc file trong so BIAS
+#     bias_name = 'block1_conv1_3chanel_8filter_bias.txt'
+#     with open('/home/truong/Desktop/git_vgg16/Data/0_bias/' + bias_name) as f:
+#         if f.mode == 'r':
+#             data_bias = f.readlines()
+#         else:
+#             print("can't read file" + bias_name )
+#     f.close()
+
+#     bias_weight = hex2dec(bin2hex(data_bias[kernel]))
+
+#     out_Gx[:, :, kernel] = conv3d(img_padding.copy(), filter_Gx, bias_weight)
+# ------------------------------------------
+
 # # Filer Gx
 # filter_Gx = np.zeros((3, 3, 3))
 # filter_Gx[:, :, 0] = np.array(
@@ -293,14 +313,14 @@ if (len(pixels_dim) == 2):  # ------- Verify Anh dau vao 2D
     h2, w2 = out_Gx.shape[0:2]
     for i in range (h2):
         for j in range (w2):        
-            bin_conv_py = dec2bin(out_Gx[i][j])
+            bin_conv_py = dec2bin(out_Gx[i, j])
 
-            hex_conv_sim = pixels[i*w2 + j][:-1]    # chu y file out modelsim co ki tu \n nen can loai bo
-            dec_conv_sim = hex2dec(hex_conv_sim)
+            # hex_conv_sim = pixels[i*w2 + j][:-1]    # chu y file out modelsim co ki tu \n nen can loai bo
+            dec_conv_sim = pixels[i, j]
             bin_conv_sim = dec2bin(dec_conv_sim)
             # print('{0}\t{1}\t{2}'.format(i, hex_conv_py, hex_conv_sim))
 
-            py_error = abs(out_Gx[i][j] - dec_conv_sim)
+            py_error = abs(out_Gx[i, j] - dec_conv_sim)
             if (py_error < 2.0):
             # if (bin_conv_py[0:9] == bin_conv_sim[0:9]):
                 error = 0.0
@@ -341,9 +361,9 @@ if (len(pixels_dim) == 2):  # ------- Verify Anh dau vao 2D
     print('So phep tinh sai: ', len(fault))
     print('Do sai lech phep tinh GAN DUNG modelsim vs python: max = {0}, min = {1}'.format(max_err, min_err))
     print('Do sai lech modelsim vs python: max = {0}, min = {1}'.format(py_max_err, py_min_err))
-
+  
     # for i in range(len(fault)):
-    #     print('{0}   \t{1}   \t{2}'.format(fault[i], dec2hex_fp(out_Gx[fault[i]]) , pixels[fault[i][0]*w2 + fault[i][1]][:-1]))
+    #     print('{0}   \t{1}   \t{2}'.format(fault[i], dec2hex_fp(out_Gx[fault[i]]) , pixels[fault[i]]))
 
 else:   # ------- Verify Anh dau vao 3D
     for kernel in range(pixels_dim[2]):
