@@ -1,0 +1,18 @@
+TESTNAME=tb_conv2d_1kernel_1channel
+
+# tao dang : name-hour-min-second.log
+SEED=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+echo "  Test name = $TESTNAME"
+echo "  Test seed = $SEED"
+echo "Start Simulation"
+
+mkdir -p ./results/log/
+
+vsim -c  -voptargs=+acc work.$TESTNAME \
+-l ./results/log/SEED.log \
+-wlf ./results/SEED.wlf \
+-do "log -r /*; run -all "
+
+echo "Done Simulation"
+
+# vsim -do "do wave.do /*" -view ./results/SEED.wlf
