@@ -15,3 +15,5 @@
 ../Verilog/tb/tb_floating_point.v
 ../Verilog/tb/tb_generator.v
 ../Verilog/tb/tb_writer.v
+../Verilog/tb/tb_generator_3d.v
+../Verilog/tb/tb_writer_3d.v

@@ -4,7 +4,7 @@ Dataset/Flower/
 Dataset/Weight_bias/
 
 
-# Data/
+Data/*.jpg
 
 
 Script_python/python_get_weight_layer.py
