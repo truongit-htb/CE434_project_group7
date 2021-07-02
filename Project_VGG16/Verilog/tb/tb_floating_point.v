@@ -1,14 +1,17 @@
 `timescale 1ns/1ps
-module tb_floating_point;
-    parameter Infile    = "E:/LAB/LAB_20_21_HK_II/CE434-ChuyenDeTKVM/git_vgg16/VGG16/CodePythonCNN/data_mult_fp.txt";
-    parameter Outfile   = "E:/LAB/LAB_20_21_HK_II/CE434-ChuyenDeTKVM/git_vgg16/VGG16/CodePythonCNN/modelsim_out_floating_point_add.txt";
 
-    parameter k = 20;
+`include "../Verilog/rtl/dimension.v"
+
+module tb_floating_point;
+    parameter Infile    = "../Data/data_decimal_image_channel_000.txt";
+    parameter Outfile   = "../Data/modelsim_float_channel_000.txt";
+
+    parameter k = 10;
 
     parameter DATA_WIDTH = 32;
-    parameter WIDTH = 6;
-    parameter HEIGHT = 6;
-    parameter Total_Pixel = WIDTH * HEIGHT;
+    // parameter WIDTH = 6;
+    // parameter HEIGHT = 6;
+    parameter Total_Pixel = `IMG_WIDTH * `IMG_HEIGHT;
 
     reg clk;
     reg resetn;
