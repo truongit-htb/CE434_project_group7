@@ -4,8 +4,9 @@ import ctypes
 import struct
 
 # Ham tao ma tran numpy ngau nhien. VD: a = create_rand_matrix(1, (200, 200, 3))
-## mode = 0:    tao ma tran khac nhau trong moi lan chay lai
-## mode != 0:   chi tao 1 kieu ma tran duy nhat trong moi lan chay lai
+## mode = 0:    tao ra ma tran int khac nhau trong moi lan chay lai
+## mode = 1:    chi tao 1 kieu ma tran duy nhat trong moi lan chay lai
+## else:        tao ra ma tran float khac nhau trong moi lan chay lai
 def create_rand_matrix(mode, dim):
     if mode == 0:
         img = np.uint8(np.random.random((dim))*255)
@@ -153,7 +154,7 @@ def conv3d(img, filter, bias):
 #----------------- Doc data cho CONVOLUTION 2D #-----------------
 img = np.zeros((56, 56))
 img_dim = img.shape
-file_name = 'data_fp_image_111.txt'
+file_name = 'data_fp_image_channel_002.txt'
 with open('/home/truong/Desktop/CE434_project_group7/Project_VGG16/Data/' + file_name) as f:
     if f.mode == 'r':
         data = f.readlines()
@@ -183,13 +184,17 @@ f.close()
 pixels = np.zeros((img_dim[0], img_dim[1]))
 pixels_dim = pixels.shape
 # for kernel in range(pixels_dim[2]):
-file_name = 'modelsim_conv2d_1kernel_1channel_000000.txt'
+file_name = 'modelsim_conv2d_channel_222.txt'
 with open('/home/truong/Desktop/CE434_project_group7/Project_VGG16/Data/' + file_name) as f:
     if f.mode == 'r':
         data = f.readlines()
         for h in range(img_dim[0]):
             for w in range(img_dim[1]):
-                temp = data[3 + h*img_dim[1] + w][:-1]
+                # # OLD
+                # temp = data[3 + h*img_dim[1] + w][:-1]
+                # # NEW
+                temp = data[h*img_dim[1] + w][:-1]
+
                 pixels[h, w] = hex2dec(temp)
     else:
         print("can't read file" + file_name )

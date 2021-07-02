@@ -13,3 +13,5 @@
 ../Verilog/tb/tb_conv2d_1kernel_1channel.v
 ../Verilog/tb/tb_conv3d_1kernel_3channel.v
 ../Verilog/tb/tb_floating_point.v
+../Verilog/tb/tb_generator.v
+../Verilog/tb/tb_writer.v

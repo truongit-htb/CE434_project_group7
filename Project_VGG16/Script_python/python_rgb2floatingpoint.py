@@ -1,6 +1,4 @@
 # Chuong trinh python dung de tao data_input cho modelsim
-# Ket hop voi hien thuc thuat toan chuyen doi RGB -> HSB bang python
-# Sau do ghi lai ket qua cua thuat toan tren de so sanh voi ket qua modelsim
 
 import cv2
 import numpy as np
@@ -9,8 +7,9 @@ import math
 import struct
 
 # Ham tao ma tran numpy ngau nhien. VD: a = create_rand_matrix(1, (200, 200, 3))
-## mode = 0:    tao ma tran khac nhau trong moi lan chay lai
-## mode != 0:   chi tao 1 kieu ma tran duy nhat trong moi lan chay lai
+## mode = 0:    tao ra ma tran int khac nhau trong moi lan chay lai
+## mode = 1:    chi tao 1 kieu ma tran duy nhat trong moi lan chay lai
+## else:        tao ra ma tran float khac nhau trong moi lan chay lai
 def create_rand_matrix(mode, dim):
     if mode == 0:
         img = np.uint8(np.random.random((dim))*255)
@@ -25,12 +24,14 @@ def create_rand_matrix(mode, dim):
         img = np.random.uniform(low = -255, high = 255, size = dim)
     return img
 
+
 # Ham chuyen so decimal sang so hexa floating point
 def dec2hex_fp(x):
     if (x != 0):
         return hex(ctypes.c_uint.from_buffer(ctypes.c_float(x)).value)[2:]  # bo ki tu 0x o dau chuoi hex
     else: 
         return '00000000'
+
 
 def dec2bin(x):
     if x == 0:
@@ -43,6 +44,7 @@ def dec2bin(x):
                 tempp = '0' + tempp
     return tempp
 
+
 def hex2dec(x):
     if (x == "xxxxxxxx"):
         return 2**32
@@ -50,18 +52,27 @@ def hex2dec(x):
         return struct.unpack('!f', bytes.fromhex(x))[0]
 
 
+def bin2hex(input):
+    return hex(int(input, 2))[2:]
 
-# #------------------- MAIN #-------------------
-# #img_rgb = cv2.imread('/v_env/ce434/W2/image_resized.png')
+
+#------------------- MAIN #-------------------
+img_rgb = cv2.imread('/home/truong/Desktop/CE434_project_group7/Project_VGG16/Data/sun56x56.jpg')
+# img_rgb = cv2.resize(img_rgb, (56, 56))
+# cv2.imshow('input56x56', img_rgb)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+# cv2.imwrite('../Data/sun56x56.jpg', img_rgb)    # CHI CHAY 1 LAN
 
 # #-------- Tao anh 2D ngau nhien
-# img_rgb = create_rand_matrix(1, (56, 56))
+# img_rgb = create_rand_matrix(0, (56, 56))
 # # Lay thong tin cua anh
-# h, w = img_rgb.shape[0:2]
-
-# #-------- Tao anh 3D ngau nhien
-img_rgb = create_rand_matrix(1, (20, 20, 3))
+# dim = img_rgb.shape[0:2]
+# # #-------- Tao anh 3D ngau nhien
+# img_rgb = create_rand_matrix(1, (20, 20, 3))
 dim = img_rgb.shape
+
+print(dim)
 
 
 # # #-------- Tao filter 2D
@@ -106,16 +117,8 @@ dim = img_rgb.shape
 
 
 #------------------- Dung python tao data input cho modelsim #-------------------
-# ------ 1
-# # path on Window
-# # f  = open('E:\LAB\LAB_20_21_HK_II\CE434-ChuyenDeTKVM\git_vgg16\VGG16\CodePythonCNN\data_weight_fp.txt', 'w')
-# # f2 = open('E:\LAB\LAB_20_21_HK_II\CE434-ChuyenDeTKVM\git_vgg16\VGG16\CodePythonCNN\data_weight_decimal.txt', 'w')
-# f = open('E:\LAB\LAB_20_21_HK_II\CE434-ChuyenDeTKVM\git_vgg16\VGG16\CodePythonCNN\data_image_fp.txt', 'w')
-# f2 = open('E:\LAB\LAB_20_21_HK_II\CE434-ChuyenDeTKVM\git_vgg16\VGG16\CodePythonCNN\data_image_decimal.txt', 'w')
-
-# # ------ 2
-# # path on Ubuntu
-if (len(dim) == 2):   # ------- Ghi file Anh dau vao 2D
+# ------- Ghi file Anh dau vao 2D
+if (len(dim) == 2):   
     file_name = 'image_111.txt'
     # f  = open('/home/truong/Desktop/git_vgg16/VGG16/CodePythonCNN/data_fp_weight_block0_conv0_kernel0_channel_1.txt', 'w')
     # f2 = open('/home/truong/Desktop/git_vgg16/VGG16/CodePythonCNN/data_decimal_weight_block0_conv0_kernel0_channel_1.txt', 'w')
@@ -133,14 +136,14 @@ if (len(dim) == 2):   # ------- Ghi file Anh dau vao 2D
     f2.close()
     print('File {0} has done!'.format(file_name))
     print('\nPLEASE UPDATE DIMENSION IN TESTBENCH & VERIFY: h = {0}, w = {1}'.format(dim[0], dim[1]))
-
-else:   # ------- Ghi file Anh dau vao 3D
+# ------- Ghi file Anh dau vao 3D
+else: 
     for k in range(dim[2]):
         file_name = 'image_channel_00{0}.txt'.format(k)
         # f  = open('/home/truong/Desktop/git_vgg16/VGG16/CodePythonCNN/data_fp_weight_block0_conv0_kernel0_channel_1.txt', 'w')
         # f2 = open('/home/truong/Desktop/git_vgg16/VGG16/CodePythonCNN/data_decimal_weight_block0_conv0_kernel0_channel_1.txt', 'w')
-        f = open('/home/truong/Desktop/git_vgg16/Data/data_fp_' + file_name, 'w')
-        f2 = open('/home/truong/Desktop/git_vgg16/Data/data_decimal_' + file_name, 'w')
+        f  = open('../Data/data_fp_' + file_name, 'w')
+        f2 = open('../Data/data_decimal_' + file_name, 'w')
         for i in range (dim[0]):
             for j in range (dim[1]):
                 r = img_rgb[i][j][k]
@@ -152,13 +155,12 @@ else:   # ------- Ghi file Anh dau vao 3D
         f2.close()
         print('File {0} has done!'.format(file_name))
     print('\nPLEASE UPDATE DIMENSION IN TESTBENCH & VERIFY: h = {0}, w = {1}'.format(dim[0], dim[1]))
-# # ------ 3
-# file_name = 'data_mult_fp.txt'
-# f = open('/home/truong/Desktop/BT-Tuan10/' + file_name, 'w')
-# for i in range (len(data_in)):
-#     r = float(data_in[i])
-#     s = dec2hex_fp(r)
-#     string = s + '\n'
-#     f.write(string)
-# f.close()
-# print('File {0} has done!'.format(file_name))
+
+
+# -------------- Tao file dimension.v --------------
+file_name = 'dimension.v'
+f  = open('../Verilog/rtl/' + file_name, 'w')
+string = "`define IMG_HEIGHT {0}\n`define IMG_WIDTH {1}".format(dim[0], dim[1])
+f.write(string)
+f.close()
+print('File {0} has done!'.format(file_name))
