@@ -16,7 +16,7 @@ def create_rand_matrix(mode, dim):
         for item in dim:
             size_matrix *= item
         # img = np.uint8(rand_array.randint(0, 20, size = size_matrix)).reshape(dim)
-        img = rand_array.randint(-255, 255, size = size_matrix).reshape(dim)
+        img = rand_array.randint(0, 255, size = size_matrix).reshape(dim)
     else:
         img = np.random.uniform(low = -255, high = 255, size = dim)
     return img
@@ -30,6 +30,7 @@ def dec2hex_fp(x):
         return '00000000'
 
 
+# Ham chuyen so decimal sang so binary
 def dec2bin(x):
     if x == 0:
         tempp = '00000000000000000000000000000000'
@@ -42,6 +43,7 @@ def dec2bin(x):
     return tempp
 
 
+# Ham chuyen so hexa sang so binary
 def hex2dec(x):
     if (x == "xxxxxxxx"):
         return 2**32
@@ -49,75 +51,100 @@ def hex2dec(x):
         return struct.unpack('!f', bytes.fromhex(x))[0]
 
 
+# Ham chuyen so binary sang so hexa
 def bin2hex(input):
     return hex(int(input, 2))[2:]
 
 
 # Ham tinh conv2d tren 1 kernel 1 channel
-def conv2d(img, filter):
-    img_copy = img.copy()
-    h, w = img.shape[0:2]
-
+def conv2d_single(img, filter):
+    h, w = img.shape[:2]
     sobel_matrix = np.zeros((h-2, w-2)) ######
+    
     for i in range(1, h-1):
         for j in range(1, w-1):
-            center_pixel = [i, j]
-            center_filter = [1, 1]
-            xRow = [0, 0, 1, -1, 1, -1, 1, -1]
-            yCol = [-1, 1, 0, 0, -1, -1, 1, 1]
+            sum = np.sum(img[i-1 : i+2, j-1 : j+2] * filter)
+            sobel_matrix[i-1, j-1] = sum
 
-            new_value = 0
-            for k in range(8):
-                item = [xRow[k], yCol[k]]
-                pixel_in_image_x = center_pixel[0] + item[0]
-                pixel_in_image_y = center_pixel[1] + item[1]
-                pixel_in_filter_x = center_filter[0] + item[0]
-                pixel_in_filter_y = center_filter[1] + item[1]
-
-                new_value += img[pixel_in_image_x, pixel_in_image_y] * filter[pixel_in_filter_x, pixel_in_filter_y]
-            new_value += img[i, j] * filter[1, 1]
-
-            # if new_value < 0:
-            #     new_value = 0
-            # if new_value > 255:
-            #     new_value = 255
-            
-            sobel_matrix[i-1, j-1] = new_value
     return sobel_matrix  
 
 
 # Ham tinh conv3d tren 1 kernel n channel
-def conv3d(img, filter, bias):
-    img_copy = img.copy()
-    h, w, d = img.shape[0:3]
-
+def conv3d_single(img, filter, bias):
+    h, w, d = img.shape
     sobel_matrix = np.zeros((h-2, w-2)) ######
+
     for i in range(1, h-1):
         for j in range(1, w-1):
-            center_pixel = [i, j]
-            center_filter = [1, 1]
-            xRow = [0, 0, 1, -1, 1, -1, 1, -1]
-            yCol = [-1, 1, 0, 0, -1, -1, 1, 1]
-                
-            new_value = 0
-            for t in range(d):                
-                for k in range(8):
-                    item = [xRow[k], yCol[k]]
-                    pixel_in_image_x  = center_pixel[0] + item[0]
-                    pixel_in_image_y  = center_pixel[1] + item[1]
-                    pixel_in_filter_x = center_filter[0] + item[0]
-                    pixel_in_filter_y = center_filter[1] + item[1]
+            sum = np.sum(img[i-1 : i+2, j-1 : j+2] * filter)
+            sobel_matrix[i-1, j-1] = sum + bias
 
-                    new_value += img[pixel_in_image_x, pixel_in_image_y, t] * filter[pixel_in_filter_x, pixel_in_filter_y, t]
-                new_value += img[i, j, t] * filter[1, 1, t]
-
-                # if new_value < 0:
-                #     new_value = 0
-                # if new_value > 255:
-                #     new_value = 255
-                
-            sobel_matrix[i-1, j-1] = new_value + bias
     return sobel_matrix
+
+
+# Ham tinh conv3d tren m kernel n channel
+def conv3d_multi(img, num_channel_out = 8, weight_name = '', bias_name = ''):
+    ############ PYTHON convolution ###############
+    if (len(img.shape) == 2):
+        #----------------- PYTHON conv2d tren anh dau vao 1 channel #-----------------
+        # Lay thong tin anh img
+        h, w = img.shape[:2]
+        # Thuc hien padding cho ma tran img 
+        img_padding = np.zeros((h+2, w+2))
+        img_padding[1:h+1, 1:w+1] = img[:, :]
+    
+        # Filer Gx
+        filter_Gx = np.array(
+            [[  1,  1.1,  1],
+            [   0,    0,  0],
+            [  -1, -1.1, -1]])
+
+        # Sobel Gx
+        out_Gx = conv2d_single(img_padding, filter_Gx)
+
+    else:
+        #----------------- PYTHON conv3D tren anh dau vao n Channel #-----------------
+        # Lay thong tin anh img
+        h, w, num_channel_in = img.shape
+        # Thuc hien padding cho ma tran img 
+        img_padding = np.zeros((h+2, w+2, num_channel_in))
+        img_padding[1:h+1, 1:w+1, :] = img[:, :, :]
+
+        out_Gx = np.zeros((h, w, num_channel_out))
+
+        # ------- Doc cac file trong so WEIGHT
+        for kernel in range(num_channel_out):
+            filter_Gx = np.zeros((3, 3, num_channel_in))
+            filter_dim = filter_Gx.shape
+
+            for channel in range(filter_dim[2]):
+                # weight_name = 'block1_conv1_3chanel_8filter_channel_{0}filter_{1}.txt'.format(channel, kernel)
+                with open('../Data/1_weight/' + weight_name.format(channel, kernel)) as f:
+                    if f.mode == 'r':
+                        data = f.readlines()
+                        # print(type(data))
+                        for h in range(filter_dim[0]):
+                            for w in range(filter_dim[1]):
+                                temp = data[h*filter_dim[1] + w][:-1]
+                                filter_Gx[h, w, channel] = hex2dec(bin2hex(temp))
+                    else:
+                        print("can't read file" + weight_name )
+                f.close()
+
+            # ----- Doc file trong so BIAS
+            # bias_name = 'block1_conv1_3chanel_8filter_bias.txt'
+            with open('../Data/0_bias/' + bias_name) as f:
+                if f.mode == 'r':
+                    data_bias = f.readlines()
+                else:
+                    print("can't read file" + bias_name )
+            f.close()
+
+            bias_weight = hex2dec(bin2hex(data_bias[kernel]))
+
+            out_Gx[:, :, kernel] = conv3d_single(img_padding, filter_Gx, bias_weight)
+
+    return out_Gx
 
 
 # Ham doc data dau vao cho CONV PYTHON
@@ -197,153 +224,37 @@ def read_data_4conv_sim(sim_dim, file_name):
     return sim
 
 
+# Ham tinh max pooling
+def max_pooling(img):
+    if len(img.shape) == 2:
+        h, w = img.shape[:2]
+        max_pool = np.zeros((h//2, w//2))
 
-# # ###########################
-# #          MAIN 
-# # ###########################
+        for i in range(0, h-1, 2):
+            for j in range(0, w-1, 2):
+                max_pool[i//2, j//2] = np.max(img[ i: i+2, j: j+2])
 
-file_name = '../Data/data_fp_image_channel_00{0}.txt'
-# file_name = '../Data/data_fp_image_channel_002.txt'
-img_dim = (56, 56, 3)
-img = read_data_4conv_py(img_dim, file_name)
+    else:
+        h, w, d = img.shape
+        max_pool = np.zeros((h//2, w//2, d))
 
-
-file_name = '../Data/' +  'modelsim_block1_conv1_00{0}.txt'
-# file_name = '../Data/' +  'modelsim_conv2d_channel_222.txt'
-sim_dim = (56, 56, 8)
-sim = read_data_4conv_sim(sim_dim, file_name)
-
-
-############ PYTHON convolution ###############
-if (len(sim_dim) == 2):
-    #----------------- PYTHON conv2d tren anh dau vao 1 channel #-----------------
-    # Lay thong tin anh img
-    h, w = img_dim
-    # Thuc hien padding cho ma tran img 
-    img_padding = np.zeros((h+2, w+2))
-    img_padding[1:h+1, 1:w+1] = img[:, :]
-    # print("Anh Padding\n ",img_padding)
-
-    # Filer Gx
-    filter_Gx = np.array(
-        [[  1,  1.1,  1],
-        [   0,    0,  0],
-        [  -1, -1.1, -1]])
-
-    # Sobel Gx
-    out_Gx = conv2d(img_padding.copy(), filter_Gx)
-else:
-    #----------------- PYTHON conv3D tren anh dau vao n Channel #-----------------
-    # Lay thong tin anh img
-    h, w, d = img_dim
-    # Thuc hien padding cho ma tran img 
-    img_padding = np.zeros((h+2, w+2, d))
-    img_padding[1:h+1, 1:w+1, :] = img[:, :, :]
-
-    out_Gx = np.zeros((h, w, 8))
-
-    # ------- Doc cac file trong so WEIGHT
-    for kernel in range(8):
-        filter_Gx = np.zeros((3, 3, 3))
-        filter_dim = filter_Gx.shape
-
-        for channel in range(filter_dim[2]):
-            weight_name = 'block1_conv1_3chanel_8filter_channel_{0}filter_{1}.txt'.format(channel, kernel)
-            with open('../Data/1_weight/' + weight_name) as f:
-                if f.mode == 'r':
-                    data = f.readlines()
-                    # print(type(data))
-                    for h in range(filter_dim[0]):
-                        for w in range(filter_dim[1]):
-                            temp = data[h*filter_dim[1] + w][:-1]
-                            filter_Gx[h, w, channel] = hex2dec(bin2hex(temp))
-                else:
-                    print("can't read file" + weight_name )
-            f.close()
-
-        # ----- Doc file trong so BIAS
-        bias_name = 'block1_conv1_3chanel_8filter_bias.txt'
-        with open('../Data/0_bias/' + bias_name) as f:
-            if f.mode == 'r':
-                data_bias = f.readlines()
-            else:
-                print("can't read file" + bias_name )
-        f.close()
-
-        bias_weight = hex2dec(bin2hex(data_bias[kernel]))
-
-        out_Gx[:, :, kernel] = conv3d(img_padding.copy(), filter_Gx, bias_weight)
-# # ------------------------------------------
+        for i in range(0, h-1, 2):
+            for j in range(0, w-1, 2):
+                for k in range(d):
+                    max_pool[i//2, j//2, k] = np.amax(img[ i: i+2, j: j+2, k])
+    
+    return max_pool
 
 
-
-############ Tinh do sai lech ###############
-if (len(sim_dim) == 2):  # ------- Verify Anh dau vao 2D
-    correct = 0
-    fault = []
-    error = 0.0
-    max_err = 0.0
-    min_err = 0.0
-    py_error = 0.0
-    py_max_err = 0.0
-    py_min_err = 0.0
-    h2, w2 = out_Gx.shape[0:2]
-    for i in range (h2):
-        for j in range (w2):        
-            bin_conv_py = dec2bin(out_Gx[i, j])
-
-            # hex_conv_sim = sim[i*w2 + j][:-1]    # chu y file out modelsim co ki tu \n nen can loai bo
-            dec_conv_sim = sim[i, j]
-            bin_conv_sim = dec2bin(dec_conv_sim)
-            # print('{0}\t{1}\t{2}'.format(i, hex_conv_py, hex_conv_sim))
-
-            py_error = abs(out_Gx[i, j] - dec_conv_sim)
-            if (py_error < 2.0):
-            # if (bin_conv_py[0:9] == bin_conv_sim[0:9]):
-                error = 0.0
-
-                for k in range (1, 32, 1):
-                    if bin_conv_py[k] > bin_conv_sim[k]:
-                        error += 2**(8 - k)
-                    elif bin_conv_py[k] < bin_conv_sim[k]:
-                        error -= 2**(8 - k)
-                error = abs(error)
-            else:
-                fault.append((i, j))
-                # error = abs(out_Gx[i][j] - hex2dec(hex_conv_sim))
-                # continue
+# Ham tinh RELU
+def relu(img):
+    img[np.where(img < 0)] = 0
+    return img
 
 
-            if (i == 0):
-                max_err = error
-                min_err = error
-                py_max_err = py_error
-                py_min_err = py_error
-            else:
-                if (error > max_err):
-                    max_err = error
-                if (error < min_err):
-                    min_err = error
-
-                if (py_error > py_max_err):
-                    py_max_err = py_error
-                if (py_error < py_min_err):
-                    py_min_err = py_error
-                
-            if (bin_conv_py == bin_conv_sim):
-                correct += 1
-
-    print('\nSo phep tinh chinh xac: ', correct)
-    print('So phep tinh gan dung: ', h2 * w2 - correct - len(fault))
-    print('So phep tinh sai: ', len(fault))
-    print('Do sai lech phep tinh GAN DUNG modelsim vs python: max = {0}, min = {1}'.format(max_err, min_err))
-    print('Do sai lech modelsim vs python: max = {0}, min = {1}'.format(py_max_err, py_min_err))
-  
-    # for i in range(len(fault)):
-    #     print('{0}   \t{1}   \t{2}'.format(fault[i], dec2hex_fp(out_Gx[fault[i]]) , sim[fault[i]]))
-
-else:   # ------- Verify Anh dau vao 3D
-    for kernel in range(sim_dim[2]):
+# Ham check function cua MODELSIM vs PYTHON
+def verify_function(out_Gx, sim):
+    if (len(sim.shape) == 2):  # ------- Verify Anh dau vao 2D
         correct = 0
         fault = []
         error = 0.0
@@ -352,19 +263,19 @@ else:   # ------- Verify Anh dau vao 3D
         py_error = 0.0
         py_max_err = 0.0
         py_min_err = 0.0
-        h2, w2 = out_Gx.shape[0:2]
+
+        h2, w2 = out_Gx.shape[:2]
         for i in range (h2):
             for j in range (w2):        
-                bin_conv_py = dec2bin(out_Gx[i, j, kernel])
+                bin_conv_py = dec2bin(out_Gx[i, j])
 
                 # hex_conv_sim = sim[i*w2 + j][:-1]    # chu y file out modelsim co ki tu \n nen can loai bo
-                dec_conv_sim = sim[i, j, kernel]
+                dec_conv_sim = sim[i, j]
                 bin_conv_sim = dec2bin(dec_conv_sim)
                 # print('{0}\t{1}\t{2}'.format(i, hex_conv_py, hex_conv_sim))
 
-                py_error = abs(out_Gx[i, j, kernel] - dec_conv_sim)
+                py_error = abs(out_Gx[i, j] - dec_conv_sim)
                 if (py_error < 2.0):
-                # if (bin_conv_py[0:9] == bin_conv_sim[0:9]):
                     error = 0.0
 
                     for k in range (1, 32, 1):
@@ -397,55 +308,158 @@ else:   # ------- Verify Anh dau vao 3D
                     
                 if (bin_conv_py == bin_conv_sim):
                     correct += 1
-        
-        print('\nKernel ', kernel)
-        print('So phep tinh chinh xac: ', correct)
+
+        print('\nSo phep tinh chinh xac: ', correct)
         print('So phep tinh gan dung: ', h2 * w2 - correct - len(fault))
         print('So phep tinh sai: ', len(fault))
         print('Do sai lech phep tinh GAN DUNG modelsim vs python: max = {0}, min = {1}'.format(max_err, min_err))
         print('Do sai lech modelsim vs python: max = {0}, min = {1}'.format(py_max_err, py_min_err))
-
+    
         # for i in range(len(fault)):
         #     print('{0}   \t{1}   \t{2}'.format(fault[i], dec2hex_fp(out_Gx[fault[i]]) , sim[fault[i]]))
 
+    else:   # ------- Verify Anh dau vao 3D
+        for kernel in range(sim_dim[2]):
+            correct = 0
+            fault = []
+            error = 0.0
+            max_err = 0.0
+            min_err = 0.0
+            py_error = 0.0
+            py_max_err = 0.0
+            py_min_err = 0.0
+
+            h2, w2 = out_Gx.shape[0:2]
+            for i in range (h2):
+                for j in range (w2):        
+                    bin_conv_py = dec2bin(out_Gx[i, j, kernel])
+
+                    # hex_conv_sim = sim[i*w2 + j][:-1]    # chu y file out modelsim co ki tu \n nen can loai bo
+                    dec_conv_sim = sim[i, j, kernel]
+                    bin_conv_sim = dec2bin(dec_conv_sim)
+                    # print('{0}\t{1}\t{2}'.format(i, hex_conv_py, hex_conv_sim))
+
+                    py_error = abs(out_Gx[i, j, kernel] - dec_conv_sim)
+                    if (py_error < 2.0):
+                        error = 0.0
+
+                        for k in range (1, 32, 1):
+                            if bin_conv_py[k] > bin_conv_sim[k]:
+                                error += 2**(8 - k)
+                            elif bin_conv_py[k] < bin_conv_sim[k]:
+                                error -= 2**(8 - k)
+                        error = abs(error)
+                    else:
+                        fault.append((i, j))
+                        # error = abs(out_Gx[i][j] - hex2dec(hex_conv_sim))
+                        # continue
 
 
+                    if (i == 0):
+                        max_err = error
+                        min_err = error
+                        py_max_err = py_error
+                        py_min_err = py_error
+                    else:
+                        if (error > max_err):
+                            max_err = error
+                        if (error < min_err):
+                            min_err = error
 
-# # ###########################
-# #         VISUALIZE 
-# # ###########################
+                        if (py_error > py_max_err):
+                            py_max_err = py_error
+                        if (py_error < py_min_err):
+                            py_min_err = py_error
+                        
+                    if (bin_conv_py == bin_conv_sim):
+                        correct += 1
+            
+            print('\nKernel ', kernel)
+            print('So phep tinh chinh xac: ', correct)
+            print('So phep tinh gan dung: ', h2 * w2 - correct - len(fault))
+            print('So phep tinh sai: ', len(fault))
+            print('Do sai lech phep tinh GAN DUNG modelsim vs python: max = {0}, min = {1}'.format(max_err, min_err))
+            print('Do sai lech modelsim vs python: max = {0}, min = {1}'.format(py_max_err, py_min_err))
 
-# ############ Anh minh hoa conv MODELSIM ############
-sim_copy = sim.copy()
-sim_copy[np.where(sim_copy < 0)] = 0
-
-if (len(sim_dim) == 2):
-    img_out = cv2.normalize(src=sim_copy, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-    cv2.imshow("SIM conv2d", img_out)    
-    cv2.imwrite("SIM_conv2d.jpg", img_out)
-else:
-    for channel in range(sim_dim[2]):
-        img_out = cv2.normalize(src=sim_copy[:, :, channel], dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-        cv2.imshow("SIM_conv3d_channel_{0}".format(channel), img_out)    
-        cv2.imwrite("../Data/SIM_conv3d_channel_00{0}.jpg".format(channel), img_out)
+            # for i in range(len(fault)):
+            #     print('{0}   \t{1}   \t{2}'.format(fault[i], dec2hex_fp(out_Gx[fault[i]]) , sim[fault[i]]))
+    return
 
 
+# Ham minh hoa ket qua tinh toan tren MODELSIM va PYTHON
+def visualize(out_Gx, sim):
+    # ############ Anh minh hoa conv MODELSIM ############
+    sim_copy = sim.copy()
+    sim_copy[np.where(sim_copy < 0)] = 0
 
-# ############ Anh minh hoa conv PYTHON ############
-out_Gx_copy = out_Gx.copy()
-out_Gx_copy[np.where(out_Gx_copy < 0)] = 0
+    if (len(sim.shape) == 2):
+        img_out = cv2.normalize(src=sim_copy, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+        cv2.imshow("SIM conv2d", img_out)    
+        # cv2.imwrite("SIM_conv2d.jpg", img_out)
 
-if (len(sim_dim) == 2):
-    img_out = cv2.normalize(src=out_Gx_copy, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-    cv2.imshow("PYTHON conv2d", img_out)    
-    # cv2.imwrite("PYTHON_conv2d.jpg", img_out)
-else:
-    for channel in range(sim_dim[2]):
-        img_out = cv2.normalize(src=out_Gx_copy[:, :, channel], dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-        cv2.imshow("PYTHON_conv3d_channel_{0}".format(channel), img_out)    
-        # cv2.imwrite("../Data/PYTHON_conv3d_channel_00{0}.jpg".format(channel), img_out)
+    else:
+        for channel in range(sim.shape[2]):
+            img_out = cv2.normalize(src=sim_copy[:, :, channel], dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+            cv2.imshow("SIM_conv3d_channel_{0}".format(channel), img_out)    
+            # cv2.imwrite("../Data/SIM_conv3d_channel_00{0}.jpg".format(channel), img_out)
 
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+
+    # ############ Anh minh hoa conv PYTHON ############
+    out_Gx_copy = out_Gx.copy()
+    out_Gx_copy[np.where(out_Gx_copy < 0)] = 0
+
+    if (len(sim.shape) == 2):
+        img_out = cv2.normalize(src=out_Gx_copy, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+        cv2.imshow("PYTHON conv2d", img_out)    
+        # cv2.imwrite("PYTHON_conv2d.jpg", img_out)
+    else:
+        for channel in range(sim.shape[2]):
+            img_out = cv2.normalize(src=out_Gx_copy[:, :, channel], dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+            cv2.imshow("PYTHON_conv3d_channel_{0}".format(channel), img_out)    
+            # cv2.imwrite("../Data/PYTHON_conv3d_channel_00{0}.jpg".format(channel), img_out)
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    return
+
+
+# ######################################################
+#                         MAIN 
+# ######################################################
+if __name__ == "__main__":
+    # ############ Read data ############
+    file_name = '../Data/data_fp_image_channel_00{0}.txt'
+    img_dim = (56, 56, 3)
+    # file_name = '../Data/data_fp_image_channel_002.txt'
+    # img_dim = (56, 56)
+    img = read_data_4conv_py(img_dim, file_name)
+
+    file_name = '../Data/' +  'modelsim_block1_conv1_2maxpool_00{0}.txt'
+    sim_dim = (28, 28, 8)
+    # file_name = '../Data/' +  'modelsim_conv2d_to_maxpool_222.txt'
+    # sim_dim = (28, 28)
+    sim = read_data_4conv_sim(sim_dim, file_name)
+
+
+    # ############ PYTHON convolution ############
+    weight_name = 'block1_conv1_3chanel_8filter_channel_{0}filter_{1}.txt'
+    bias_name = 'block1_conv1_3chanel_8filter_bias.txt'
+
+    out_Gx = conv3d_multi(img, weight_name = weight_name, bias_name = bias_name)
+
+
+    # ############ PYTHON relu - maxpooling ############
+    out_Gx = relu(out_Gx)
+    out_Gx = max_pooling(out_Gx.copy())
+    print(out_Gx.shape)
+
+
+    # ############ Verifying ############
+    verify_function(out_Gx, sim)
+
+
+    # ############ VISUALIZE ############
+    visualize(out_Gx, sim)
+
 
 

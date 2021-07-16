@@ -1,19 +1,23 @@
 #TESTNAME=tb_conv2d_1kernel_1channel
 TESTNAME=tb_conv3d_1kernel_1channel
 
-# tao dang : name-hour-min-second.log
-#SEED=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 echo "  Test name = $TESTNAME"
-#echo "  Test seed = $SEED"
+
 echo "Start Simulation"
 
 mkdir -p ./results/log/
 
-vsim -c  -voptargs=+acc work.$TESTNAME \
+vsim  -c -voptargs=+acc work.$TESTNAME \
 -l ./results/log/$TESTNAME.log \
 -wlf ./results/$TESTNAME.wlf \
--do "log -r /*; run -all "
+-do "log -ports -r -depth 4 /* ;log -internal /$TESTNAME/generator/data_cnt /$TESTNAME/writer/data_cnt;  run -all"
+#-do "log -r /*; run -all "  /$TESTNAME/block1/*
 
 echo "Done Simulation"
 
+
+
 # vsim -do "do wave.do /*" -view ./results/SEED.wlf
+# tao dang : name-hour-min-second.log
+#SEED=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+#echo "  Test seed = $SEED"
