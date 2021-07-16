@@ -1,4 +1,4 @@
-`timescale 1ns/1ps
+`timescale 1ns/1ns
 
 `include "../Verilog/rtl/dimension.v"
 
@@ -8,22 +8,19 @@ module tb_conv3d_1kernel_1channel;
     parameter Image_Channel1 = "../Data/data_fp_image_channel_001.txt";
     parameter Image_Channel2 = "../Data/data_fp_image_channel_002.txt";
 
-    parameter Outfile_0   = "../Data/modelsim_block1_conv1_000.txt";
-    parameter Outfile_1   = "../Data/modelsim_block1_conv1_001.txt";
-    parameter Outfile_2   = "../Data/modelsim_block1_conv1_002.txt";
-    parameter Outfile_3   = "../Data/modelsim_block1_conv1_003.txt";
-    parameter Outfile_4   = "../Data/modelsim_block1_conv1_004.txt";
-    parameter Outfile_5   = "../Data/modelsim_block1_conv1_005.txt";
-    parameter Outfile_6   = "../Data/modelsim_block1_conv1_006.txt";
-    parameter Outfile_7   = "../Data/modelsim_block1_conv1_007.txt";
+    parameter Outfile_0   = "../Data/modelsim_block1_conv1_2maxpool_000.txt";
+    parameter Outfile_1   = "../Data/modelsim_block1_conv1_2maxpool_001.txt";
+    parameter Outfile_2   = "../Data/modelsim_block1_conv1_2maxpool_002.txt";
+    parameter Outfile_3   = "../Data/modelsim_block1_conv1_2maxpool_003.txt";
+    parameter Outfile_4   = "../Data/modelsim_block1_conv1_2maxpool_004.txt";
+    parameter Outfile_5   = "../Data/modelsim_block1_conv1_2maxpool_005.txt";
+    parameter Outfile_6   = "../Data/modelsim_block1_conv1_2maxpool_006.txt";
+    parameter Outfile_7   = "../Data/modelsim_block1_conv1_2maxpool_007.txt";
 
-    parameter k = 10;
+    parameter k = 5;
 
     // LAM ON NHO DAT DUNG KICH THUOC ANH KHONG THI DUNG HOI HAN!
     parameter DATA_WIDTH = 32;
-    // parameter WIDTH = 20;
-    // parameter HEIGHT = 20;
-    // parameter Total_Pixel = WIDTH * HEIGHT;
 
 
     reg clk;
@@ -44,16 +41,6 @@ module tb_conv3d_1kernel_1channel;
     wire   [DATA_WIDTH-1:0]    data_out_6;
     wire   [DATA_WIDTH-1:0]    data_out_7;
 
-    // reg [32-1:0] In_Memory_0 [0:Total_Pixel-1];
-    // reg [32-1:0] In_Memory_1 [0:Total_Pixel-1];
-    // reg [32-1:0] In_Memory_2 [0:Total_Pixel-1];
-
-    // initial 
-    // begin
-    //     $readmemh(Image_Channel0, In_Memory_0);
-    //     $readmemh(Image_Channel1, In_Memory_1);
-    //     $readmemh(Image_Channel2, In_Memory_2);
-    // end
 
     initial 
     begin
@@ -63,106 +50,6 @@ module tb_conv3d_1kernel_1channel;
         #(k*3/2) resetn = 1'b1;
     end
 
-    // integer i;
-    // initial 
-    // begin 
-    //     //#(k*2) data_in = In_Memory[i];
-    //     #(k*3/2);
-    //     for (i = 0; i < Total_Pixel; i = i + 1) 
-    //     begin
-            
-    //         // if (i == 4)
-    //         // valid_in = 1'b0; 
-    //         // if (i == 6)
-    //         // valid_in = 1'b1; 
-
-    //         // if (i == 10)
-    //         // valid_in = 1'b0; 
-    //         // if (i == 14)
-    //         // valid_in = 1'b1; 
-
-            
-    //         data_in0 = In_Memory_0[i];
-    //         data_in1 = In_Memory_1[i];
-    //         data_in2 = In_Memory_2[i];
-    //         // in2 = In_Memory[i + 1];
-    //         #(k*2);            
-    //     end
-    //     data_in0 = 32'bx;
-    //     data_in1 = 32'bx;
-    //     data_in2 = 32'bx;
-    //     // -------  Can duy tri VALID_IN them WIDTH+1 clock de co the tinh het so pixel o hang cuoi cung trong anh ---------
-    //     #(k*2*(WIDTH + 1));
-        
-    //     valid_in = 1'b0;
-    //     // #(k*4) $stop;
-    // end
-
-    // // reg [32-1:0] Out_Memory [0:Total_Pixel-1];
-    
-    // reg [32-1:0] Out_Memory_0 [0:Total_Pixel-1];
-    // reg [32-1:0] Out_Memory_1 [0:Total_Pixel-1];
-    // reg [32-1:0] Out_Memory_2 [0:Total_Pixel-1];
-    // reg [32-1:0] Out_Memory_3 [0:Total_Pixel-1];
-    // reg [32-1:0] Out_Memory_4 [0:Total_Pixel-1];
-    // reg [32-1:0] Out_Memory_5 [0:Total_Pixel-1];
-    // reg [32-1:0] Out_Memory_6 [0:Total_Pixel-1];
-    // reg [32-1:0] Out_Memory_7 [0:Total_Pixel-1];
-    // integer j;
-    // initial 
-    // begin
-    //     j = 0;
-    //     #(k*3/2);
-
-    //     while (valid_out == 1'b0)
-    //     begin
-    //          #(k*2);
-    //     end
-
-    //     for (j = 0; j < Total_Pixel; j = j + 1)
-    //     begin
-    //         if (valid_out == 1'b1)
-    //             // Out_Memory[j] = data_out;
-    //             begin
-    //             Out_Memory_0[j] = data_out0;
-    //             Out_Memory_1[j] = data_out1;
-    //             Out_Memory_2[j] = data_out2;
-    //             Out_Memory_3[j] = data_out3;
-    //             Out_Memory_4[j] = data_out4;
-    //             Out_Memory_5[j] = data_out5;
-    //             Out_Memory_6[j] = data_out6;
-    //             Out_Memory_7[j] = data_out7;
-    //             end
-    //         else
-    //             // Out_Memory[j] = 32'hx;
-    //             begin
-    //             Out_Memory_0[j] = 32'hx;
-    //             Out_Memory_1[j] = 32'hx;
-    //             Out_Memory_2[j] = 32'hx;
-    //             Out_Memory_3[j] = 32'hx;
-    //             Out_Memory_4[j] = 32'hx;
-    //             Out_Memory_5[j] = 32'hx;
-    //             Out_Memory_6[j] = 32'hx;
-    //             Out_Memory_7[j] = 32'hx;
-    //             end
-    //         #(k*2);
-    //     end
-
-    //     #(k*2);
-    //     // $writememh(Outfile, Out_Memory);
-
-    //     $writememh(Outfile_0, Out_Memory_0);
-    //     $writememh(Outfile_1, Out_Memory_1);
-    //     $writememh(Outfile_2, Out_Memory_2);
-    //     $writememh(Outfile_3, Out_Memory_3);
-    //     $writememh(Outfile_4, Out_Memory_4);
-    //     $writememh(Outfile_5, Out_Memory_5);
-    //     $writememh(Outfile_6, Out_Memory_6);
-    //     $writememh(Outfile_7, Out_Memory_7);
-
-    //     #k $stop;
-    // end
-    
     always #k clk = ~clk;
 
     tb_generator_3d #(
@@ -185,31 +72,50 @@ module tb_conv3d_1kernel_1channel;
         .fifo_wrreq(valid_in)
     );
 
+    // // testbench cho mach conv2d_8kernel_3channel
+    // block1_conv1_8_kernel_3_channel #(
+	// 	.DATA_WIDTH(32),.IMG_WIDTH(`IMG_WIDTH),.IMG_HEIGHT(`IMG_HEIGHT)
+    // )
+    // block1_conv1_8kernel_3channel(
+	// 	.clk(clk),
+	// 	.resetn(resetn),
+	// 	.data_valid_in(valid_in),
+	// 	.data_in0(data_in_0),             
+	// 	.data_in1(data_in_1),             
+	// 	.data_in2(data_in_2), 
+
+    //     .data_out({data_out_0, data_out_1, data_out_2, data_out_3, data_out_4, data_out_5, data_out_6, data_out_7}),
+
+	// 	.valid_out(valid_out),
+	// 	.done()
+	// 	);
+
     // testbench cho mach conv2d_8kernel_3channel
-    block1_conv1_8_kernel_3_channel #(
-		.DATA_WIDTH(32),.IMG_WIDTH(`IMG_WIDTH),.IMG_HEIGHT(`IMG_HEIGHT)
+    block1_demo #(
+		.DATA_WIDTH(32),
+        .WIDTH(`IMG_WIDTH),
+        .HEIGHT(`IMG_HEIGHT)
     )
-    block1_conv1_8kernel_3channel(
+    block1 (
 		.clk(clk),
 		.resetn(resetn),
-		.data_valid_in(valid_in),
-		.data_in0(data_in_0),             
-		.data_in1(data_in_1),             
-		.data_in2(data_in_2), 
+		.valid_in(valid_in),
+		.data_in_0(data_in_0),             
+		.data_in_1(data_in_1),             
+		.data_in_2(data_in_2), 
 
-        .data_out_conv0(data_out_0),
-        .data_out_conv1(data_out_1),
-        .data_out_conv2(data_out_2),
-        .data_out_conv3(data_out_3),
-        .data_out_conv4(data_out_4),
-        .data_out_conv5(data_out_5),
-        .data_out_conv6(data_out_6),
-        .data_out_conv7(data_out_7),
+        .data_out_0(data_out_0),
+        .data_out_1(data_out_1),
+        .data_out_2(data_out_2),
+        .data_out_3(data_out_3),
+        .data_out_4(data_out_4),
+        .data_out_5(data_out_5),
+        .data_out_6(data_out_6),
+        .data_out_7(data_out_7),
 
-		.valid_out_pixel(valid_out),
-		.done_img()
+		.valid_out(valid_out),
+		.done()
 		);
-
 
     tb_writer_3d #(
         // .output_file(Outfile),
@@ -222,8 +128,8 @@ module tb_conv3d_1kernel_1channel;
         .output_file_6(Outfile_6),
         .output_file_7(Outfile_7),
 
-        .WIDTH(`IMG_WIDTH),
-        .HEIGHT(`IMG_HEIGHT)
+        .WIDTH(`IMG_WIDTH>>1),
+        .HEIGHT(`IMG_HEIGHT>>1)
     ) writer(
         .clk(clk),
         .resetn(resetn),
@@ -243,6 +149,9 @@ module tb_conv3d_1kernel_1channel;
     );
 
 endmodule
+
+
+
 
 
 
