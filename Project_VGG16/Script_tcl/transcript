@@ -1,0 +1,4 @@
+# ./results/tb_fc.wlf opened as dataset "tb_fc"
+# do wave.do /*
+# Cannot open macro file: wave.do
+add wave -position insertpoint tb_fc:/tb_fc/*

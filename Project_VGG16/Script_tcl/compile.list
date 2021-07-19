@@ -6,10 +6,11 @@
 ../Verilog/rtl/conv3d_kernel_8_channel_size_3.v
 ../Verilog/rtl/max_pooling.v
 ../Verilog/rtl/block1_conv1_8kernel_3channel.v
-
+../Verilog/rtl/fully_connected_16.v
 
 # tb code
 ../Verilog/tb/max_pooling_tb.v
 ../Verilog/tb/tb_conv2d_1kernel_1channel.v
 ../Verilog/tb/tb_conv3d_1kernel_3channel.v
 ../Verilog/tb/tb_floating_point.v
+../Verilog/tb/tb_fc.v
