@@ -1,5 +1,6 @@
 #TESTNAME=tb_conv2d_1kernel_1channel
 TESTNAME=tb_conv3d_1kernel_1channel
+TESTNAME=tb_fc
 
 echo "  Test name = $TESTNAME"
 

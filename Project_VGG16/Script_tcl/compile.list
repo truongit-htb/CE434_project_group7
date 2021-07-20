@@ -9,6 +9,7 @@
 
 ../Verilog/rtl/block1_demo.v
 
+../Verilog/rtl/fully_connected_16.v
 
 # tb code
 ../Verilog/tb/max_pooling_tb.v
@@ -19,3 +20,4 @@
 ../Verilog/tb/tb_writer.v
 ../Verilog/tb/tb_generator_3d.v
 ../Verilog/tb/tb_writer_3d.v
+../Verilog/tb/tb_fc.v
