@@ -7,8 +7,8 @@ module tb_conv2d_1kernel_1channel;
     // parameter Infile    = "E:/LAB/LAB_20_21_HK_II/CE434-ChuyenDeTKVM/git_vgg16/VGG16/CodePythonCNN/data_image_fp.txt";
     // parameter Outfile   = "E:/LAB/LAB_20_21_HK_II/CE434-ChuyenDeTKVM/git_vgg16/VGG16/CodePythonCNN/modelsim_out_conv2d_1kernel_1channel-02.txt";
     // // path on Ubuntu
-    parameter Infile    = "../Data/data_fp_image_channel_000.txt";
-    parameter Outfile   = "../Data/modelsim_conv2d_to_maxpool_000.txt";
+    parameter Infile    = "../Data/3_data_in/data_fp_sun_00_channel_000.txt";
+    parameter Outfile   = "../Data/4_data_out/modelsim_conv2d_sun_000.txt";
 
     parameter k = 5;
 
@@ -110,48 +110,48 @@ module tb_conv2d_1kernel_1channel;
         .fifo_wrreq(valid_in)
     );
 
-    // // testbench cho mach conv2d_1kernel_1channel
-    // conv2d_kernel_size_3 #(
-    //     .DATA_WIDTH(32),.IMG_WIDTH(`IMG_WIDTH),.IMG_HEIGHT(`IMG_HEIGHT),
-    //     .kernelR0( 32'h3f800000 ),
-    //     .kernelR1( 32'h3f8ccccd ),
-    //     .kernelR2( 32'h3f800000 ),
-    //     .kernelR3( 32'h00000000 ),
-    //     .kernelR4( 32'h00000000 ),
-    //     .kernelR5( 32'h00000000 ),
-    //     .kernelR6( 32'hbf800000 ),
-    //     .kernelR7( 32'hbf8ccccd ),
-    //     .kernelR8( 32'hbf800000 )
-    // )
-    // conv1_0(
-    //     .clk(clk),
-    //     .resetn(resetn),
-    //     .data_valid_in(valid_in),
-    //     .data_in(data_in),
-    //     .data_out(data_out),
-    //     .valid_out_pixel(valid_out),
-    //     .done()
-    // );
-
-    block1_demo #(
-    .DATA_WIDTH(32),
-    .WIDTH(`IMG_WIDTH),
-    .HEIGHT(`IMG_HEIGHT)
+    // testbench cho mach conv2d_1kernel_1channel
+    conv2d_kernel_size_3 #(
+        .DATA_WIDTH(32),.IMG_WIDTH(`IMG_WIDTH),.IMG_HEIGHT(`IMG_HEIGHT),
+        .kernelR0( 32'h3f800000 ),
+        .kernelR1( 32'h3f8ccccd ),
+        .kernelR2( 32'h3f800000 ),
+        .kernelR3( 32'h00000000 ),
+        .kernelR4( 32'h00000000 ),
+        .kernelR5( 32'h00000000 ),
+        .kernelR6( 32'hbf800000 ),
+        .kernelR7( 32'hbf8ccccd ),
+        .kernelR8( 32'hbf800000 )
     )
-    block1 (
-    .clk(clk),
-    .resetn(resetn),
-    .valid_in(valid_in),
-    .data_in(data_in),
-    .data_out(data_out),
-    .valid_out(valid_out),
-    .done()
+    conv1_0(
+        .clk(clk),
+        .resetn(resetn),
+        .data_valid_in(valid_in),
+        .data_in(data_in),
+        .data_out(data_out),
+        .valid_out_pixel(valid_out),
+        .done()
     );
+
+    // block1_demo #(
+    // .DATA_WIDTH(32),
+    // .WIDTH(`IMG_WIDTH),
+    // .HEIGHT(`IMG_HEIGHT)
+    // )
+    // block1 (
+    // .clk(clk),
+    // .resetn(resetn),
+    // .valid_in(valid_in),
+    // .data_in(data_in),
+    // .data_out(data_out),
+    // .valid_out(valid_out),
+    // .done()
+    // );
 
     tb_writer #(
         .output_file(Outfile),
-        .WIDTH(`IMG_WIDTH>>1),
-        .HEIGHT(`IMG_HEIGHT>>1)
+        .WIDTH(`IMG_WIDTH),
+        .HEIGHT(`IMG_HEIGHT)
     ) writer(
         .clk(clk),
         .resetn(resetn),
