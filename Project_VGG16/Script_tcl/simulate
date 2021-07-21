@@ -1,18 +1,31 @@
-#TESTNAME=tb_conv2d_1kernel_1channel
-TESTNAME=tb_conv3d_1kernel_1channel
-TESTNAME=tb_fc
+TESTNAME=tb_conv2d_1kernel_1channel
+#TESTNAME=tb_conv3d_1kernel_1channel
+#TESTNAME=tb_fc
+
+SEED=$TESTNAME+$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
+echo "  Test seed = $SEED"
+
 
 echo "  Test name = $TESTNAME"
-
 echo "Start Simulation"
+
 
 mkdir -p ./results/log/
 
+
+## SIMULATE WITH WAVEFORM
 vsim  -c -voptargs=+acc work.$TESTNAME \
--l ./results/log/$TESTNAME.log \
+-l ./results/log/$SEED.log \
 -wlf ./results/$TESTNAME.wlf \
--do "log -ports -r -depth 4 /* ;log -internal /$TESTNAME/generator/data_cnt /$TESTNAME/writer/data_cnt;  run -all"
-#-do "log -r /*; run -all "  /$TESTNAME/block1/*
+-do "log -r /*; run -all "  
+
+
+
+## WITHOUT WAVEFORM
+#vsim  -c -voptargs=+acc work.$TESTNAME \
+#-l ./results/log/$SEED.log \
+#-do "nolog -r /*; run -all"
+
 
 echo "Done Simulation"
 
@@ -22,3 +35,5 @@ echo "Done Simulation"
 # tao dang : name-hour-min-second.log
 #SEED=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 #echo "  Test seed = $SEED"
+
+#-do "log -ports -r -depth 4 /* ;log -internal /$TESTNAME/generator/data_cnt /$TESTNAME/writer/data_cnt;  run -all"

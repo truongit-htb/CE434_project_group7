@@ -1,6 +1,10 @@
 Data/*.jpg
 # Data/4_data_out/*.jpg
 Data/4_data_out/
+Data/3_data_in/
+Data/5_image/
+Data/temp/
+
 
 
 
@@ -12,6 +16,8 @@ Dataset/Weight_bias/
 
 Script_python/python_get_weight_layer.py
 Script_python/python_testcode.py
+# Script_python/python_build_model.py
+
 
 
 Script_tcl/results/

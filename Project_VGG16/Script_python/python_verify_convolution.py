@@ -118,29 +118,42 @@ def conv3d_multi(img, num_channel_out = 8, weight_name = '', bias_name = ''):
             filter_dim = filter_Gx.shape
 
             for channel in range(filter_dim[2]):
-                # weight_name = 'block1_conv1_3chanel_8filter_channel_{0}filter_{1}.txt'.format(channel, kernel)
-                with open('../Data/1_weight/' + weight_name.format(channel, kernel)) as f:
+                # # weight_name = 'block1_conv1_3chanel_8filter_channel_{0}filter_{1}.txt'.format(channel, kernel)
+                # # EX-open
+                # with open('../Data/1_weight/' + weight_name.format(channel, kernel)) as f:
+
+                # NEW-open
+                with open('../Dataset/1_weight/' + weight_name.format(channel, kernel)) as f:
                     if f.mode == 'r':
                         data = f.readlines()
                         # print(type(data))
                         for h in range(filter_dim[0]):
                             for w in range(filter_dim[1]):
                                 temp = data[h*filter_dim[1] + w][:-1]
-                                filter_Gx[h, w, channel] = hex2dec(bin2hex(temp))
+                                # filter_Gx[h, w, channel] = hex2dec(bin2hex(temp))
+
+                                filter_Gx[h, w, channel] = hex2dec(temp)
                     else:
                         print("can't read file" + weight_name )
                 f.close()
 
-            # ----- Doc file trong so BIAS
-            # bias_name = 'block1_conv1_3chanel_8filter_bias.txt'
-            with open('../Data/0_bias/' + bias_name) as f:
+            # # ----- Doc file trong so BIAS
+            # # bias_name = 'block1_conv1_3chanel_8filter_bias.txt'
+            # # EX-open
+            # with open('../Data/0_bias/' + bias_name) as f:
+            # NEW-open
+            with open('../Dataset/0_bias/' + bias_name) as f:
                 if f.mode == 'r':
                     data_bias = f.readlines()
                 else:
                     print("can't read file" + bias_name )
             f.close()
 
-            bias_weight = hex2dec(bin2hex(data_bias[kernel]))
+            # # EX
+            # bias_weight = hex2dec(bin2hex(data_bias[kernel]))
+            # NEW
+            bias_weight = hex2dec(data_bias[kernel])
+
 
             out_Gx[:, :, kernel] = conv3d_single(img_padding, filter_Gx, bias_weight)
 
@@ -246,7 +259,7 @@ def max_pooling(img):
     return max_pool
 
 
-# Ham tinh RELU
+# Ham RELU activation
 def relu(img):
     img[np.where(img < 0)] = 0
     return img
@@ -319,7 +332,7 @@ def verify_function(out_Gx, sim):
         #     print('{0}   \t{1}   \t{2}'.format(fault[i], dec2hex_fp(out_Gx[fault[i]]) , sim[fault[i]]))
 
     else:   # ------- Verify Anh dau vao 3D
-        for kernel in range(sim_dim[2]):
+        for kernel in range(sim.shape[2]):
             correct = 0
             fault = []
             error = 0.0
@@ -428,13 +441,16 @@ def visualize(out_Gx, sim):
 # ######################################################
 if __name__ == "__main__":
     # ############ Read data ############
-    file_name = '../Data/data_fp_image_channel_00{0}.txt'
+    file_name = '../Data/3_data_in/data_fp_sun_00_channel_00{0}.txt'
+    # file_name = '../Data/data_fp_image_channel_00{0}.txt'
     img_dim = (56, 56, 3)
     # file_name = '../Data/data_fp_image_channel_002.txt'
     # img_dim = (56, 56)
     img = read_data_4conv_py(img_dim, file_name)
 
-    file_name = '../Data/' +  'modelsim_block1_conv1_2maxpool_00{0}.txt'
+
+    file_name = '../Data/4_data_out/' +  'modelsim_block1_conv1_sun_00{0}.txt'
+    # file_name = '../Data/' +  'modelsim_block1_conv1_sun_00{0}.txt'
     sim_dim = (28, 28, 8)
     # file_name = '../Data/' +  'modelsim_conv2d_to_maxpool_222.txt'
     # sim_dim = (28, 28)
@@ -442,15 +458,17 @@ if __name__ == "__main__":
 
 
     # ############ PYTHON convolution ############
-    weight_name = 'block1_conv1_3chanel_8filter_channel_{0}filter_{1}.txt'
-    bias_name = 'block1_conv1_3chanel_8filter_bias.txt'
+    # weight_name = 'block1_conv1_3chanel_8filter_channel_{0}filter_{1}.txt'
+    # bias_name = 'block1_conv1_3chanel_8filter_bias.txt'
+    weight_name = 'block1_conv1_filter_{1}_channel_{0}.txt'
+    bias_name = 'block1_conv1_bias.txt'
 
     out_Gx = conv3d_multi(img, weight_name = weight_name, bias_name = bias_name)
 
 
     # ############ PYTHON relu - maxpooling ############
     out_Gx = relu(out_Gx)
-    out_Gx = max_pooling(out_Gx.copy())
+    out_Gx = max_pooling(out_Gx)
     print(out_Gx.shape)
 
 
@@ -459,7 +477,7 @@ if __name__ == "__main__":
 
 
     # ############ VISUALIZE ############
-    visualize(out_Gx, sim)
+    # visualize(out_Gx, sim)
 
 
 
