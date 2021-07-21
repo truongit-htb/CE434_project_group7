@@ -27,15 +27,15 @@ module conv2d_kernel_size_3 #(
     parameter IMG_HEIGHT = 56,
     parameter SIZE = 3,
 
-    parameter kernelR0 = 32'h3f800000,
-    parameter kernelR1 = 32'h00000000,
-    parameter kernelR2 = 32'hbf800000,
-    parameter kernelR3 = 32'h40000000,
-    parameter kernelR4 = 32'h00000000,
-    parameter kernelR5 = 32'hc0000000,
-    parameter kernelR6 = 32'h3f800000,
-    parameter kernelR7 = 32'h00000000,
-    parameter kernelR8 = 32'hbf800000
+    parameter kernelR0 = 32'h3f800000, kernelR1 = 32'h00000000, kernelR2 = 32'hbf800000, kernelR3 = 32'h40000000, kernelR4 = 32'h00000000, kernelR5 = 32'hc0000000, kernelR6 = 32'h3f800000, kernelR7 = 32'h00000000, kernelR8 = 32'hbf800000
+    // parameter kernelR1 = 32'h00000000,
+    // parameter kernelR2 = 32'hbf800000,
+    // parameter kernelR3 = 32'h40000000,
+    // parameter kernelR4 = 32'h00000000,
+    // parameter kernelR5 = 32'hc0000000,
+    // parameter kernelR6 = 32'h3f800000,
+    // parameter kernelR7 = 32'h00000000,
+    // parameter kernelR8 = 32'hbf800000
     )
     (
     input     wire            clk,
