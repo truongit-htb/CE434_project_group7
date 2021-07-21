@@ -7,39 +7,39 @@ module conv3d_kernel_3_channel_size_3 #(
     parameter DATA_WIDTH = 32,
     parameter IMG_WIDTH = 56,
     parameter IMG_HEIGHT = 56,
-    parameter SIZE = 3,
+    // parameter SIZE = 3,
     parameter CHANNEL = 3,
 
     // Cx_Wy = CHANNELx_WEIGHTy
-    parameter C0_W0 = 32'h3f800000,
-    parameter C0_W1 = 32'h3f8ccccd,
-    parameter C0_W2 = 32'h3f800000,
-    parameter C0_W3 = 32'h00000000,
-    parameter C0_W4 = 32'h00000000,
-    parameter C0_W5 = 32'h00000000,
-    parameter C0_W6 = 32'hbf800000,
-    parameter C0_W7 = 32'hbf8ccccd,
-    parameter C0_W8 = 32'hbf800000,
+    parameter C0_W0 = 32'h0,
+    parameter C0_W1 = 32'h0,
+    parameter C0_W2 = 32'h0,
+    parameter C0_W3 = 32'h0,
+    parameter C0_W4 = 32'h0,
+    parameter C0_W5 = 32'h0,
+    parameter C0_W6 = 32'h0,
+    parameter C0_W7 = 32'h0,
+    parameter C0_W8 = 32'h0,
 
-    parameter C1_W0 = 32'h3f800000,
-    parameter C1_W1 = 32'h00000000,
-    parameter C1_W2 = 32'hbf800000,
-    parameter C1_W3 = 32'h40000000,
-    parameter C1_W4 = 32'h00000000,
-    parameter C1_W5 = 32'hc0000000,
-    parameter C1_W6 = 32'h3f800000,
-    parameter C1_W7 = 32'h00000000,
-    parameter C1_W8 = 32'hbf800000,
+    parameter C1_W0 = 32'h0,
+    parameter C1_W1 = 32'h0,
+    parameter C1_W2 = 32'h0,
+    parameter C1_W3 = 32'h0,
+    parameter C1_W4 = 32'h0,
+    parameter C1_W5 = 32'h0,
+    parameter C1_W6 = 32'h0,
+    parameter C1_W7 = 32'h0,
+    parameter C1_W8 = 32'h0,
 
-    parameter C2_W0 = 32'h3fc00000,
-    parameter C2_W1 = 32'h3f800000,
-    parameter C2_W2 = 32'h00000000,
-    parameter C2_W3 = 32'h3f800000,
-    parameter C2_W4 = 32'h00000000,
-    parameter C2_W5 = 32'hbf800000,
-    parameter C2_W6 = 32'h00000000,
-    parameter C2_W7 = 32'hbf800000,
-    parameter C2_W8 = 32'hbfc00000,
+    parameter C2_W0 = 32'h0,
+    parameter C2_W1 = 32'h0,
+    parameter C2_W2 = 32'h0,
+    parameter C2_W3 = 32'h0,
+    parameter C2_W4 = 32'h0,
+    parameter C2_W5 = 32'h0,
+    parameter C2_W6 = 32'h0,
+    parameter C2_W7 = 32'h0,
+    parameter C2_W8 = 32'h0,
 
     parameter BIAS  = 32'h0
     )
@@ -51,13 +51,9 @@ module conv3d_kernel_3_channel_size_3 #(
     input     wire   [DATA_WIDTH-1:0]    data_in1,
     input     wire   [DATA_WIDTH-1:0]    data_in2,
 
-    // input     wire            load_kernel,
-    // input     wire   [31:0]   kernel,
-    
     output    wire   [31:0]    data_out,
     output     valid_out_pixel, // bi tat sau W*H - (W-2)*(H-2)
     output  done
-    // output reg load_kernel_done
     );
 
     // reg done_img;
@@ -112,7 +108,9 @@ module conv3d_kernel_3_channel_size_3 #(
 
     reg [31:0] counter;
     wire [31:0] data_out_conv_kernel [0:CHANNEL-1];
-    wire [2:0] valid_out_conv_kernel;
+    wire [CHANNEL-1:0] valid_out_conv_kernel;
+    wire [CHANNEL-1:0] done_conv;
+
     
     conv2d_kernel_size_3 #(
 		.DATA_WIDTH(32),.IMG_WIDTH(IMG_WIDTH),.IMG_HEIGHT(IMG_HEIGHT),
@@ -130,13 +128,10 @@ module conv3d_kernel_3_channel_size_3 #(
 		clk,
 		resetn,
 		data_valid_in,
-		data_in0,             
-		// load_kernel0,
-		// kernel,            
+		data_in0,         
 		data_out_conv_kernel[0],
 		valid_out_conv_kernel[0],
-		done_conv_0
-		// load_kernel_done_0
+		done_conv[0]
 		);
     conv2d_kernel_size_3 #(
 		.DATA_WIDTH(32),.IMG_WIDTH(IMG_WIDTH),.IMG_HEIGHT(IMG_HEIGHT),
@@ -154,13 +149,10 @@ module conv3d_kernel_3_channel_size_3 #(
 		clk,
 		resetn,
 		data_valid_in,
-		data_in1,             
-		// load_kernel1,
-		// kernel,            
+		data_in1,     
 		data_out_conv_kernel[1],
 		valid_out_conv_kernel[1],
-		done_conv_1
-		// load_kernel_done_1
+		done_conv[1]
 		);
     conv2d_kernel_size_3 #(
 		.DATA_WIDTH(32),.IMG_WIDTH(IMG_WIDTH),.IMG_HEIGHT(IMG_HEIGHT),
@@ -178,13 +170,10 @@ module conv3d_kernel_3_channel_size_3 #(
 		clk,
 		resetn,
 		data_valid_in,
-		data_in2,             
-		// load_kernel2,
-		// kernel,            
+		data_in2,       
 		data_out_conv_kernel[2],
 		valid_out_conv_kernel[2],
-		done_conv_2
-		// load_kernel_done_2
+		done_conv[2]
 		);
 
 
@@ -240,33 +229,24 @@ module conv3d_kernel_3_channel_size_3 #(
 	
     always @ (posedge clk or negedge resetn) 
     begin
-        if(resetn == 1'b0) 
-        begin
+        if(resetn == 1'b0)
             counter <= 0;
-        end
         else 
             if (done == 1'b1) 
-            begin
                 counter <= 0;
-            end
             else 
-                if(valid_out_pixel == 1'b1) 
+                if(valid_out_pixel == 1'b1)
                 begin
-                    if(counter == (IMG_WIDTH)*(IMG_HEIGHT) -1 ) 
-                    begin
+                    if(counter == (IMG_WIDTH)*(IMG_HEIGHT) -1 )
                     counter <= 0;
-                    end 
                     else 
-                    begin
                     counter <= counter + 1;
-                    end
                 end
-                else begin
+                else
                     counter <= counter;
-                end
     end
     
-    assign done = (counter == (IMG_WIDTH)*(IMG_HEIGHT) -1 )&valid_out_pixel;
+    assign done = (counter == (IMG_WIDTH)*(IMG_HEIGHT) -1) & valid_out_pixel;
 
 
   endmodule
