@@ -260,9 +260,64 @@ def max_pooling(img):
 
 
 # Ham RELU activation
-def relu(img):
+def relu_activation(img):
     img[np.where(img < 0)] = 0
     return img
+
+
+# Ham flatten
+def flatten(img):
+    return img.reshape(img.shape[2] * img.shape[1] * img.shape[0])
+
+
+# Ham sigmoid 
+def sigmoid(x):
+    # sig = np.where(x < 0, np.exp(x)/(1 + np.exp(x)), 1/(1 + np.exp(-x)))
+    sig = np.where(x < 0, np.exp(x)/(1 + np.exp(x)), 1./(1 + np.exp(-x)))
+
+    return sig
+
+
+# Ham fully connected sigmoid activation
+def sigmoid_activation(img, weight_name = '', bias_name = ''):
+    filter = np.zeros((img.shape[0]))
+    with open('../Dataset/2_dense/' + weight_name) as f:
+        if f.mode == 'r':
+            data = f.readlines()
+            for i in range(img.shape[0]):
+                filter[i] = hex2dec(data[i][:-1]) 
+        else:
+            print("can't read file" + weight_name )
+    f.close()
+
+    # ----- Doc file trong so BIAS
+    # bias_name = 'block1_conv1_3chanel_8filter_bias.txt'
+    with open('../Dataset/2_dense/' + bias_name) as f:
+        if f.mode == 'r':
+            data_bias = f.readlines()
+        else:
+            print("can't read file" + bias_name )
+    f.close()
+
+
+    bias = hex2dec(data_bias[0][:-1]) 
+
+    out = np.sum(img * filter) + bias
+    out = out.astype(np.float128)
+
+    print('gia tri fc = ', out)
+    out = sigmoid(out)
+    print('gia tri sigmoid = ', out)
+    return out
+
+
+# Ham predict
+def predict(x, threshold = 0.5):
+    if x > threshold:
+        img_class = 1
+    else:
+        img_class = 0
+    return img_class
 
 
 # Ham check function cua MODELSIM vs PYTHON
@@ -440,7 +495,8 @@ def visualize(out_Gx, sim):
 #                         MAIN 
 # ######################################################
 if __name__ == "__main__":
-    # ############ Read data ############
+
+    # ############ Read data in for PYTHON ############
     file_name = '../Data/3_data_in/data_fp_sun_00_channel_00{0}.txt'
     # file_name = '../Data/data_fp_image_channel_00{0}.txt'
     img_dim = (56, 56, 3)
@@ -449,28 +505,34 @@ if __name__ == "__main__":
     img = read_data_4conv_py(img_dim, file_name)
 
 
-    file_name = '../Data/4_data_out/' +  'modelsim_block1_conv1_sun_00{0}.txt'
-    # file_name = '../Data/' +  'modelsim_block1_conv1_sun_00{0}.txt'
-    sim_dim = (28, 28, 8)
-    # file_name = '../Data/' +  'modelsim_conv2d_to_maxpool_222.txt'
-    # sim_dim = (28, 28)
-    sim = read_data_4conv_sim(sim_dim, file_name)
 
-
-    # ############ PYTHON convolution ############
-    # weight_name = 'block1_conv1_3chanel_8filter_channel_{0}filter_{1}.txt'
-    # bias_name = 'block1_conv1_3chanel_8filter_bias.txt'
+    # ############ BUILD MODEL ############
+    # ############ BLOCK 1 ############
+    # # conv1
     weight_name = 'block1_conv1_filter_{1}_channel_{0}.txt'
     bias_name = 'block1_conv1_bias.txt'
-
     out_Gx = conv3d_multi(img, weight_name = weight_name, bias_name = bias_name)
-
-
-    # ############ PYTHON relu - maxpooling ############
-    out_Gx = relu(out_Gx)
-    out_Gx = max_pooling(out_Gx)
     print(out_Gx.shape)
 
+    # # conv2
+    weight_name = 'block1_conv2_filter_{1}_channel_{0}.txt'
+    bias_name = 'block1_conv2_bias.txt'
+    out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
+    # # # print(out_Gx.shape)
+    # # # # # conv2_relu
+    # # # out_Gx = relu_activation(out_Gx)
+
+    # # # # # max_pooling_0
+    # # # out_Gx = max_pooling(out_Gx)
+    # # # print(out_Gx.shape)
+    # # # # #################################
+
+
+
+    # ############ Read data out of MODELSIM ############
+    file_name = '../Data/4_data_out/' +  'modelsim_block1_conv2_sun_00{0}.txt'
+    sim_dim = out_Gx.shape
+    sim = read_data_4conv_sim(sim_dim, file_name)
 
     # ############ Verifying ############
     verify_function(out_Gx, sim)
@@ -478,6 +540,30 @@ if __name__ == "__main__":
 
     # ############ VISUALIZE ############
     # visualize(out_Gx, sim)
+
+
+
+    # #------------------- Dung python tao data input cho modelsim #-------------------
+    # dim = out_Gx.shape
+    # print(dim)
+
+    # # ------- Ghi file Anh dau vao 3D
+    # for k in range(dim[2]):
+    #     f_name = 'modelsim_block1_conv1_sun_v2_00{0}.txt'.format(k)
+
+    #     f  = open('../Data/4_data_out/' + f_name, 'w')
+    #     # f2 = open('../Data/3_data_in/' + f_name, 'w')
+    #     for i in range (dim[0]):
+    #         for j in range (dim[1]):
+    #             r = out_Gx[i][j][k]
+    #             # f2.write(str(r) + '\n')
+    #             s = dec2hex_fp(r)
+    #             string = s + '\n'
+    #             f.write(string)
+    #     f.close()
+    #     # f2.close()
+    #     print('File {0} has done!'.format(f_name))
+    # print('\nPLEASE UPDATE DIMENSION IN TESTBENCH & VERIFY: h = {0}, w = {1}'.format(dim[0], dim[1]))
 
 
 

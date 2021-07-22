@@ -1,5 +1,5 @@
-TESTNAME=tb_conv2d_1kernel_1channel
-#TESTNAME=tb_conv3d_1kernel_1channel
+#TESTNAME=tb_conv2d_1kernel_1channel
+TESTNAME=tb_conv3d_1kernel_1channel
 #TESTNAME=tb_fc
 
 SEED=$TESTNAME+$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
@@ -16,8 +16,9 @@ mkdir -p ./results/log/
 ## SIMULATE WITH WAVEFORM
 vsim  -c -voptargs=+acc work.$TESTNAME \
 -l ./results/log/$SEED.log \
--wlf ./results/$TESTNAME.wlf \
--do "log -r /*; run -all "  
+-wlf ./results/$SEED.wlf \
+-do "log -ports -r -depth 4 /*; log -internal /$TESTNAME/generator/data_cnt /$TESTNAME/writer/data_cnt;  run -all"
+
 
 
 
@@ -36,4 +37,5 @@ echo "Done Simulation"
 #SEED=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 #echo "  Test seed = $SEED"
 
-#-do "log -ports -r -depth 4 /* ;log -internal /$TESTNAME/generator/data_cnt /$TESTNAME/writer/data_cnt;  run -all"
+#-do "log -ports -r -depth 4 /*; log -internal /$TESTNAME/generator/data_cnt /$TESTNAME/writer/data_cnt;  run -all"
+#-do "log -r /*; run -all " 
