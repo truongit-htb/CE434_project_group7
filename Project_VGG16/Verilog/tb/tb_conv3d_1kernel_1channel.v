@@ -4,18 +4,28 @@
 
 module tb_conv3d_1kernel_1channel;
     // // path on Ubuntu
-    parameter Image_Channel0 = "../Data/3_data_in/data_fp_sun_00_channel_000.txt";
-    parameter Image_Channel1 = "../Data/3_data_in/data_fp_sun_00_channel_001.txt";
-    parameter Image_Channel2 = "../Data/3_data_in/data_fp_sun_00_channel_002.txt";
+    // parameter Image_Channel0 = "../Data/3_data_in/data_fp_sun_01_channel_000.txt";
+    // parameter Image_Channel1 = "../Data/3_data_in/data_fp_sun_01_channel_001.txt";
+    // parameter Image_Channel2 = "../Data/3_data_in/data_fp_sun_01_channel_002.txt";
+    // // EXTEND
+    parameter Image_Channel0 = "../Data/4_data_out/modelsim_block1_conv1_sun_000.txt";
+    parameter Image_Channel1 = "../Data/4_data_out/modelsim_block1_conv1_sun_001.txt";
+    parameter Image_Channel2 = "../Data/4_data_out/modelsim_block1_conv1_sun_002.txt";
+    parameter Image_Channel3 = "../Data/4_data_out/modelsim_block1_conv1_sun_003.txt";
+    parameter Image_Channel4 = "../Data/4_data_out/modelsim_block1_conv1_sun_004.txt";
+    parameter Image_Channel5 = "../Data/4_data_out/modelsim_block1_conv1_sun_005.txt";
+    parameter Image_Channel6 = "../Data/4_data_out/modelsim_block1_conv1_sun_006.txt";
+    parameter Image_Channel7 = "../Data/4_data_out/modelsim_block1_conv1_sun_007.txt";
+    
 
-    parameter Outfile_0   = "../Data/4_data_out/modelsim_block1_conv1_sun_000.txt";
-    parameter Outfile_1   = "../Data/4_data_out/modelsim_block1_conv1_sun_001.txt";
-    parameter Outfile_2   = "../Data/4_data_out/modelsim_block1_conv1_sun_002.txt";
-    parameter Outfile_3   = "../Data/4_data_out/modelsim_block1_conv1_sun_003.txt";
-    parameter Outfile_4   = "../Data/4_data_out/modelsim_block1_conv1_sun_004.txt";
-    parameter Outfile_5   = "../Data/4_data_out/modelsim_block1_conv1_sun_005.txt";
-    parameter Outfile_6   = "../Data/4_data_out/modelsim_block1_conv1_sun_006.txt";
-    parameter Outfile_7   = "../Data/4_data_out/modelsim_block1_conv1_sun_007.txt";
+    parameter Outfile_0   = "../Data/4_data_out/modelsim_block1_conv2_sun_01_000.txt";
+    parameter Outfile_1   = "../Data/4_data_out/modelsim_block1_conv2_sun_01_001.txt";
+    parameter Outfile_2   = "../Data/4_data_out/modelsim_block1_conv2_sun_01_002.txt";
+    parameter Outfile_3   = "../Data/4_data_out/modelsim_block1_conv2_sun_01_003.txt";
+    parameter Outfile_4   = "../Data/4_data_out/modelsim_block1_conv2_sun_01_004.txt";
+    parameter Outfile_5   = "../Data/4_data_out/modelsim_block1_conv2_sun_01_005.txt";
+    parameter Outfile_6   = "../Data/4_data_out/modelsim_block1_conv2_sun_01_006.txt";
+    parameter Outfile_7   = "../Data/4_data_out/modelsim_block1_conv2_sun_01_007.txt";
 
     parameter k = 5;
 
@@ -28,7 +38,13 @@ module tb_conv3d_1kernel_1channel;
     wire [31:0] data_in_0;
     wire [31:0] data_in_1;
     wire [31:0] data_in_2;
-    // wire [31:0] data_out;
+    // // EXTEND
+    wire [31:0] data_in_3;
+    wire [31:0] data_in_4;
+    wire [31:0] data_in_5;
+    wire [31:0] data_in_6;
+    wire [31:0] data_in_7;
+    wire [31:0] data_out;
     wire valid_out, done;
 
     wire   [DATA_WIDTH-1:0]    data_out_0;
@@ -57,6 +73,12 @@ module tb_conv3d_1kernel_1channel;
         .input_file_0(Image_Channel0),
         .input_file_1(Image_Channel1),
         .input_file_2(Image_Channel2),
+        // // EXTEND
+        .input_file_3(Image_Channel3),
+        .input_file_4(Image_Channel4),
+        .input_file_5(Image_Channel5),
+        .input_file_6(Image_Channel6),
+        .input_file_7(Image_Channel7),
 
         .WIDTH(`IMG_WIDTH),
         .HEIGHT(`IMG_HEIGHT)
@@ -67,6 +89,12 @@ module tb_conv3d_1kernel_1channel;
         .fifo_data_0(data_in_0),
         .fifo_data_1(data_in_1),
         .fifo_data_2(data_in_2),
+        // // EXTEND
+        .fifo_data_3(data_in_3),
+        .fifo_data_4(data_in_4),
+        .fifo_data_5(data_in_5),
+        .fifo_data_6(data_in_6),
+        .fifo_data_7(data_in_7),
 
         .fifo_wrreq(valid_in)
     );
@@ -97,9 +125,8 @@ module tb_conv3d_1kernel_1channel;
 
 
     // testbench cho mach conv2d_8kernel_3channel
-    block1_conv1_to_maxpool #(
-    // block1_demo #(
-
+    // block1_conv1 #(
+    block1_conv2 #(
 		.DATA_WIDTH(32),
         .WIDTH(`IMG_WIDTH),
         .HEIGHT(`IMG_HEIGHT)
@@ -111,6 +138,12 @@ module tb_conv3d_1kernel_1channel;
 		.data_in_0(data_in_0),             
 		.data_in_1(data_in_1),             
 		.data_in_2(data_in_2), 
+        // // EXTEND
+        .data_in_3(data_in_3),             
+		.data_in_4(data_in_4),             
+		.data_in_5(data_in_5), 
+        .data_in_6(data_in_6),             
+		.data_in_7(data_in_7), 
 
         .data_out_0(data_out_0),
         .data_out_1(data_out_1),
@@ -136,10 +169,10 @@ module tb_conv3d_1kernel_1channel;
         .output_file_6(Outfile_6),
         .output_file_7(Outfile_7),
 
-        .WIDTH(`IMG_WIDTH>>1),
-        .HEIGHT(`IMG_HEIGHT>>1)
-        // .WIDTH(`IMG_WIDTH),
-        // .HEIGHT(`IMG_HEIGHT)
+        // .WIDTH(`IMG_WIDTH>>1),
+        // .HEIGHT(`IMG_HEIGHT>>1)
+        .WIDTH(`IMG_WIDTH),
+        .HEIGHT(`IMG_HEIGHT)
     ) writer(
         .clk(clk),
         .resetn(resetn),
