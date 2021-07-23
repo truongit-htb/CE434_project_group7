@@ -21,6 +21,9 @@ module {{module_name}} #(
     wire conv_valid_out;
     wire done_conv;
 
+    assign valid_out = conv_valid_out;
+    assign done = done_conv;
+
     // gan output cho block1_conv1-relu-maxpool
     // wire [DATA_WIDTH-1:0] relu_out  [0: CHANNEL_OUT -1];
     // wire [DATA_WIDTH-1:0] data_out_pool [0: CHANNEL_OUT -1];
@@ -42,18 +45,6 @@ module {{module_name}} #(
 
 
     // gan output cho block1_conv1
-    assign data_out_0 = conv_out[0];
-    assign data_out_1 = conv_out[1];
-    assign data_out_2 = conv_out[2];
-    assign data_out_3 = conv_out[3];
-    assign data_out_4 = conv_out[4];
-    assign data_out_5 = conv_out[5];
-    assign data_out_6 = conv_out[6];
-    assign data_out_7 = conv_out[7];
-
-    assign valid_out = conv_valid_out;
-    assign done = done_conv;
-
 
     {{instances}}
 
