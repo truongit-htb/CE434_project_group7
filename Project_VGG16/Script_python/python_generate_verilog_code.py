@@ -45,7 +45,12 @@ def create_port_block(num_kernel = 8, num_channel = 3):
 
 
 def create_inst_block(num_kernel = 8, num_channel = 3, bias_name = '', weight_name = '', ins_name = 'block1_conv1'):
-    accumulate_str = '''\n\tconv3d_{0}_kernel_{1}_channel_size_3 #('''.format(num_kernel, num_channel)
+    accumulate_str = ''''''
+    for k in range(num_kernel):
+        accumulate_str += '''\n\tassign data_out_{0} = conv_out[{0}];'''.format(k)
+        
+
+    accumulate_str += '''\n\n\tconv3d_{0}_kernel_{1}_channel_size_3 #('''.format(num_kernel, num_channel)
     accumulate_str += '''\n\t\t.DATA_WIDTH(32),.IMG_WIDTH(WIDTH),.IMG_HEIGHT(HEIGHT),'''
 
     # Edit here
@@ -335,8 +340,8 @@ def create_inst_conv(form = 'single', num_kernel = 8, num_channel = 3):
 
 
 def build_report():
-    num_kernel = 8      # Edit here
-    num_channel = 8     # Edit here
+    num_kernel = 16      # Edit here
+    num_channel = 16     # Edit here
 
 
     ################### CREATE CONV SINGLE KERNEL ####################
@@ -352,37 +357,43 @@ def build_report():
                                     port = create_port_conv('single', num_kernel, num_channel), instances = create_inst_conv('single', num_kernel, num_channel),
                                     n_delay = calc_num_delay(num_channel)[0], content_assign_add = content_assign_adder(num_channel))
     ##################################################################
+    save_report(content, out_template)
+    print("{0} has created!".format(out_template))
 
 
-    # #################### CREATE CONV MULTI KERNEL ####################
-    # file_name = 'template_conv3d_N_kernel_M_channel.v'
-    # file_template = get_template_sample('../Data/6_template/template/' + file_name)
-    # jinja2_template = Template(file_template)
+
+    #################### CREATE CONV MULTI KERNEL ####################
+    file_name = 'template_conv3d_N_kernel_M_channel.v'
+    file_template = get_template_sample('../Data/6_template/template/' + file_name)
+    jinja2_template = Template(file_template)
     
 
-    # file_name = 'conv3d_{0}_kernel_{1}_channel_size_3.v'.format(num_kernel, num_channel)
-    # out_template = '../Data/6_template/results/' + file_name
+    file_name = 'conv3d_{0}_kernel_{1}_channel_size_3.v'.format(num_kernel, num_channel)
+    out_template = '../Data/6_template/results/' + file_name
 
-    # content = jinja2_template.render(n_kernel = num_kernel, n_channel = num_channel, param_weight_bias = create_param_conv('multi', num_kernel, num_channel), 
-    #                                 port = create_port_conv('multi', num_kernel, num_channel), instances = create_inst_conv('multi', num_kernel, num_channel))
-    # ##################################################################
+    content = jinja2_template.render(n_kernel = num_kernel, n_channel = num_channel, param_weight_bias = create_param_conv('multi', num_kernel, num_channel), 
+                                    port = create_port_conv('multi', num_kernel, num_channel), instances = create_inst_conv('multi', num_kernel, num_channel))
+    ##################################################################
+    save_report(content, out_template)
+    print("{0} has created!".format(out_template))
 
 
-    # #################### CREATE BLOCK ####################
-    # file_name = 'template_top_module.v'
-    # in_template = '../Data/6_template/template/' + file_name
-    # file_template = get_template_sample(in_template)
-    # jinja2_template = Template(file_template)
+
+
+    #################### CREATE BLOCK ####################
+    file_name = 'template_top_module.v'
+    in_template = '../Data/6_template/template/' + file_name
+    file_template = get_template_sample(in_template)
+    jinja2_template = Template(file_template)
     
 
-    # file_name = 'block1_conv1.v'          # Edit here
-    # out_template = '../Data/6_template/results/' + file_name
+    file_name = 'block4_conv2.v'          # Edit here
+    out_template = '../Data/6_template/results/' + file_name
 
-    # bias_name = file_name[:-2] + '_bias.txt'
-    # weight_name = file_name[:-2] + '_filter_{1}_channel_{0}.txt'          
-    # content = jinja2_template.render(module_name = file_name[:-2], n_kernel = num_kernel, port = create_port_block(num_kernel, num_channel),
-    #                                  instances = create_inst_block(num_kernel, num_channel, bias_name, weight_name, file_name[:-2]))
-
+    bias_name = file_name[:-2] + '_bias.txt'
+    weight_name = file_name[:-2] + '_filter_{1}_channel_{0}.txt'          
+    content = jinja2_template.render(module_name = file_name[:-2], n_kernel = num_kernel, port = create_port_block(num_kernel, num_channel),
+                                     instances = create_inst_block(num_kernel, num_channel, bias_name, weight_name, file_name[:-2]))
 
     save_report(content, out_template)
     print("{0} has created!".format(out_template))
