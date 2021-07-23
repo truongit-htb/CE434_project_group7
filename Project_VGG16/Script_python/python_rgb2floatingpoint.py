@@ -60,10 +60,10 @@ def bin2hex(input):
 
 
 #------------------- MAIN #-------------------
-file_name = 'sun_01.jpg'       # Edit here
+file_name = 'sun_02.jpg'       # Edit here
 
 img_rgb = cv2.imread('../Data/5_image/' + file_name)
-img_rgb = cv2.resize(img_rgb, (56, 56))
+img_rgb = cv2.resize(img_rgb, (28, 28))
 img_rgb = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2RGB)
 
 # cv2.imshow('input56x56', img_rgb)
@@ -81,16 +81,16 @@ for k in range(dim[2]):
     f_name = file_name[:-4] + '_channel_00{0}.txt'.format(k)
 
     f  = open('../Data/3_data_in/data_fp_' + f_name, 'w')
-    f2 = open('../Data/3_data_in/data_dec_' + f_name, 'w')
+    # f2 = open('../Data/3_data_in/data_dec_' + f_name, 'w')     # Edit here
     for i in range (dim[0]):
         for j in range (dim[1]):
             r = img_rgb[i][j][k]
-            f2.write(str(r) + '\n')
+            # f2.write(str(r) + '\n')    # Edit here
             s = dec2hex_fp(r)
             string = s + '\n'
             f.write(string)
     f.close()
-    f2.close()
+    # f2.close()        # Edit here
     print('File {0} has done!'.format(f_name))
 print('\nPLEASE UPDATE DIMENSION IN TESTBENCH & VERIFY: h = {0}, w = {1}'.format(dim[0], dim[1]))
 

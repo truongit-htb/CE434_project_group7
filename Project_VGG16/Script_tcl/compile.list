@@ -7,17 +7,26 @@
 #../Verilog/rtl/max_pooling.v
 #../Verilog/rtl/block1_conv1_8kernel_3channel.v
 #../Verilog/rtl/block1_demo.v
+#../Verilog/rtl/fully_connected_16.v
+
 
 #../Verilog/rtl/block1_conv1_to_maxpool.v
 
-../Verilog/rtl/block1_conv1.v
-../Verilog/rtl/conv3d_8_kernel_3_channel_size_3.v
+#../Verilog/rtl/block1_conv1.v
+#../Verilog/rtl/conv3d_8_kernel_3_channel_size_3.v
 
 #../Verilog/rtl/block1_conv2.v
 #../Verilog/rtl/conv3d_8_kernel_8_channel_size_3.v
 
+#../Verilog/rtl/block4_conv1.v
+#../Verilog/rtl/conv3d_16_kernel_8_channel_size_3.v
 
-#../Verilog/rtl/fully_connected_16.v
+../Verilog/rtl/block4_conv2.v
+../Verilog/rtl/conv3d_16_kernel_16_channel_size_3.v
+
+
+
+
 
 
 # tb code
