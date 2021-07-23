@@ -10,6 +10,15 @@ module tb_writer_3d (
     data_in_5,
     data_in_6,
     data_in_7,
+    // EXTEND
+    data_in_8,
+    data_in_9,
+    data_in_10,
+    data_in_11,
+    data_in_12,
+    data_in_13,
+    data_in_14,
+    data_in_15,
 
     data_valid_in,
     done
@@ -28,6 +37,15 @@ module tb_writer_3d (
     parameter output_file_5 = "";
     parameter output_file_6 = "";
     parameter output_file_7 = "";
+    // EXTEND
+    parameter output_file_8 = "";
+    parameter output_file_9 = "";
+    parameter output_file_10 = "";
+    parameter output_file_11 = "";
+    parameter output_file_12 = "";
+    parameter output_file_13 = "";
+    parameter output_file_14 = "";
+    parameter output_file_15 = "";
 
 
     //
@@ -37,7 +55,7 @@ module tb_writer_3d (
 
     input clk;     
     input resetn;
-    // input [DWIDTH-1:0] data_in;
+
     input [DWIDTH-1:0] data_in_0;
     input [DWIDTH-1:0] data_in_1;
     input [DWIDTH-1:0] data_in_2;
@@ -46,6 +64,15 @@ module tb_writer_3d (
     input [DWIDTH-1:0] data_in_5;
     input [DWIDTH-1:0] data_in_6;
     input [DWIDTH-1:0] data_in_7;
+    // EXTEND
+    input [DWIDTH-1:0] data_in_8 ;
+    input [DWIDTH-1:0] data_in_9 ;
+    input [DWIDTH-1:0] data_in_10;
+    input [DWIDTH-1:0] data_in_11;
+    input [DWIDTH-1:0] data_in_12;
+    input [DWIDTH-1:0] data_in_13;
+    input [DWIDTH-1:0] data_in_14;
+    input [DWIDTH-1:0] data_in_15;
 
     input data_valid_in;
     output reg done;
@@ -58,6 +85,15 @@ module tb_writer_3d (
     integer  file_out_5;
     integer  file_out_6;
     integer  file_out_7;
+    // EXTEND
+    integer  file_out_8 ;
+    integer  file_out_9 ;
+    integer  file_out_10;
+    integer  file_out_11;
+    integer  file_out_12;
+    integer  file_out_13;
+    integer  file_out_14;
+    integer  file_out_15;
 
     initial begin
         file_out_0 = $fopen(output_file_0,"w");
@@ -68,6 +104,15 @@ module tb_writer_3d (
         file_out_5 = $fopen(output_file_5,"w");
         file_out_6 = $fopen(output_file_6,"w");
         file_out_7 = $fopen(output_file_7,"w");
+        // EXTEND
+        file_out_8  = $fopen(output_file_8 ,"w");
+        file_out_9  = $fopen(output_file_9 ,"w");
+        file_out_10 = $fopen(output_file_10,"w");
+        file_out_11 = $fopen(output_file_11,"w");
+        file_out_12 = $fopen(output_file_12,"w");
+        file_out_13 = $fopen(output_file_13,"w");
+        file_out_14 = $fopen(output_file_14,"w");
+        file_out_15 = $fopen(output_file_15,"w");
 
     end
 
@@ -142,12 +187,23 @@ module tb_writer_3d (
                     $fwrite(file_out_5, "%h\n", data_in_5);
                     $fwrite(file_out_6, "%h\n", data_in_6);
                     $fwrite(file_out_7, "%h\n", data_in_7);
+                    // EXTEND
+                    $fwrite(file_out_8 , "%h\n", data_in_8 );
+                    $fwrite(file_out_9 , "%h\n", data_in_9 );
+                    $fwrite(file_out_10, "%h\n", data_in_10);
+                    $fwrite(file_out_11, "%h\n", data_in_11);
+                    $fwrite(file_out_12, "%h\n", data_in_12);
+                    $fwrite(file_out_13, "%h\n", data_in_13);
+                    $fwrite(file_out_14, "%h\n", data_in_14);
+                    $fwrite(file_out_15, "%h\n", data_in_15);
 
                     done <= 1'b0;
                 end
                 else
                     // if(data_cnt == num_data-1) 
                     begin
+                        done <= 1'b1;
+                        
                         // $fwrite(file_out, "%h\n", data_in);
                         $fwrite(file_out_0, "%h\n", data_in_0);
                         $fwrite(file_out_1, "%h\n", data_in_1);
@@ -157,8 +213,18 @@ module tb_writer_3d (
                         $fwrite(file_out_5, "%h\n", data_in_5);
                         $fwrite(file_out_6, "%h\n", data_in_6);
                         $fwrite(file_out_7, "%h\n", data_in_7);
+                        
 
-                        done <= 1'b1;
+                        // EXTEND
+                        $fwrite(file_out_8 , "%h\n", data_in_8 );
+                        $fwrite(file_out_9 , "%h\n", data_in_9 );
+                        $fwrite(file_out_10, "%h\n", data_in_10);
+                        $fwrite(file_out_11, "%h\n", data_in_11);
+                        $fwrite(file_out_12, "%h\n", data_in_12);
+                        $fwrite(file_out_13, "%h\n", data_in_13);
+                        $fwrite(file_out_14, "%h\n", data_in_14);
+                        $fwrite(file_out_15, "%h\n", data_in_15);
+                        
 
                         #5;
                         $fclose(file_out_0);
@@ -169,6 +235,16 @@ module tb_writer_3d (
                         $fclose(file_out_5);
                         $fclose(file_out_6);
                         $fclose(file_out_7);
+                        // EXTEND
+                        $fclose(file_out_8 );
+                        $fclose(file_out_9 );
+                        $fclose(file_out_10);
+                        $fclose(file_out_11);
+                        $fclose(file_out_12);
+                        $fclose(file_out_13);
+                        $fclose(file_out_14);
+                        $fclose(file_out_15);
+
                         $display("writed file done");
                         #5 $finish;
                     end
