@@ -497,9 +497,8 @@ def visualize(out_Gx, sim):
 if __name__ == "__main__":
 
     # ############ Read data in for PYTHON ############
-    file_name = '../Data/3_data_in/data_fp_sun_00_channel_00{0}.txt'
-    # file_name = '../Data/data_fp_image_channel_00{0}.txt'
-    img_dim = (56, 56, 3)
+    file_name = '../Data/3_data_in/data_fp_sun_02_channel_00{0}.txt'
+    img_dim = (28, 28, 3)
     # file_name = '../Data/data_fp_image_channel_002.txt'
     # img_dim = (56, 56)
     img = read_data_4conv_py(img_dim, file_name)
@@ -518,19 +517,124 @@ if __name__ == "__main__":
     weight_name = 'block1_conv2_filter_{1}_channel_{0}.txt'
     bias_name = 'block1_conv2_bias.txt'
     out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-    # # # print(out_Gx.shape)
-    # # # # # conv2_relu
-    # # # out_Gx = relu_activation(out_Gx)
+    print(out_Gx.shape)
+    # # conv2_relu
+    out_Gx = relu_activation(out_Gx)
 
-    # # # # # max_pooling_0
-    # # # out_Gx = max_pooling(out_Gx)
-    # # # print(out_Gx.shape)
-    # # # # #################################
+    # # max_pooling_0
+    out_Gx = max_pooling(out_Gx)
+    print(out_Gx.shape)
+    # #################################
 
+
+    # ############ BLOCK 2 ############
+    # # conv1
+    weight_name = 'block2_conv1_filter_{1}_channel_{0}.txt'
+    bias_name = 'block2_conv1_bias.txt'
+    out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
+    print(out_Gx.shape)
+
+    # # conv2
+    weight_name = 'block2_conv2_filter_{1}_channel_{0}.txt'
+    bias_name = 'block2_conv2_bias.txt'
+    out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
+    print(out_Gx.shape)
+    # # conv2_relu
+    out_Gx = relu_activation(out_Gx)
+
+    # # max_pooling_0
+    out_Gx = max_pooling(out_Gx)
+    print(out_Gx.shape)
+    # #################################
+
+
+    # ############ BLOCK 3 ############
+    # # conv1
+    weight_name = 'block3_conv1_filter_{1}_channel_{0}.txt'
+    bias_name = 'block3_conv1_bias.txt'
+    out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
+    print(out_Gx.shape)
+
+    # # conv2
+    weight_name = 'block3_conv2_filter_{1}_channel_{0}.txt'
+    bias_name = 'block3_conv2_bias.txt'
+    out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
+    print(out_Gx.shape)
+
+    # # conv3
+    weight_name = 'block3_conv3_filter_{1}_channel_{0}.txt'
+    bias_name = 'block3_conv3_bias.txt'
+    out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
+    print(out_Gx.shape)
+    # # conv3_relu
+    out_Gx = relu_activation(out_Gx)
+
+    # # max_pooling_0
+    out_Gx = max_pooling(out_Gx)
+    print(out_Gx.shape)
+    # #################################
+
+
+    # ############ BLOCK 4 ############
+    # # conv1
+    weight_name = 'block4_conv1_filter_{1}_channel_{0}.txt'
+    bias_name = 'block4_conv1_bias.txt'
+    out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
+    print(out_Gx.shape)
+
+    # # conv2
+    weight_name = 'block4_conv2_filter_{1}_channel_{0}.txt'
+    bias_name = 'block4_conv2_bias.txt'
+    out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
+    print(out_Gx.shape)
+
+    # # # conv3
+    # weight_name = 'block4_conv3_filter_{1}_channel_{0}.txt'
+    # bias_name = 'block4_conv3_bias.txt'
+    # out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
+    # print(out_Gx.shape)
+    # # # conv3_relu
+    # out_Gx = relu_activation(out_Gx)
+
+    # # # max_pooling_0
+    # out_Gx = max_pooling(out_Gx)
+    # print(out_Gx.shape)
+    # # #################################
+
+
+    # # ############ BLOCK 5 ############
+    # # # conv1
+    # weight_name = 'block5_conv1_filter_{1}_channel_{0}.txt'
+    # bias_name = 'block5_conv1_bias.txt'
+    # out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
+    # print(out_Gx.shape)
+    # # # conv1_relu
+    # out_Gx = relu_activation(out_Gx)
+
+    # # # conv2
+    # weight_name = 'block5_conv2_filter_{1}_channel_{0}.txt'
+    # bias_name = 'block5_conv2_bias.txt'
+    # out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
+    # print(out_Gx.shape)
+    # # # conv2_relu
+    # out_Gx = relu_activation(out_Gx)
+
+    # # # conv3
+    # weight_name = 'block5_conv3_filter_{1}_channel_{0}.txt'
+    # bias_name = 'block5_conv3_bias.txt'
+    # out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
+    # print(out_Gx.shape)
+    # # # conv3_relu
+    # out_Gx = relu_activation(out_Gx)
+
+    # # # max_pooling_0
+    # out_Gx = max_pooling(out_Gx)
+    # print(out_Gx.shape)
+    # # #################################
 
 
     # ############ Read data out of MODELSIM ############
-    file_name = '../Data/4_data_out/' +  'modelsim_block1_conv2_sun_00{0}.txt'
+    file_name = '../Data/4_data_out/block4_conv2_temp/' +  'modelsim_temp_block4_conv2_sun_00{0}.txt'
     sim_dim = out_Gx.shape
     sim = read_data_4conv_sim(sim_dim, file_name)
 
@@ -538,8 +642,8 @@ if __name__ == "__main__":
     verify_function(out_Gx, sim)
 
 
-    # ############ VISUALIZE ############
-    # visualize(out_Gx, sim)
+    # # ############ VISUALIZE ############
+    # # visualize(out_Gx, sim)
 
 
 
@@ -549,9 +653,9 @@ if __name__ == "__main__":
 
     # # ------- Ghi file Anh dau vao 3D
     # for k in range(dim[2]):
-    #     f_name = 'modelsim_block1_conv1_sun_v2_00{0}.txt'.format(k)
+    #     f_name = 'modelsim_temp_block3_conv3_sun_00{0}.txt'.format(k)
 
-    #     f  = open('../Data/4_data_out/' + f_name, 'w')
+    #     f  = open('../Data/4_data_out/block3_conv3_temp/' + f_name, 'w')
     #     # f2 = open('../Data/3_data_in/' + f_name, 'w')
     #     for i in range (dim[0]):
     #         for j in range (dim[1]):
@@ -565,5 +669,13 @@ if __name__ == "__main__":
     #     print('File {0} has done!'.format(f_name))
     # print('\nPLEASE UPDATE DIMENSION IN TESTBENCH & VERIFY: h = {0}, w = {1}'.format(dim[0], dim[1]))
 
+
+    # # -------------- Tao file dimension.v --------------
+    # file_name = 'dimension.v'
+    # f  = open('../Verilog/rtl/' + file_name, 'w')
+    # string = "`define IMG_HEIGHT {0}\n`define IMG_WIDTH {1}".format(dim[0], dim[1])
+    # f.write(string)
+    # f.close()
+    # print('\nFile {0} has done!'.format(file_name))
 
 
