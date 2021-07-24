@@ -51,6 +51,7 @@ module tb_writer_3d (
     //
     parameter WIDTH = 56;
     parameter HEIGHT = 56;
+    parameter NUM_IMG = 1;
     localparam num_data = WIDTH*HEIGHT;
 
     input clk;     
@@ -178,7 +179,7 @@ module tb_writer_3d (
                 //     $fwrite(file_out, "%d\n", num_data); 
                 // end
 
-                if (data_cnt < num_data-1) begin               
+                if (data_cnt < NUM_IMG* num_data-1) begin         // Edit here           
                     $fwrite(file_out_0, "%h\n", data_in_0);
                     $fwrite(file_out_1, "%h\n", data_in_1);
                     $fwrite(file_out_2, "%h\n", data_in_2);
