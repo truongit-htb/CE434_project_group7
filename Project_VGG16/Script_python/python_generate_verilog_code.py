@@ -387,7 +387,7 @@ def build_report():
     jinja2_template = Template(file_template)
     
 
-    file_name = 'block4_conv2.v'          # Edit here
+    file_name = 'block4_conv3.v'          # Edit here
     out_template = '../Data/6_template/results/' + file_name
 
     bias_name = file_name[:-2] + '_bias.txt'
