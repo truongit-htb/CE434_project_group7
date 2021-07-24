@@ -50,6 +50,7 @@ module conv2d_kernel_size_3 #(
     reg [31:0] counter;
 
     wire enable_mult;
+    // delay num_padding*IMG_WIDTH + num_padding
     delay_valid #(.N_CLOCKs(1*IMG_WIDTH+1)) valid_ins(clk,resetn,data_valid_in,enable_mult);
 
 
