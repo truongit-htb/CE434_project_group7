@@ -196,45 +196,78 @@ def read_data_4conv_py(img_dim, file_name):
 
 
 # Ham doc data out CONV MODELSIM
-def read_data_4conv_sim(sim_dim, file_name):
+def read_data_4conv_sim(sim_dim, file_name, num_img = 1):
     sim = np.zeros(sim_dim)
 
-    if (len(sim_dim) == 2):       
-        # #----------------- Doc ket qua 2D #-----------------        
-        with open(file_name) as f:
-            if f.mode == 'r':
-                data = f.readlines()
-                for h in range(sim_dim[0]):
-                    for w in range(sim_dim[1]):
-                        # # OLD
-                        # temp = data[3 + h*sim_dim[1] + w][:-1]
-                        # # NEW
-                        temp = data[h*sim_dim[1] + w][:-1]
+    if num_img < 2:
+        if (len(sim_dim) == 2):       
+            # #----------------- Doc ket qua 2D #-----------------        
+            with open(file_name) as f:
+                if f.mode == 'r':
+                    data = f.readlines()
+                    for h in range(sim_dim[0]):
+                        for w in range(sim_dim[1]):
+                            # # OLD
+                            # temp = data[3 + h*sim_dim[1] + w][:-1]
+                            # # NEW
+                            temp = data[h*sim_dim[1] + w][:-1]
 
-                        sim[h, w] = hex2dec(temp)
-            else:
-                print("can't read file" + file_name )
-        f.close()
+                            sim[h, w] = hex2dec(temp)
+                else:
+                    print("can't read file" + file_name )
+            f.close()
+        else:
+            #----------------- Doc ket qua 3D #-----------------
+            for kernel in range(sim_dim[2]):
+                # file_name = '../Data/' +  'modelsim_block1_conv1_00{0}.txt'.format(kernel)
+                with open(file_name.format(kernel)) as f:
+                    if f.mode == 'r':
+                        data = f.readlines()
+                        for h in range(sim_dim[0]):
+                            for w in range(sim_dim[1]):
+                                # # EX
+                                # temp = data[3 + h*sim_dim[1] + w][:-1]
+                                # # NEW
+                                temp = data[h*sim_dim[1] + w][:-1]
+
+                                sim[h, w, kernel] = hex2dec(temp)
+                    else:
+                        print("can't read file" + file_name )
+                f.close()
+        return sim
+
     else:
+        SIM_ARR = []
+
+        for n_img in range(num_img):
+            SIM_ARR.append(np.zeros(sim_dim))
+
         #----------------- Doc ket qua 3D #-----------------
         for kernel in range(sim_dim[2]):
             # file_name = '../Data/' +  'modelsim_block1_conv1_00{0}.txt'.format(kernel)
             with open(file_name.format(kernel)) as f:
                 if f.mode == 'r':
                     data = f.readlines()
-                    for h in range(sim_dim[0]):
-                        for w in range(sim_dim[1]):
-                            # # EX
-                            # temp = data[3 + h*sim_dim[1] + w][:-1]
-                            # # NEW
-                            temp = data[h*sim_dim[1] + w][:-1]
 
-                            sim[h, w, kernel] = hex2dec(temp)
+                    for n_img in range(num_img):
+                        for h in range(sim_dim[0]):
+                            for w in range(sim_dim[1]):
+                                # # EX
+                                # temp = data[3 + h*sim_dim[1] + w][:-1]
+                                # # NEW
+                                temp = data[h*sim_dim[1] + w + n_img*sim_dim[0]*sim_dim[1]][:-1]
+
+                                SIM_ARR[n_img][h, w, kernel] = hex2dec(temp)
+
+                        # SIM_ARR.append(sim)
                 else:
                     print("can't read file" + file_name )
             f.close()
+        return SIM_ARR
 
-    return sim
+    
+
+    
 
 
 # Ham tinh max pooling
@@ -382,11 +415,13 @@ def verify_function(out_Gx, sim):
         print('So phep tinh sai: ', len(fault))
         print('Do sai lech phep tinh GAN DUNG modelsim vs python: max = {0}, min = {1}'.format(max_err, min_err))
         print('Do sai lech modelsim vs python: max = {0}, min = {1}'.format(py_max_err, py_min_err))
-    
+
+        return fault
         # for i in range(len(fault)):
         #     print('{0}   \t{1}   \t{2}'.format(fault[i], dec2hex_fp(out_Gx[fault[i]]) , sim[fault[i]]))
 
     else:   # ------- Verify Anh dau vao 3D
+        FAULT_ARR = []
         for kernel in range(sim.shape[2]):
             correct = 0
             fault = []
@@ -443,15 +478,16 @@ def verify_function(out_Gx, sim):
                         correct += 1
             
             print('\nKernel ', kernel)
-            print('So phep tinh chinh xac: ', correct)
-            print('So phep tinh gan dung: ', h2 * w2 - correct - len(fault))
+            # print('So phep tinh chinh xac: ', correct)
+            # print('So phep tinh gan dung: ', h2 * w2 - correct - len(fault))
             print('So phep tinh sai: ', len(fault))
-            print('Do sai lech phep tinh GAN DUNG modelsim vs python: max = {0}, min = {1}'.format(max_err, min_err))
-            print('Do sai lech modelsim vs python: max = {0}, min = {1}'.format(py_max_err, py_min_err))
+            # print('Do sai lech phep tinh GAN DUNG modelsim vs python: max = {0}, min = {1}'.format(max_err, min_err))
+            # print('Do sai lech modelsim vs python: max = {0}, min = {1}'.format(py_max_err, py_min_err))
 
+            FAULT_ARR.append(fault)
             # for i in range(len(fault)):
             #     print('{0}   \t{1}   \t{2}'.format(fault[i], dec2hex_fp(out_Gx[fault[i]]) , sim[fault[i]]))
-    return
+        return FAULT_ARR
 
 
 # Ham minh hoa ket qua tinh toan tren MODELSIM va PYTHON
@@ -497,173 +533,220 @@ def visualize(out_Gx, sim):
 if __name__ == "__main__":
 
     # ############ Read data in for PYTHON ############
-    file_name = '../Data/3_data_in/data_fp_sun_02_channel_00{0}.txt'
-    img_dim = (28, 28, 3)
-    # file_name = '../Data/data_fp_image_channel_002.txt'
-    # img_dim = (56, 56)
-    img = read_data_4conv_py(img_dim, file_name)
+    # file_name = '../Data/3_data_in/data_fp_sun_00_channel_00{0}.txt'
+    # img_dim = (56, 56, 3)
+    # # file_name = '../Data/data_fp_image_channel_002.txt'
+    # # img_dim = (56, 56)
+    # img = read_data_4conv_py(img_dim, file_name)
 
 
-
-    # ############ BUILD MODEL ############
-    # ############ BLOCK 1 ############
-    # # conv1
-    weight_name = 'block1_conv1_filter_{1}_channel_{0}.txt'
-    bias_name = 'block1_conv1_bias.txt'
-    out_Gx = conv3d_multi(img, weight_name = weight_name, bias_name = bias_name)
-    print(out_Gx.shape)
-
-    # # conv2
-    weight_name = 'block1_conv2_filter_{1}_channel_{0}.txt'
-    bias_name = 'block1_conv2_bias.txt'
-    out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-    print(out_Gx.shape)
-    # # conv2_relu
-    out_Gx = relu_activation(out_Gx)
-
-    # # max_pooling_0
-    out_Gx = max_pooling(out_Gx)
-    print(out_Gx.shape)
-    # #################################
+    NUM_IMG = 5     # Edit here
 
 
-    # ############ BLOCK 2 ############
-    # # conv1
-    weight_name = 'block2_conv1_filter_{1}_channel_{0}.txt'
-    bias_name = 'block2_conv1_bias.txt'
-    out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-    print(out_Gx.shape)
+    OUT_ARR = []
+    for lap in range(NUM_IMG):        
+        # if lap == 0:
+        #     file_name = '../Data/3_data_in/data_fp_sun_00_channel_00{0}.txt'
+        # elif lap == 1:
+        #     file_name = '../Data/3_data_in/data_fp_sun_02_channel_00{0}.txt'
 
-    # # conv2
-    weight_name = 'block2_conv2_filter_{1}_channel_{0}.txt'
-    bias_name = 'block2_conv2_bias.txt'
-    out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-    print(out_Gx.shape)
-    # # conv2_relu
-    out_Gx = relu_activation(out_Gx)
-
-    # # max_pooling_0
-    out_Gx = max_pooling(out_Gx)
-    print(out_Gx.shape)
-    # #################################
+        file_name = '../Data/3_data_in/data_fp_sun_0'+ str(lap) +'_channel_00{0}.txt'
 
 
-    # ############ BLOCK 3 ############
-    # # conv1
-    weight_name = 'block3_conv1_filter_{1}_channel_{0}.txt'
-    bias_name = 'block3_conv1_bias.txt'
-    out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-    print(out_Gx.shape)
-
-    # # conv2
-    weight_name = 'block3_conv2_filter_{1}_channel_{0}.txt'
-    bias_name = 'block3_conv2_bias.txt'
-    out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-    print(out_Gx.shape)
-
-    # # conv3
-    weight_name = 'block3_conv3_filter_{1}_channel_{0}.txt'
-    bias_name = 'block3_conv3_bias.txt'
-    out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-    print(out_Gx.shape)
-    # # conv3_relu
-    out_Gx = relu_activation(out_Gx)
-
-    # # max_pooling_0
-    out_Gx = max_pooling(out_Gx)
-    print(out_Gx.shape)
-    # #################################
+        img_dim = (56, 56, 3)
+        # file_name = '../Data/data_fp_image_channel_002.txt'
+        # img_dim = (56, 56)
+        img = read_data_4conv_py(img_dim, file_name)
 
 
-    # ############ BLOCK 4 ############
-    # # conv1
-    weight_name = 'block4_conv1_filter_{1}_channel_{0}.txt'
-    bias_name = 'block4_conv1_bias.txt'
-    out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-    print(out_Gx.shape)
+        # ############ BUILD MODEL ############
+        # ############ BLOCK 1 ############
+        # # conv1
+        weight_name = 'block1_conv1_filter_{1}_channel_{0}.txt'
+        bias_name = 'block1_conv1_bias.txt'
+        out_Gx = conv3d_multi(img, weight_name = weight_name, bias_name = bias_name)
+        print(out_Gx.shape)
 
-    # # conv2
-    weight_name = 'block4_conv2_filter_{1}_channel_{0}.txt'
-    bias_name = 'block4_conv2_bias.txt'
-    out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-    print(out_Gx.shape)
+        # # conv2
+        weight_name = 'block1_conv2_filter_{1}_channel_{0}.txt'
+        bias_name = 'block1_conv2_bias.txt'
+        out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
+        print(out_Gx.shape)
+        # # conv2_relu
+        out_Gx = relu_activation(out_Gx)
 
-    # # # conv3
-    # weight_name = 'block4_conv3_filter_{1}_channel_{0}.txt'
-    # bias_name = 'block4_conv3_bias.txt'
-    # out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-    # print(out_Gx.shape)
-    # # # conv3_relu
-    # out_Gx = relu_activation(out_Gx)
-
-    # # # max_pooling_0
-    # out_Gx = max_pooling(out_Gx)
-    # print(out_Gx.shape)
-    # # #################################
+        # # max_pooling_0
+        out_Gx = max_pooling(out_Gx)
+        print(out_Gx.shape)
+        # #################################
 
 
-    # # ############ BLOCK 5 ############
-    # # # conv1
-    # weight_name = 'block5_conv1_filter_{1}_channel_{0}.txt'
-    # bias_name = 'block5_conv1_bias.txt'
-    # out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-    # print(out_Gx.shape)
-    # # # conv1_relu
-    # out_Gx = relu_activation(out_Gx)
+        # ############ BLOCK 2 ############
+        # # conv1
+        weight_name = 'block2_conv1_filter_{1}_channel_{0}.txt'
+        bias_name = 'block2_conv1_bias.txt'
+        out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
+        print(out_Gx.shape)
 
-    # # # conv2
-    # weight_name = 'block5_conv2_filter_{1}_channel_{0}.txt'
-    # bias_name = 'block5_conv2_bias.txt'
-    # out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-    # print(out_Gx.shape)
-    # # # conv2_relu
-    # out_Gx = relu_activation(out_Gx)
+        # # conv2
+        weight_name = 'block2_conv2_filter_{1}_channel_{0}.txt'
+        bias_name = 'block2_conv2_bias.txt'
+        out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
+        print(out_Gx.shape)
+        # # conv2_relu
+        out_Gx = relu_activation(out_Gx)
 
-    # # # conv3
-    # weight_name = 'block5_conv3_filter_{1}_channel_{0}.txt'
-    # bias_name = 'block5_conv3_bias.txt'
-    # out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-    # print(out_Gx.shape)
-    # # # conv3_relu
-    # out_Gx = relu_activation(out_Gx)
+        # # max_pooling_0
+        out_Gx = max_pooling(out_Gx)
+        print(out_Gx.shape)
+        # #################################
 
-    # # # max_pooling_0
-    # out_Gx = max_pooling(out_Gx)
-    # print(out_Gx.shape)
-    # # #################################
+
+        # ############ BLOCK 3 ############
+        # # conv1
+        weight_name = 'block3_conv1_filter_{1}_channel_{0}.txt'
+        bias_name = 'block3_conv1_bias.txt'
+        out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
+        print(out_Gx.shape)
+
+        # # conv2
+        weight_name = 'block3_conv2_filter_{1}_channel_{0}.txt'
+        bias_name = 'block3_conv2_bias.txt'
+        out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
+        print(out_Gx.shape)
+
+        # # conv3
+        weight_name = 'block3_conv3_filter_{1}_channel_{0}.txt'
+        bias_name = 'block3_conv3_bias.txt'
+        out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
+        print(out_Gx.shape)
+        # # conv3_relu
+        out_Gx = relu_activation(out_Gx)
+
+        # # max_pooling_0
+        out_Gx = max_pooling(out_Gx)
+        print(out_Gx.shape)
+        # #################################
+
+
+        # ############ BLOCK 4 ############
+        # # conv1
+        weight_name = 'block4_conv1_filter_{1}_channel_{0}.txt'
+        bias_name = 'block4_conv1_bias.txt'
+        out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
+        print(out_Gx.shape)
+
+        # # conv2
+        weight_name = 'block4_conv2_filter_{1}_channel_{0}.txt'
+        bias_name = 'block4_conv2_bias.txt'
+        out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
+        print(out_Gx.shape)
+
+        # # conv3
+        weight_name = 'block4_conv3_filter_{1}_channel_{0}.txt'
+        bias_name = 'block4_conv3_bias.txt'
+        out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
+        print(out_Gx.shape)
+
+        # conv3_relu
+        out_Gx = relu_activation(out_Gx)
+
+        # # max_pooling_0
+        out_Gx = max_pooling(out_Gx)
+        print(out_Gx.shape)
+        # # # #################################
+
+
+        # # ############ BLOCK 5 ############
+        # # # conv1
+        # weight_name = 'block5_conv1_filter_{1}_channel_{0}.txt'
+        # bias_name = 'block5_conv1_bias.txt'
+        # out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
+        # print(out_Gx.shape)
+        # # # conv1_relu
+        # out_Gx = relu_activation(out_Gx)
+
+        # # # conv2
+        # weight_name = 'block5_conv2_filter_{1}_channel_{0}.txt'
+        # bias_name = 'block5_conv2_bias.txt'
+        # out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
+        # print(out_Gx.shape)
+        # # # conv2_relu
+        # out_Gx = relu_activation(out_Gx)
+
+        # # # conv3
+        # weight_name = 'block5_conv3_filter_{1}_channel_{0}.txt'
+        # bias_name = 'block5_conv3_bias.txt'
+        # out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
+        # print(out_Gx.shape)
+        # # # conv3_relu
+        # out_Gx = relu_activation(out_Gx)
+
+        # # # max_pooling_0
+        # out_Gx = max_pooling(out_Gx)
+        # print(out_Gx.shape)
+        # # #################################
+
+        OUT_ARR.append(out_Gx)
+
 
 
     # ############ Read data out of MODELSIM ############
-    file_name = '../Data/4_data_out/block4_conv2_temp/' +  'modelsim_temp_block4_conv2_sun_00{0}.txt'
+    file_name = '../Data/4_data_out/block4_conv1_2_3_to_pool/' +  'sim_temp_block4_conv1_2_3_to_pool_sun_00{0}.txt'    # Edit here
     sim_dim = out_Gx.shape
-    sim = read_data_4conv_sim(sim_dim, file_name)
+    
+    if NUM_IMG < 2:
+        sim = read_data_4conv_sim(sim_dim, file_name)
+    else:
+        SIM_ARR = read_data_4conv_sim(sim_dim, file_name, NUM_IMG)
 
-    # ############ Verifying ############
-    verify_function(out_Gx, sim)
+
+    # ############ VERIFYING ############
+    if NUM_IMG < 2:
+        fault = verify_function(out_Gx, sim)
+
+        print('\n\n==> Tong so pixel tinh sai: ', len(fault))
+    else:
+        FAULT_ARR = []
+        for n_img in range(NUM_IMG):
+            print('\nIMAGE\t', n_img)
+            fault = verify_function(OUT_ARR[n_img], SIM_ARR[n_img])
+
+            FAULT_ARR.append(fault)
+
+        num_fault = 0
+        for n_img in range(NUM_IMG):
+            for k in range(sim_dim[2]):
+                num_fault += len(FAULT_ARR[n_img][k])
+        print('\n\n==> Tong so pixel tinh sai: ', num_fault)
+        
 
 
-    # # ############ VISUALIZE ############
-    # # visualize(out_Gx, sim)
+    # # # ############ VISUALIZE ############
+    # # # visualize(out_Gx, sim)
 
 
 
     # #------------------- Dung python tao data input cho modelsim #-------------------
     # dim = out_Gx.shape
-    # print(dim)
 
     # # ------- Ghi file Anh dau vao 3D
+    
+
     # for k in range(dim[2]):
-    #     f_name = 'modelsim_temp_block3_conv3_sun_00{0}.txt'.format(k)
+    #     f_name = 'modelsim_temp_block3_conv3_sun_v2_00{0}.txt'.format(k)
 
     #     f  = open('../Data/4_data_out/block3_conv3_temp/' + f_name, 'w')
     #     # f2 = open('../Data/3_data_in/' + f_name, 'w')
-    #     for i in range (dim[0]):
-    #         for j in range (dim[1]):
-    #             r = out_Gx[i][j][k]
-    #             # f2.write(str(r) + '\n')
-    #             s = dec2hex_fp(r)
-    #             string = s + '\n'
-    #             f.write(string)
+
+    #     for lap in range(NUM_IMG):        
+    #         for i in range (dim[0]):
+    #             for j in range (dim[1]):
+    #                 r = OUT_ARR[lap][i, j, k]
+    #                 # f2.write(str(r) + '\n')
+    #                 s = dec2hex_fp(r)
+    #                 string = s + '\n'
+    #                 f.write(string)
     #     f.close()
     #     # f2.close()
     #     print('File {0} has done!'.format(f_name))
@@ -673,9 +756,10 @@ if __name__ == "__main__":
     # # -------------- Tao file dimension.v --------------
     # file_name = 'dimension.v'
     # f  = open('../Verilog/rtl/' + file_name, 'w')
-    # string = "`define IMG_HEIGHT {0}\n`define IMG_WIDTH {1}".format(dim[0], dim[1])
+    # string = "`define IMG_HEIGHT {0}\n`define IMG_WIDTH {1}\n`define NUM_IMG {2}".format(dim[0], dim[1], NUM_IMG)
     # f.write(string)
     # f.close()
     # print('\nFile {0} has done!'.format(file_name))
+
 
 
