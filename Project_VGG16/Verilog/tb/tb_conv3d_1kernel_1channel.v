@@ -8,43 +8,43 @@ module tb_conv3d_1kernel_1channel;
     // parameter Image_Channel1 = "../Data/3_data_in/data_fp_sun_01_channel_001.txt";
     // parameter Image_Channel2 = "../Data/3_data_in/data_fp_sun_01_channel_002.txt";
     // // EXTEND
-    parameter Image_Channel0 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_000.txt";
-    parameter Image_Channel1 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_001.txt";
-    parameter Image_Channel2 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_002.txt";
-    parameter Image_Channel3 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_003.txt";
-    parameter Image_Channel4 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_004.txt";
-    parameter Image_Channel5 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_005.txt";
-    parameter Image_Channel6 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_006.txt";
-    parameter Image_Channel7 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_007.txt";
+    parameter Image_Channel0 = "../Data/4_data_out/block3_conv3_temp/modelsim_temp_block3_conv3_sun_v2_000.txt";
+    parameter Image_Channel1 = "../Data/4_data_out/block3_conv3_temp/modelsim_temp_block3_conv3_sun_v2_001.txt";
+    parameter Image_Channel2 = "../Data/4_data_out/block3_conv3_temp/modelsim_temp_block3_conv3_sun_v2_002.txt";
+    parameter Image_Channel3 = "../Data/4_data_out/block3_conv3_temp/modelsim_temp_block3_conv3_sun_v2_003.txt";
+    parameter Image_Channel4 = "../Data/4_data_out/block3_conv3_temp/modelsim_temp_block3_conv3_sun_v2_004.txt";
+    parameter Image_Channel5 = "../Data/4_data_out/block3_conv3_temp/modelsim_temp_block3_conv3_sun_v2_005.txt";
+    parameter Image_Channel6 = "../Data/4_data_out/block3_conv3_temp/modelsim_temp_block3_conv3_sun_v2_006.txt";
+    parameter Image_Channel7 = "../Data/4_data_out/block3_conv3_temp/modelsim_temp_block3_conv3_sun_v2_007.txt";
 
-    parameter Image_Channel8  = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_008.txt";
-    parameter Image_Channel9  = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_009.txt";
-    parameter Image_Channel10 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_0010.txt";
-    parameter Image_Channel11 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_0011.txt";
-    parameter Image_Channel12 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_0012.txt";
-    parameter Image_Channel13 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_0013.txt";
-    parameter Image_Channel14 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_0014.txt";
-    parameter Image_Channel15 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_0015.txt";
+    // parameter Image_Channel8  = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_008.txt";
+    // parameter Image_Channel9  = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_009.txt";
+    // parameter Image_Channel10 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_0010.txt";
+    // parameter Image_Channel11 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_0011.txt";
+    // parameter Image_Channel12 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_0012.txt";
+    // parameter Image_Channel13 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_0013.txt";
+    // parameter Image_Channel14 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_0014.txt";
+    // parameter Image_Channel15 = "../Data/4_data_out/block4_conv1_temp/modelsim_temp_block4_conv1_sun_0015.txt";
     
 
 
-    parameter Outfile_0   = "../Data/4_data_out/block4_conv2_temp/modelsim_temp_block4_conv2_sun_000.txt";
-    parameter Outfile_1   = "../Data/4_data_out/block4_conv2_temp/modelsim_temp_block4_conv2_sun_001.txt";
-    parameter Outfile_2   = "../Data/4_data_out/block4_conv2_temp/modelsim_temp_block4_conv2_sun_002.txt";
-    parameter Outfile_3   = "../Data/4_data_out/block4_conv2_temp/modelsim_temp_block4_conv2_sun_003.txt";
-    parameter Outfile_4   = "../Data/4_data_out/block4_conv2_temp/modelsim_temp_block4_conv2_sun_004.txt";
-    parameter Outfile_5   = "../Data/4_data_out/block4_conv2_temp/modelsim_temp_block4_conv2_sun_005.txt";
-    parameter Outfile_6   = "../Data/4_data_out/block4_conv2_temp/modelsim_temp_block4_conv2_sun_006.txt";
-    parameter Outfile_7   = "../Data/4_data_out/block4_conv2_temp/modelsim_temp_block4_conv2_sun_007.txt";
+    parameter Outfile_0   = "../Data/4_data_out/block4_conv1_2_3_to_pool/sim_temp_block4_conv1_2_3_to_pool_sun_000.txt";
+    parameter Outfile_1   = "../Data/4_data_out/block4_conv1_2_3_to_pool/sim_temp_block4_conv1_2_3_to_pool_sun_001.txt";
+    parameter Outfile_2   = "../Data/4_data_out/block4_conv1_2_3_to_pool/sim_temp_block4_conv1_2_3_to_pool_sun_002.txt";
+    parameter Outfile_3   = "../Data/4_data_out/block4_conv1_2_3_to_pool/sim_temp_block4_conv1_2_3_to_pool_sun_003.txt";
+    parameter Outfile_4   = "../Data/4_data_out/block4_conv1_2_3_to_pool/sim_temp_block4_conv1_2_3_to_pool_sun_004.txt";
+    parameter Outfile_5   = "../Data/4_data_out/block4_conv1_2_3_to_pool/sim_temp_block4_conv1_2_3_to_pool_sun_005.txt";
+    parameter Outfile_6   = "../Data/4_data_out/block4_conv1_2_3_to_pool/sim_temp_block4_conv1_2_3_to_pool_sun_006.txt";
+    parameter Outfile_7   = "../Data/4_data_out/block4_conv1_2_3_to_pool/sim_temp_block4_conv1_2_3_to_pool_sun_007.txt";
     // // EXTEND
-    parameter Outfile_8    = "../Data/4_data_out/block4_conv2_temp/modelsim_temp_block4_conv2_sun_008.txt";
-    parameter Outfile_9    = "../Data/4_data_out/block4_conv2_temp/modelsim_temp_block4_conv2_sun_009.txt";
-    parameter Outfile_10   = "../Data/4_data_out/block4_conv2_temp/modelsim_temp_block4_conv2_sun_0010.txt";
-    parameter Outfile_11   = "../Data/4_data_out/block4_conv2_temp/modelsim_temp_block4_conv2_sun_0011.txt";
-    parameter Outfile_12   = "../Data/4_data_out/block4_conv2_temp/modelsim_temp_block4_conv2_sun_0012.txt";
-    parameter Outfile_13   = "../Data/4_data_out/block4_conv2_temp/modelsim_temp_block4_conv2_sun_0013.txt";
-    parameter Outfile_14   = "../Data/4_data_out/block4_conv2_temp/modelsim_temp_block4_conv2_sun_0014.txt";
-    parameter Outfile_15   = "../Data/4_data_out/block4_conv2_temp/modelsim_temp_block4_conv2_sun_0015.txt";
+    parameter Outfile_8    = "../Data/4_data_out/block4_conv1_2_3_to_pool/sim_temp_block4_conv1_2_3_to_pool_sun_008.txt";
+    parameter Outfile_9    = "../Data/4_data_out/block4_conv1_2_3_to_pool/sim_temp_block4_conv1_2_3_to_pool_sun_009.txt";
+    parameter Outfile_10   = "../Data/4_data_out/block4_conv1_2_3_to_pool/sim_temp_block4_conv1_2_3_to_pool_sun_0010.txt";
+    parameter Outfile_11   = "../Data/4_data_out/block4_conv1_2_3_to_pool/sim_temp_block4_conv1_2_3_to_pool_sun_0011.txt";
+    parameter Outfile_12   = "../Data/4_data_out/block4_conv1_2_3_to_pool/sim_temp_block4_conv1_2_3_to_pool_sun_0012.txt";
+    parameter Outfile_13   = "../Data/4_data_out/block4_conv1_2_3_to_pool/sim_temp_block4_conv1_2_3_to_pool_sun_0013.txt";
+    parameter Outfile_14   = "../Data/4_data_out/block4_conv1_2_3_to_pool/sim_temp_block4_conv1_2_3_to_pool_sun_0014.txt";
+    parameter Outfile_15   = "../Data/4_data_out/block4_conv1_2_3_to_pool/sim_temp_block4_conv1_2_3_to_pool_sun_0015.txt";
 
     parameter k = 5;
 
@@ -64,14 +64,14 @@ module tb_conv3d_1kernel_1channel;
     wire [31:0] data_in_6;
     wire [31:0] data_in_7;
 
-    wire [31:0] data_in_8 ;
-    wire [31:0] data_in_9 ;
-    wire [31:0] data_in_10;
-    wire [31:0] data_in_11;
-    wire [31:0] data_in_12;
-    wire [31:0] data_in_13;
-    wire [31:0] data_in_14;
-    wire [31:0] data_in_15;
+    // wire [31:0] data_in_8 ;
+    // wire [31:0] data_in_9 ;
+    // wire [31:0] data_in_10;
+    // wire [31:0] data_in_11;
+    // wire [31:0] data_in_12;
+    // wire [31:0] data_in_13;
+    // wire [31:0] data_in_14;
+    // wire [31:0] data_in_15;
 
 
 
@@ -98,6 +98,7 @@ module tb_conv3d_1kernel_1channel;
 
     initial 
     begin
+        $timeformat (-9, 0, " ns.", 5);
         clk = 1'b0;
         resetn = 1'b0;   
         #(k*3/2) resetn = 1'b1;
@@ -118,17 +119,19 @@ module tb_conv3d_1kernel_1channel;
         .input_file_6(Image_Channel6),
         .input_file_7(Image_Channel7),
 
-        .input_file_8 (Image_Channel8 ),
-        .input_file_9 (Image_Channel9 ),
-        .input_file_10(Image_Channel10),
-        .input_file_11(Image_Channel11),
-        .input_file_12(Image_Channel12),
-        .input_file_13(Image_Channel13),
-        .input_file_14(Image_Channel14),
-        .input_file_15(Image_Channel15),
+        // .input_file_8 (Image_Channel8 ),
+        // .input_file_9 (Image_Channel9 ),
+        // .input_file_10(Image_Channel10),
+        // .input_file_11(Image_Channel11),
+        // .input_file_12(Image_Channel12),
+        // .input_file_13(Image_Channel13),
+        // .input_file_14(Image_Channel14),
+        // .input_file_15(Image_Channel15),
 
         .WIDTH(`IMG_WIDTH),
-        .HEIGHT(`IMG_HEIGHT)
+        .HEIGHT(`IMG_HEIGHT),
+        .NUM_IMG(`NUM_IMG),
+        .NUM_LAYER(2)           // Edit here with value = num_layer_conv - 1
     ) generator (
         .clk(clk),
         .resetn(resetn),
@@ -143,25 +146,26 @@ module tb_conv3d_1kernel_1channel;
         .fifo_data_6(data_in_6),
         .fifo_data_7(data_in_7),
 
-        .fifo_data_8 (data_in_8 ),
-        .fifo_data_9 (data_in_9 ),
-        .fifo_data_10(data_in_10),
-        .fifo_data_11(data_in_11),
-        .fifo_data_12(data_in_12),
-        .fifo_data_13(data_in_13),
-        .fifo_data_14(data_in_14),
-        .fifo_data_15(data_in_15),
+        // .fifo_data_8 (data_in_8 ),
+        // .fifo_data_9 (data_in_9 ),
+        // .fifo_data_10(data_in_10),
+        // .fifo_data_11(data_in_11),
+        // .fifo_data_12(data_in_12),
+        // .fifo_data_13(data_in_13),
+        // .fifo_data_14(data_in_14),
+        // .fifo_data_15(data_in_15),
 
         .fifo_wrreq(valid_in)
     );
 
 
-    // // Edit here
+    // // Edit here for change module
 
     // // block1_conv1 #(
     // block1_conv2 #(
     // block4_conv1 #(
-    block4_conv2 #(
+    // block4_conv2 #(
+    block_demo #(
 		.DATA_WIDTH(32),
         .WIDTH(`IMG_WIDTH),
         .HEIGHT(`IMG_HEIGHT)
@@ -180,14 +184,14 @@ module tb_conv3d_1kernel_1channel;
         .data_in_6(data_in_6),             
 		.data_in_7(data_in_7),
 
-        .data_in_8 (data_in_8 ),             
-		.data_in_9 (data_in_9 ),             
-		.data_in_10(data_in_10), 
-        .data_in_11(data_in_11),             
-		.data_in_12(data_in_12), 
-        .data_in_13(data_in_13),             
-		.data_in_14(data_in_14),             
-		.data_in_15(data_in_15), 
+        // .data_in_8 (data_in_8 ),             
+		// .data_in_9 (data_in_9 ),             
+		// .data_in_10(data_in_10), 
+        // .data_in_11(data_in_11),             
+		// .data_in_12(data_in_12), 
+        // .data_in_13(data_in_13),             
+		// .data_in_14(data_in_14),             
+		// .data_in_15(data_in_15), 
 
 
         .data_out_0(data_out_0),
@@ -234,10 +238,11 @@ module tb_conv3d_1kernel_1channel;
         .output_file_14(Outfile_14),
         .output_file_15(Outfile_15),
 
-        // .WIDTH(`IMG_WIDTH>>1),
-        // .HEIGHT(`IMG_HEIGHT>>1)
-        .WIDTH(`IMG_WIDTH),
-        .HEIGHT(`IMG_HEIGHT)
+        .WIDTH(`IMG_WIDTH>>1),           // Edit here for max-pooling
+        .HEIGHT(`IMG_HEIGHT>>1),
+        // .WIDTH(`IMG_WIDTH),
+        // .HEIGHT(`IMG_HEIGHT),
+        .NUM_IMG(`NUM_IMG)
     ) writer(
         .clk(clk),
         .resetn(resetn),
