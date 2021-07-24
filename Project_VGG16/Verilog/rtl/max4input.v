@@ -2,7 +2,7 @@ module max4input #(
     parameter DATA_WIDTH=32
     )
     (
-        clk/*,enable*/,resetn,valid_in,in1,in2,in3,in4,out,valid_out
+        clk, resetn, valid_in, in1, in2, in3, in4, out, valid_out
     );
     input clk;
     
@@ -16,7 +16,6 @@ module max4input #(
     output reg valid_out;
 
     reg [DATA_WIDTH-1:0] maxab,maxcd,max;
-    reg [1:0] counter,count_out;
     assign out = max;
 
 
