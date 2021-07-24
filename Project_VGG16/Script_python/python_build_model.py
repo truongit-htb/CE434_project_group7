@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import ctypes
 import struct
+import time
+
 
 # Ham tao ma tran numpy ngau nhien. VD: a = create_rand_matrix(1, (200, 200, 3))
 ## mode = 0:    tao ra ma tran int khac nhau trong moi lan chay lai
@@ -303,12 +305,12 @@ def sigmoid_activation(img, weight_name = '', bias_name = ''):
     bias = hex2dec(data_bias[0][:-1]) 
 
     out = np.sum(img * filter) + bias
-    out = out.astype(np.float128)
+    out_fc = out.astype(np.float128)
 
-    print('gia tri fc = ', out)
-    out = sigmoid(out)
-    print('gia tri sigmoid = ', out)
-    return out
+    # print('gia tri fc = ', out)
+    out = sigmoid(out_fc)
+    # print('gia tri sigmoid = ', out)
+    return out, out_fc
 
 
 # Ham predict
@@ -505,21 +507,38 @@ if __name__ == "__main__":
     # # file_name = '../Data/data_fp_image_channel_002.txt'
     # # img_dim = (56, 56)
     # img = read_data_4conv_py(img_dim, file_name)
+    start = time.time()
 
-    for i in range(2):
-        for j in range(3):
-            if i == 0:
-                file_name = "daisy_0{}.jpg".format(j)
-            else:
-                file_name = "sun_0{}.jpg".format(j)
-           
-            print()
-            print(file_name)
-            
-            img = cv2.imread('../Data/5_image/' + file_name)
+    MAX_FC = 0
+    MIN_FC = 0
+
+    pass_sun = 0
+    pass_daisy = 0
+    fault = []
+
+    # image_name = "sun_{}.jpg"        #Edit here
+    image_name = "daisy_{}.jpg"        #Edit here
+
+    if 'daisy' in image_name:
+        N = 124
+        dir = '../Dataset/Flower/dir_daisy_image/'
+    elif 'sun' in image_name:
+        N = 101
+        dir = '../Dataset/Flower/dir_sun_image/'
+    
+    for i in range(N):
+
+            file_name = image_name.format(i)
+
+            # img = cv2.imread('../Data/5_image/' + file_name)
+            img = cv2.imread(dir + file_name)
+
+
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             img = cv2.resize(img, (56, 56))
-            # img = img /255
+            
+            # # ############ NORMALIZE ############
+            img = img /255        # Edit here
 
             # ############ BUILD MODEL ############
             # ############ BLOCK 1 ############
@@ -527,19 +546,19 @@ if __name__ == "__main__":
             weight_name = 'block1_conv1_filter_{1}_channel_{0}.txt'
             bias_name = 'block1_conv1_bias.txt'
             out_Gx = conv3d_multi(img, weight_name = weight_name, bias_name = bias_name)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
 
             # # conv2
             weight_name = 'block1_conv2_filter_{1}_channel_{0}.txt'
             bias_name = 'block1_conv2_bias.txt'
             out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
             # # conv2_relu
             out_Gx = relu_activation(out_Gx)
 
             # # max_pooling_0
             out_Gx = max_pooling(out_Gx)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
             # #################################
 
 
@@ -548,19 +567,19 @@ if __name__ == "__main__":
             weight_name = 'block2_conv1_filter_{1}_channel_{0}.txt'
             bias_name = 'block2_conv1_bias.txt'
             out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
 
             # # conv2
             weight_name = 'block2_conv2_filter_{1}_channel_{0}.txt'
             bias_name = 'block2_conv2_bias.txt'
             out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
             # # conv2_relu
             out_Gx = relu_activation(out_Gx)
 
             # # max_pooling_0
             out_Gx = max_pooling(out_Gx)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
             # #################################
 
 
@@ -569,25 +588,25 @@ if __name__ == "__main__":
             weight_name = 'block3_conv1_filter_{1}_channel_{0}.txt'
             bias_name = 'block3_conv1_bias.txt'
             out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
 
             # # conv2
             weight_name = 'block3_conv2_filter_{1}_channel_{0}.txt'
             bias_name = 'block3_conv2_bias.txt'
             out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
 
             # # conv3
             weight_name = 'block3_conv3_filter_{1}_channel_{0}.txt'
             bias_name = 'block3_conv3_bias.txt'
             out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
             # # conv3_relu
             out_Gx = relu_activation(out_Gx)
 
             # # max_pooling_0
             out_Gx = max_pooling(out_Gx)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
             # #################################
 
 
@@ -596,25 +615,25 @@ if __name__ == "__main__":
             weight_name = 'block4_conv1_filter_{1}_channel_{0}.txt'
             bias_name = 'block4_conv1_bias.txt'
             out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
 
             # # conv2
             weight_name = 'block4_conv2_filter_{1}_channel_{0}.txt'
             bias_name = 'block4_conv2_bias.txt'
             out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
 
             # # conv3
             weight_name = 'block4_conv3_filter_{1}_channel_{0}.txt'
             bias_name = 'block4_conv3_bias.txt'
             out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
             # # conv3_relu
             out_Gx = relu_activation(out_Gx)
 
             # # max_pooling_0
             out_Gx = max_pooling(out_Gx)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
             # #################################
 
 
@@ -623,7 +642,7 @@ if __name__ == "__main__":
             weight_name = 'block5_conv1_filter_{1}_channel_{0}.txt'
             bias_name = 'block5_conv1_bias.txt'
             out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
             # # conv1_relu
             out_Gx = relu_activation(out_Gx)
 
@@ -631,7 +650,7 @@ if __name__ == "__main__":
             weight_name = 'block5_conv2_filter_{1}_channel_{0}.txt'
             bias_name = 'block5_conv2_bias.txt'
             out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
             # # conv2_relu
             out_Gx = relu_activation(out_Gx)
 
@@ -639,35 +658,68 @@ if __name__ == "__main__":
             weight_name = 'block5_conv3_filter_{1}_channel_{0}.txt'
             bias_name = 'block5_conv3_bias.txt'
             out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
             # # conv3_relu
             out_Gx = relu_activation(out_Gx)
 
             # # max_pooling_0
             out_Gx = max_pooling(out_Gx)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
             # #################################
 
 
             # ############ FLATTEN ############
             out_Gx = flatten(out_Gx)
-            print(out_Gx.shape)
+            # print(out_Gx.shape)
 
 
             # ############  DENSE  ############
             weight_name = 'sigmoid_filter.txt'
             bias_name = 'sigmoid_bias.txt'
-            out = sigmoid_activation(out_Gx, weight_name = weight_name, bias_name = bias_name)
+            out, out_fc = sigmoid_activation(out_Gx, weight_name = weight_name, bias_name = bias_name)
 
-
+            if i == 0:
+                MAX_FC = out_fc
+                MIN_FC = out_fc
+            else:
+                if out_fc > MAX_FC:
+                    MAX_FC = out_fc
+                if out_fc < MIN_FC:
+                    MIN_FC = out_fc
 
             # ############ PREDICT ############
-            print()
+            # print()
             y_pred = predict(out)
-            if y_pred == 0:
-                print(y_pred, 'This is Daisy flower')
-            else:
-                print(y_pred, 'This is Sun flower')
+            # if y_pred == 0:
+            #     print(y_pred, 'This is Daisy flower')
+            # else:
+            #     print(y_pred, 'This is Sun flower')
+
+            if ('sun' in file_name):
+                if (y_pred == 1):
+                    pass_sun += 1
+                else:
+                    fault.append(i)
+            elif ('daisy' in file_name):
+                if (y_pred == 0):
+                    pass_daisy += 1
+                else:
+                    fault.append(i)
+
+
+    if 'daisy' in image_name:
+        print('\n\nSo lan du doan dung dasisy flower: {0}/{1} = {2}'.format(pass_daisy, i+1, float(pass_daisy)/(i+1)))
+    elif 'sun' in image_name:
+        print('\n\nSo lan du doan dung sun flower: {0}/{1} = {2}'.format(pass_sun, i+1, float(pass_sun)/(i+1)))
+
+    print('\nCac vi tri du doan sai:', fault)
+
+
+    print('\nMAX FC = {0}, MIN FC = {1}'.format(MAX_FC, MIN_FC))
+
+    finish = time.time()
+
+    print('\nElapsed time = ', finish - start)
 
 
 

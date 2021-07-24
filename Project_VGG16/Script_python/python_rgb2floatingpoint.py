@@ -60,10 +60,10 @@ def bin2hex(input):
 
 
 #------------------- MAIN #-------------------
-file_name = 'sun_02.jpg'       # Edit here
+file_name = 'sun_04.jpg'       # Edit here
 
 img_rgb = cv2.imread('../Data/5_image/' + file_name)
-img_rgb = cv2.resize(img_rgb, (28, 28))
+img_rgb = cv2.resize(img_rgb, (56, 56))
 img_rgb = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2RGB)
 
 # cv2.imshow('input56x56', img_rgb)
@@ -95,10 +95,10 @@ for k in range(dim[2]):
 print('\nPLEASE UPDATE DIMENSION IN TESTBENCH & VERIFY: h = {0}, w = {1}'.format(dim[0], dim[1]))
 
 
-# -------------- Tao file dimension.v --------------
-file_name = 'dimension.v'
-f  = open('../Verilog/rtl/' + file_name, 'w')
-string = "`define IMG_HEIGHT {0}\n`define IMG_WIDTH {1}".format(dim[0], dim[1])
-f.write(string)
-f.close()
-print('\nFile {0} has done!'.format(file_name))
+# # -------------- Tao file dimension.v --------------
+# file_name = 'dimension.v'
+# f  = open('../Verilog/rtl/' + file_name, 'w')
+# string = "`define IMG_HEIGHT {0}\n`define IMG_WIDTH {1}".format(dim[0], dim[1])
+# f.write(string)
+# f.close()
+# print('\nFile {0} has done!'.format(file_name))

@@ -17,7 +17,9 @@ mkdir -p ./results/log/
 vsim  -c -voptargs=+acc work.$TESTNAME \
 -l ./results/log/$SEED.log \
 -wlf ./results/$SEED.wlf \
--do "log -ports -r -depth 4 /*; log -internal /$TESTNAME/generator/data_cnt /$TESTNAME/writer/data_cnt;  run -all"
+-do "log -ports -r -depth 4 /*; log -internal /$TESTNAME/generator/data_cnt /$TESTNAME/writer/data_cnt;  run 4000ns"
+#-do "log -r /*; run -all " 
+
 
 
 
