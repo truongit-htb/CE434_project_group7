@@ -196,74 +196,91 @@ def read_data_4conv_py(img_dim, file_name):
 
 
 # Ham doc data out CONV MODELSIM
-def read_data_4conv_sim(sim_dim, file_name, num_img = 1):
+def read_data_4conv_sim(sim_dim, file_name, num_img = 1, dense = False):
     sim = np.zeros(sim_dim)
 
-    if num_img < 2:
-        if (len(sim_dim) == 2):       
-            # #----------------- Doc ket qua 2D #-----------------        
-            with open(file_name) as f:
-                if f.mode == 'r':
-                    data = f.readlines()
-                    for h in range(sim_dim[0]):
-                        for w in range(sim_dim[1]):
-                            # # OLD
-                            # temp = data[3 + h*sim_dim[1] + w][:-1]
-                            # # NEW
-                            temp = data[h*sim_dim[1] + w][:-1]
+    if dense == False:
+        if num_img < 2:
+            if (len(sim_dim) == 2):       
+                # #----------------- Doc ket qua 2D #-----------------        
+                with open(file_name) as f:
+                    if f.mode == 'r':
+                        data = f.readlines()
+                        for h in range(sim_dim[0]):
+                            for w in range(sim_dim[1]):
+                                # # OLD
+                                # temp = data[3 + h*sim_dim[1] + w][:-1]
+                                # # NEW
+                                temp = data[h*sim_dim[1] + w][:-1]
 
-                            sim[h, w] = hex2dec(temp)
-                else:
-                    print("can't read file" + file_name )
-            f.close()
+                                sim[h, w] = hex2dec(temp)
+                    else:
+                        print("can't read file" + file_name )
+                f.close()
+            else:
+                #----------------- Doc ket qua 3D #-----------------
+                for kernel in range(sim_dim[2]):
+                    # file_name = '../Data/' +  'modelsim_block1_conv1_00{0}.txt'.format(kernel)
+                    with open(file_name.format(kernel)) as f:
+                        if f.mode == 'r':
+                            data = f.readlines()
+                            for h in range(sim_dim[0]):
+                                for w in range(sim_dim[1]):
+                                    # # EX
+                                    # temp = data[3 + h*sim_dim[1] + w][:-1]
+                                    # # NEW
+                                    temp = data[h*sim_dim[1] + w][:-1]
+
+                                    sim[h, w, kernel] = hex2dec(temp)
+                        else:
+                            print("can't read file" + file_name )
+                    f.close()
+            return sim
+
         else:
+            SIM_ARR = []
+
+            for n_img in range(num_img):
+                SIM_ARR.append(np.zeros(sim_dim))
+
             #----------------- Doc ket qua 3D #-----------------
             for kernel in range(sim_dim[2]):
                 # file_name = '../Data/' +  'modelsim_block1_conv1_00{0}.txt'.format(kernel)
                 with open(file_name.format(kernel)) as f:
                     if f.mode == 'r':
                         data = f.readlines()
-                        for h in range(sim_dim[0]):
-                            for w in range(sim_dim[1]):
-                                # # EX
-                                # temp = data[3 + h*sim_dim[1] + w][:-1]
-                                # # NEW
-                                temp = data[h*sim_dim[1] + w][:-1]
 
-                                sim[h, w, kernel] = hex2dec(temp)
+                        for n_img in range(num_img):
+                            for h in range(sim_dim[0]):
+                                for w in range(sim_dim[1]):
+                                    # # EX
+                                    # temp = data[3 + h*sim_dim[1] + w][:-1]
+                                    # # NEW
+                                    temp = data[h*sim_dim[1] + w + n_img*sim_dim[0]*sim_dim[1]][:-1]
+
+                                    SIM_ARR[n_img][h, w, kernel] = hex2dec(temp)
+
+                            # SIM_ARR.append(sim)
                     else:
                         print("can't read file" + file_name )
                 f.close()
-        return sim
-
+            return SIM_ARR
+    
     else:
         SIM_ARR = []
-
-        for n_img in range(num_img):
-            SIM_ARR.append(np.zeros(sim_dim))
-
-        #----------------- Doc ket qua 3D #-----------------
-        for kernel in range(sim_dim[2]):
-            # file_name = '../Data/' +  'modelsim_block1_conv1_00{0}.txt'.format(kernel)
-            with open(file_name.format(kernel)) as f:
-                if f.mode == 'r':
-                    data = f.readlines()
-
-                    for n_img in range(num_img):
-                        for h in range(sim_dim[0]):
-                            for w in range(sim_dim[1]):
-                                # # EX
-                                # temp = data[3 + h*sim_dim[1] + w][:-1]
-                                # # NEW
-                                temp = data[h*sim_dim[1] + w + n_img*sim_dim[0]*sim_dim[1]][:-1]
-
-                                SIM_ARR[n_img][h, w, kernel] = hex2dec(temp)
-
-                        # SIM_ARR.append(sim)
-                else:
-                    print("can't read file" + file_name )
-            f.close()
+        with open(file_name) as f:
+            if f.mode == 'r':
+                data = f.readlines()
+                for n_img in range(num_img):
+                    sim_pred = int(data[n_img][0])
+                    sim_sigmoid = hex2dec( data[n_img][3:len(data[n_img]) -1] )
+                    SIM_ARR.append((sim_pred, sim_sigmoid))
+            else:
+                        print("can't read file" + file_name )
+        f.close()
         return SIM_ARR
+        
+
 
     
 
@@ -336,12 +353,12 @@ def sigmoid_activation(img, weight_name = '', bias_name = ''):
     bias = hex2dec(data_bias[0][:-1]) 
 
     out = np.sum(img * filter) + bias
-    out = out.astype(np.float128)
+    out_fc = out.astype(np.float128)
 
-    print('gia tri fc = ', out)
-    out = sigmoid(out)
-    print('gia tri sigmoid = ', out)
-    return out
+    # print('gia tri fc = ', out)
+    out = sigmoid(out_fc)
+    # print('gia tri sigmoid = ', out)
+    return out, out_fc
 
 
 # Ham predict
@@ -354,75 +371,9 @@ def predict(x, threshold = 0.5):
 
 
 # Ham check function cua MODELSIM vs PYTHON
-def verify_function(out_Gx, sim):
-    if (len(sim.shape) == 2):  # ------- Verify Anh dau vao 2D
-        correct = 0
-        fault = []
-        error = 0.0
-        max_err = 0.0
-        min_err = 0.0
-        py_error = 0.0
-        py_max_err = 0.0
-        py_min_err = 0.0
-
-        h2, w2 = out_Gx.shape[:2]
-        for i in range (h2):
-            for j in range (w2):        
-                bin_conv_py = dec2bin(out_Gx[i, j])
-
-                # hex_conv_sim = sim[i*w2 + j][:-1]    # chu y file out modelsim co ki tu \n nen can loai bo
-                dec_conv_sim = sim[i, j]
-                bin_conv_sim = dec2bin(dec_conv_sim)
-                # print('{0}\t{1}\t{2}'.format(i, hex_conv_py, hex_conv_sim))
-
-                py_error = abs(out_Gx[i, j] - dec_conv_sim)
-                if (py_error < 2.0):
-                    error = 0.0
-
-                    for k in range (1, 32, 1):
-                        if bin_conv_py[k] > bin_conv_sim[k]:
-                            error += 2**(8 - k)
-                        elif bin_conv_py[k] < bin_conv_sim[k]:
-                            error -= 2**(8 - k)
-                    error = abs(error)
-                else:
-                    fault.append((i, j))
-                    # error = abs(out_Gx[i][j] - hex2dec(hex_conv_sim))
-                    # continue
-
-
-                if (i == 0):
-                    max_err = error
-                    min_err = error
-                    py_max_err = py_error
-                    py_min_err = py_error
-                else:
-                    if (error > max_err):
-                        max_err = error
-                    if (error < min_err):
-                        min_err = error
-
-                    if (py_error > py_max_err):
-                        py_max_err = py_error
-                    if (py_error < py_min_err):
-                        py_min_err = py_error
-                    
-                if (bin_conv_py == bin_conv_sim):
-                    correct += 1
-
-        print('\nSo phep tinh chinh xac: ', correct)
-        print('So phep tinh gan dung: ', h2 * w2 - correct - len(fault))
-        print('So phep tinh sai: ', len(fault))
-        print('Do sai lech phep tinh GAN DUNG modelsim vs python: max = {0}, min = {1}'.format(max_err, min_err))
-        print('Do sai lech modelsim vs python: max = {0}, min = {1}'.format(py_max_err, py_min_err))
-
-        return fault
-        # for i in range(len(fault)):
-        #     print('{0}   \t{1}   \t{2}'.format(fault[i], dec2hex_fp(out_Gx[fault[i]]) , sim[fault[i]]))
-
-    else:   # ------- Verify Anh dau vao 3D
-        FAULT_ARR = []
-        for kernel in range(sim.shape[2]):
+def verify_function(out_Gx, sim, dense = False):
+    if dense == False:
+        if (len(sim.shape) == 2):  # ------- Verify Anh dau vao 2D
             correct = 0
             fault = []
             error = 0.0
@@ -432,17 +383,17 @@ def verify_function(out_Gx, sim):
             py_max_err = 0.0
             py_min_err = 0.0
 
-            h2, w2 = out_Gx.shape[0:2]
+            h2, w2 = out_Gx.shape[:2]
             for i in range (h2):
                 for j in range (w2):        
-                    bin_conv_py = dec2bin(out_Gx[i, j, kernel])
+                    bin_conv_py = dec2bin(out_Gx[i, j])
 
                     # hex_conv_sim = sim[i*w2 + j][:-1]    # chu y file out modelsim co ki tu \n nen can loai bo
-                    dec_conv_sim = sim[i, j, kernel]
+                    dec_conv_sim = sim[i, j]
                     bin_conv_sim = dec2bin(dec_conv_sim)
                     # print('{0}\t{1}\t{2}'.format(i, hex_conv_py, hex_conv_sim))
 
-                    py_error = abs(out_Gx[i, j, kernel] - dec_conv_sim)
+                    py_error = abs(out_Gx[i, j] - dec_conv_sim)
                     if (py_error < 2.0):
                         error = 0.0
 
@@ -476,18 +427,106 @@ def verify_function(out_Gx, sim):
                         
                     if (bin_conv_py == bin_conv_sim):
                         correct += 1
-            
-            print('\nKernel ', kernel)
-            # print('So phep tinh chinh xac: ', correct)
-            # print('So phep tinh gan dung: ', h2 * w2 - correct - len(fault))
-            print('So phep tinh sai: ', len(fault))
-            # print('Do sai lech phep tinh GAN DUNG modelsim vs python: max = {0}, min = {1}'.format(max_err, min_err))
-            # print('Do sai lech modelsim vs python: max = {0}, min = {1}'.format(py_max_err, py_min_err))
 
-            FAULT_ARR.append(fault)
+            print('\nSo phep tinh chinh xac: ', correct)
+            print('So phep tinh gan dung: ', h2 * w2 - correct - len(fault))
+            print('So phep tinh sai: ', len(fault))
+            print('Do sai lech phep tinh GAN DUNG modelsim vs python: max = {0}, min = {1}'.format(max_err, min_err))
+            print('Do sai lech modelsim vs python: max = {0}, min = {1}'.format(py_max_err, py_min_err))
+
+            return fault
             # for i in range(len(fault)):
             #     print('{0}   \t{1}   \t{2}'.format(fault[i], dec2hex_fp(out_Gx[fault[i]]) , sim[fault[i]]))
-        return FAULT_ARR
+
+        else:   # ------- Verify Anh dau vao 3D
+            FAULT_ARR = []
+            for kernel in range(sim.shape[2]):
+                correct = 0
+                fault = []
+                error = 0.0
+                max_err = 0.0
+                min_err = 0.0
+                py_error = 0.0
+                py_max_err = 0.0
+                py_min_err = 0.0
+
+                h2, w2 = out_Gx.shape[0:2]
+                for i in range (h2):
+                    for j in range (w2):        
+                        bin_conv_py = dec2bin(out_Gx[i, j, kernel])
+
+                        # hex_conv_sim = sim[i*w2 + j][:-1]    # chu y file out modelsim co ki tu \n nen can loai bo
+                        dec_conv_sim = sim[i, j, kernel]
+                        bin_conv_sim = dec2bin(dec_conv_sim)
+                        # print('{0}\t{1}\t{2}'.format(i, hex_conv_py, hex_conv_sim))
+
+                        py_error = abs(out_Gx[i, j, kernel] - dec_conv_sim)
+                        if (py_error < 2.0):
+                            error = 0.0
+
+                            for k in range (1, 32, 1):
+                                if bin_conv_py[k] > bin_conv_sim[k]:
+                                    error += 2**(8 - k)
+                                elif bin_conv_py[k] < bin_conv_sim[k]:
+                                    error -= 2**(8 - k)
+                            error = abs(error)
+                        else:
+                            fault.append((i, j))
+                            # error = abs(out_Gx[i][j] - hex2dec(hex_conv_sim))
+                            # continue
+
+
+                        if (i == 0):
+                            max_err = error
+                            min_err = error
+                            py_max_err = py_error
+                            py_min_err = py_error
+                        else:
+                            if (error > max_err):
+                                max_err = error
+                            if (error < min_err):
+                                min_err = error
+
+                            if (py_error > py_max_err):
+                                py_max_err = py_error
+                            if (py_error < py_min_err):
+                                py_min_err = py_error
+                            
+                        if (bin_conv_py == bin_conv_sim):
+                            correct += 1
+                
+                print('\nKernel ', kernel)
+                # print('So phep tinh chinh xac: ', correct)
+                # print('So phep tinh gan dung: ', h2 * w2 - correct - len(fault))
+                print('So phep tinh sai: ', len(fault))
+                # print('Do sai lech phep tinh GAN DUNG modelsim vs python: max = {0}, min = {1}'.format(max_err, min_err))
+                # print('Do sai lech modelsim vs python: max = {0}, min = {1}'.format(py_max_err, py_min_err))
+
+                FAULT_ARR.append(fault)
+                # for i in range(len(fault)):
+                #     print('{0}   \t{1}   \t{2}'.format(fault[i], dec2hex_fp(out_Gx[fault[i]]) , sim[fault[i]]))
+            return FAULT_ARR
+    else:
+        correct_pred = 0
+        # correct_sig = 0
+        for n_img in range(len(out_Gx)):
+            py_pred, py_sigmoid = out_Gx[n_img]
+            sim_pred, sim_sigmoid = sim[n_img]
+            error = abs(py_sigmoid - sim_sigmoid)
+            if py_pred == sim_pred:
+                correct_pred += 1
+            if error < 2.0:
+                print('\n{0}\t sai so ket qua sigmoid PYTHON vs MODELSIM = {1}'.format(n_img, error))
+            else:
+                print('\n{0}\t SAI, sai so = {1}'.format(n_img, error))
+        
+        fault = len(out_Gx) - correct_pred
+        print('\nSO LAN DU DOAN SAI {}'.format(fault))
+        return fault
+
+
+            
+
 
 
 # Ham minh hoa ket qua tinh toan tren MODELSIM va PYTHON
@@ -544,13 +583,17 @@ if __name__ == "__main__":
 
 
     OUT_ARR = []
+    dense = False
+
     for lap in range(NUM_IMG):        
         # if lap == 0:
         #     file_name = '../Data/3_data_in/data_fp_sun_00_channel_00{0}.txt'
         # elif lap == 1:
         #     file_name = '../Data/3_data_in/data_fp_sun_02_channel_00{0}.txt'
 
-        file_name = '../Data/3_data_in/data_fp_sun_0'+ str(lap) +'_channel_00{0}.txt'
+        # file_name = '../Data/3_data_in/data_fp_sun_0'+ str(lap) +'_channel_00{0}.txt'
+        file_name = '../Data/3_data_in/data_fp_daisy_0'+ str(lap) +'_channel_00{0}.txt'
+
 
 
         img_dim = (56, 56, 3)
@@ -657,48 +700,72 @@ if __name__ == "__main__":
         # # # #################################
 
 
-        # # ############ BLOCK 5 ############
-        # # # conv1
-        # weight_name = 'block5_conv1_filter_{1}_channel_{0}.txt'
-        # bias_name = 'block5_conv1_bias.txt'
-        # out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-        # print(out_Gx.shape)
-        # # # conv1_relu
-        # out_Gx = relu_activation(out_Gx)
+        # ############ BLOCK 5 ############
+        # # conv1
+        weight_name = 'block5_conv1_filter_{1}_channel_{0}.txt'
+        bias_name = 'block5_conv1_bias.txt'
+        out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
+        print(out_Gx.shape)
+        # # conv1_relu
+        out_Gx = relu_activation(out_Gx)
 
-        # # # conv2
-        # weight_name = 'block5_conv2_filter_{1}_channel_{0}.txt'
-        # bias_name = 'block5_conv2_bias.txt'
-        # out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-        # print(out_Gx.shape)
-        # # # conv2_relu
-        # out_Gx = relu_activation(out_Gx)
+        # # conv2
+        weight_name = 'block5_conv2_filter_{1}_channel_{0}.txt'
+        bias_name = 'block5_conv2_bias.txt'
+        out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
+        print(out_Gx.shape)
+        # # conv2_relu
+        out_Gx = relu_activation(out_Gx)
 
-        # # # conv3
-        # weight_name = 'block5_conv3_filter_{1}_channel_{0}.txt'
-        # bias_name = 'block5_conv3_bias.txt'
-        # out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-        # print(out_Gx.shape)
-        # # # conv3_relu
-        # out_Gx = relu_activation(out_Gx)
+        # # conv3
+        weight_name = 'block5_conv3_filter_{1}_channel_{0}.txt'
+        bias_name = 'block5_conv3_bias.txt'
+        out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
+        print(out_Gx.shape)
+        # # conv3_relu
+        out_Gx = relu_activation(out_Gx)
 
-        # # # max_pooling_0
-        # out_Gx = max_pooling(out_Gx)
-        # print(out_Gx.shape)
-        # # #################################
+        # # max_pooling_0
+        out_Gx = max_pooling(out_Gx)
+        print(out_Gx.shape)
+        # #################################
 
-        OUT_ARR.append(out_Gx)
+
+        dense = True
+        # ############ FLATTEN ############
+        out_Gx = flatten(out_Gx)
+        # print(out_Gx.shape)
+
+
+        # ############  DENSE  ############
+        weight_name = 'sigmoid_filter.txt'
+        bias_name = 'sigmoid_bias.txt'
+        out, out_fc = sigmoid_activation(out_Gx, weight_name = weight_name, bias_name = bias_name)
+
+
+        # ############ PREDICT ############
+        # print()
+        y_pred = predict(out)
+
+
+
+        if (dense):
+            OUT_ARR.append((y_pred, out))
+        else:
+            OUT_ARR.append(out_Gx)
 
 
 
     # ############ Read data out of MODELSIM ############
-    file_name = '../Data/4_data_out/block4_conv1_2_3_to_pool/' +  'sim_temp_block4_conv1_2_3_to_pool_sun_00{0}.txt'    # Edit here
+    file_name = '../Data/4_data_out/block4_to_5_to_sig_temp/' +  'sim_temp_block4_to_5_to_sig_sun.txt'    # Edit here
+
+    # file_name = '../Data/4_data_out/block4_to_5_to_sig_temp/' +  'sim_temp_block4_to_5_to_sig_sun_00{0}.txt'    # Edit here
     sim_dim = out_Gx.shape
     
     if NUM_IMG < 2:
         sim = read_data_4conv_sim(sim_dim, file_name)
     else:
-        SIM_ARR = read_data_4conv_sim(sim_dim, file_name, NUM_IMG)
+        SIM_ARR = read_data_4conv_sim(sim_dim, file_name, NUM_IMG, dense)
 
 
     # ############ VERIFYING ############
@@ -708,22 +775,28 @@ if __name__ == "__main__":
         print('\n\n==> Tong so pixel tinh sai: ', len(fault))
     else:
         FAULT_ARR = []
-        for n_img in range(NUM_IMG):
-            print('\nIMAGE\t', n_img)
-            fault = verify_function(OUT_ARR[n_img], SIM_ARR[n_img])
+        if dense:
+            # for n_img in range(NUM_IMG):
+            #     print('\nIMAGE\t', n_img)
+            fault = verify_function(OUT_ARR, SIM_ARR, dense)
 
-            FAULT_ARR.append(fault)
+        else:
+            for n_img in range(NUM_IMG):
+                print('\nIMAGE\t', n_img)
+                fault = verify_function(OUT_ARR[n_img], SIM_ARR[n_img])
 
-        num_fault = 0
-        for n_img in range(NUM_IMG):
-            for k in range(sim_dim[2]):
-                num_fault += len(FAULT_ARR[n_img][k])
-        print('\n\n==> Tong so pixel tinh sai: ', num_fault)
+                FAULT_ARR.append(fault)
+
+            num_fault = 0
+            for n_img in range(NUM_IMG):
+                for k in range(sim_dim[2]):
+                    num_fault += len(FAULT_ARR[n_img][k])
+            print('\n\n==> Tong so pixel tinh sai: ', num_fault)
         
 
 
-    # # # ############ VISUALIZE ############
-    # # # visualize(out_Gx, sim)
+    # # # # ############ VISUALIZE ############
+    # # # # visualize(out_Gx, sim)
 
 
 
@@ -734,7 +807,7 @@ if __name__ == "__main__":
     
 
     # for k in range(dim[2]):
-    #     f_name = 'modelsim_temp_block3_conv3_sun_v2_00{0}.txt'.format(k)
+    #     f_name = 'modelsim_temp_block3_conv3_daisy_v2_00{0}.txt'.format(k)
 
     #     f  = open('../Data/4_data_out/block3_conv3_temp/' + f_name, 'w')
     #     # f2 = open('../Data/3_data_in/' + f_name, 'w')

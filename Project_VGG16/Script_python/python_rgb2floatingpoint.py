@@ -60,7 +60,7 @@ def bin2hex(input):
 
 
 #------------------- MAIN #-------------------
-file_name = 'sun_04.jpg'       # Edit here
+file_name = 'daisy_04.jpg'       # Edit here
 
 img_rgb = cv2.imread('../Data/5_image/' + file_name)
 img_rgb = cv2.resize(img_rgb, (56, 56))

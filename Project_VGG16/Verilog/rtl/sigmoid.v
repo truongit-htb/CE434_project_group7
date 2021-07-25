@@ -1,22 +1,23 @@
 `define f2r(z) ({z[31], z[30], {3{~z[30]}}, z[29:23], z[22:0], {29{1'b0}}})
 `define r2f(z) ({z[63], z[62], z[58:52], z[51:29]})
+
 module sigmoid(
     clk,
     resetn,
     valid_in,
     x,
     f_x,
-    valid_out//, tp, fx, r1
+    image_class,
+    valid_out
     );
     input clk;
 	input resetn;
 	input valid_in;
     input [31:0] x;
     output reg [31:0] f_x;
+    output image_class;
     output reg valid_out;
-    //output [31:0] r1;
-   //parameter one = 32'h3f800000;
-    //assign r1 = $realtobits(r0);
+    
     wire [31:0] x1;
     assign x1 = (x[31] == 1'b0) ? {1'b1, x[30:0]} : {1'b0, x[30:0]};
     reg [63:0] tp, fx;
@@ -86,5 +87,8 @@ module sigmoid(
             valid_out <= 0;
         end
     end
+
+    // if f_x < 0.5 return image_class = 0 else image_class = 1
+    assign image_class = (f_x[31] == 1'b1) ? 1'b0 : ((f_x < 32'h3f000000) ? 1'b0 : 1'b1);
   
 endmodule

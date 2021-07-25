@@ -3,7 +3,9 @@ module tb_writer (
     resetn,
     data_in,
     data_valid_in,
-    done
+    done,
+
+    image_class
     
     // fifo_rdreq,
     // fifo_data,
@@ -16,6 +18,7 @@ module tb_writer (
     //
     parameter WIDTH = 56;
     parameter HEIGHT = 56;
+    parameter NUM_IMG = 1;
     localparam num_data = WIDTH*HEIGHT;
 
     input clk;     
@@ -23,6 +26,8 @@ module tb_writer (
     input [DWIDTH-1:0] data_in;
     input data_valid_in;
     output reg done;
+    
+    input image_class;
 
     integer  file_out;
     initial begin
@@ -90,14 +95,17 @@ module tb_writer (
                 //     $fwrite(file_out, "%d\n", num_data); 
                 // end
 
-                if (data_cnt < num_data-1) begin               
-                    $fwrite(file_out, "%h\n", data_in);
+                if (data_cnt < NUM_IMG * num_data-1)       // Edit here
+                begin               
+                    $fwrite(file_out, "%h, %h\n", image_class, data_in);  // Edit here  
                     done <= 1'b0;
                 end
                 else
                     // if(data_cnt == num_data-1) 
                     begin
-                        $fwrite(file_out, "%h\n", data_in);
+                        $fwrite(file_out, "%h, %h\n", image_class, data_in);  // Edit here  
+                        // $fwrite(file_out, "%h\n", data_in);
+                        
                         done <= 1'b1;
                         #5 $fclose(file_out);
                         $display("writed file done");

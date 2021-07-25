@@ -5,7 +5,9 @@ module tb_generator (
     // fifo write bus
     // fifo_full,
     fifo_data,
-    fifo_wrreq
+    fifo_wrreq,
+
+    ack
 );
     // paramenters
     parameter DWIDTH = 8;
@@ -23,6 +25,8 @@ module tb_generator (
     output [DWIDTH-1:0] fifo_data;
     output reg fifo_wrreq;
     // output reg [7:0] num_data;
+
+    output reg ack;
 
     integer file_in;
     integer  s_data;
@@ -88,24 +92,26 @@ module tb_generator (
 
                 if (s_data) 
                 begin
-                    if(data_cnt < num_data)
+                    // if (data_cnt == num_data+)
+                    if(data_cnt < num_data * 2)             // Edit here
                     begin
                         data_read <= data;
                         fifo_wrreq <= 1;
                     end
                     else
-                        if(data_cnt == num_data) 
+                        if(data_cnt == num_data * 2)        // Edit here
                         begin
                             data_read <= data;
                             fifo_wrreq <= 1;
                             $display("end read data");
                         end
                         else
-                            if (data_cnt < num_data+WIDTH+2) begin
-                                fifo_wrreq <= 1;
-                                data_read <= 32'bz;
-                            end
-                            else
+                            // if (data_cnt < num_data+WIDTH+2)        // Edit here
+                            // begin
+                            //     fifo_wrreq <= 1;
+                            //     data_read <= 32'bz;
+                            // end
+                            // else
                             begin
                                 fifo_wrreq <= 0;
                                 data_read <= 32'bz;

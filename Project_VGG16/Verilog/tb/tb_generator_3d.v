@@ -125,6 +125,7 @@ module tb_generator_3d (
     // parameter WR_DATA_STATE = 1;
     //
     reg [11:0] data_cnt;
+    reg [9:0]  image_cnt;
     reg [DWIDTH-1:0] data_channel_0;          // dung de doc gia tri pixel tu file
     reg [DWIDTH-1:0] data_channel_1;          // dung de doc gia tri pixel tu file
     reg [DWIDTH-1:0] data_channel_2;          // dung de doc gia tri pixel tu file
@@ -195,13 +196,33 @@ module tb_generator_3d (
     // end
     // wire data_valid_in;
     // // assign data_valid_in = a[3] | a[1];
-    assign data_valid_in = 1'b1;
+
+
+    reg data_valid_in;
+    reg [10:0] counter;
+    always @(posedge clk or negedge resetn) 
+    begin
+        if (resetn == 1'b0)
+        begin
+            counter <= 10'b0;
+            data_valid_in <= 1'b0;
+        end
+        else
+        begin
+            counter <= counter + 1;
+            if (counter % 10 == 0)
+                data_valid_in <= 1'b0;
+            else
+                data_valid_in <= 1'b1;
+        end
+    end
+    // assign data_valid_in = 1'b1;
 
 
     always @(posedge clk or negedge resetn) begin
         if (resetn == 1'b0) 
         begin
-            data_cnt <= 1;
+            data_cnt <= 0;
             // data_read <= 0;
             data_read_0 <= 0;
             data_read_1 <= 0;
@@ -223,6 +244,8 @@ module tb_generator_3d (
             // data_read_13 <= 0;
             // data_read_14 <= 0;
             // data_read_15 <= 0;
+
+            image_cnt <= 0;
         end
         else 
         begin
@@ -249,59 +272,41 @@ module tb_generator_3d (
                 // s_data = $fscanf(file_in_14, "%h", data_channel_14);
                 // s_data = $fscanf(file_in_15, "%h", data_channel_15);
 
-                // if (s_data) 
-                // begin
-                //     data_read <= data;
-                //     fifo_wrreq <= 1;
-                //     if(data_cnt == num_data) 
-                //     begin
-                //         $display("end read data");
-                //     end   
-                // end
-                // else 
-                // begin
-                //     // data_cnt <= data_cnt;
-                //     data_read <= data_read;
-                //     fifo_wrreq <= 0;
-                // end
-
                 if (s_data) 
                 begin
-                    if(data_cnt < num_data * NUM_IMG)             // Edit here
+                    if(data_cnt < num_data /* * NUM_IMG*/)             // Edit here
                     begin
-                        // data_read <= data;
-                        data_read_0 <= data_channel_0;
-                        data_read_1 <= data_channel_1;
-                        data_read_2 <= data_channel_2;
-
-                        fifo_wrreq <= 1;
-
-                        // EXTEND
-                        data_read_3 <= data_channel_3;
-                        data_read_4 <= data_channel_4;
-                        data_read_5 <= data_channel_5;
-                        data_read_6 <= data_channel_6;
-                        data_read_7 <= data_channel_7;
-
-                        // data_read_8  <= data_channel_8 ;
-                        // data_read_9  <= data_channel_9 ;
-                        // data_read_10 <= data_channel_10;
-                        // data_read_11 <= data_channel_11;
-                        // data_read_12 <= data_channel_12;
-                        // data_read_13 <= data_channel_13;
-                        // data_read_14 <= data_channel_14;
-                        // data_read_15 <= data_channel_15;
-                    end
-                    else
-                        if(data_cnt == num_data * NUM_IMG)            // Edit here
+                        if ( image_cnt > NUM_IMG && data_cnt > (NUM_LAYER*(WIDTH+1)) )
                         begin
+                            fifo_wrreq <= 0;
+                            // data_read <= data;
+                            data_read_0 <= 0;
+                            data_read_1 <= 0;
+                            data_read_2 <= 0;
+
+                            // EXTEND
+                            data_read_3 <= 0;
+                            data_read_4 <= 0;
+                            data_read_5 <= 0;
+                            data_read_6 <= 0;
+                            data_read_7 <= 0;
+
+                            // data_read_8  <= 0;
+                            // data_read_9  <= 0;
+                            // data_read_10 <= 0;
+                            // data_read_11 <= 0;
+                            // data_read_12 <= 0;
+                            // data_read_13 <= 0;
+                            // data_read_14 <= 0;
+                            // data_read_15 <= 0;
+                        end
+                        else
+                        begin
+                            fifo_wrreq <= 1;
                             // data_read <= data;
                             data_read_0 <= data_channel_0;
                             data_read_1 <= data_channel_1;
                             data_read_2 <= data_channel_2;
-
-                            fifo_wrreq <= 1;
-                            $display("%t \tend read data", $time);
 
                             // EXTEND
                             data_read_3 <= data_channel_3;
@@ -319,62 +324,49 @@ module tb_generator_3d (
                             // data_read_14 <= data_channel_14;
                             // data_read_15 <= data_channel_15;
                         end
+
+                    end
+                    else
+                        // if(data_cnt == num_data /* NUM_IMG*/)            // Edit here
+                    begin
+                        image_cnt <= image_cnt + 1;
+                        data_cnt <= 1;
+                        if (image_cnt < NUM_IMG)
+                            $display("%t \tSTART IMAGE = %d", $time, image_cnt + 1);
                         else
-                        begin
-                            // delay NUM_IMG*(num_data+1) + NUM_LAYER*(WIDTH+1) (etc..) de day het du lieu ra khoi duong ong
-                            // if (data_cnt < num_data+WIDTH+2)             // Edit here
-                            // if (data_cnt < num_data+3*WIDTH+4)                // Edit here
-                            if (data_cnt < (NUM_IMG* num_data+1 + NUM_LAYER*(WIDTH+1)) )                // Edit here
-
-
-                            begin
-                                fifo_wrreq <= 1;
-                                // data_read <= 32'bz;
-                                data_read_0 <= 32'bz;
-                                data_read_1 <= 32'bz;
-                                data_read_2 <= 32'bz;
-
-                                // EXTEND
-                                data_read_3 <= 32'bz;
-                                data_read_4 <= 32'bz;
-                                data_read_5 <= 32'bz;
-                                data_read_6 <= 32'bz;
-                                data_read_7 <= 32'bz;
-
-                                // data_read_8  <= 32'bz;
-                                // data_read_9  <= 32'bz;
-                                // data_read_10 <= 32'bz;
-                                // data_read_11 <= 32'bz;
-                                // data_read_12 <= 32'bz;
-                                // data_read_13 <= 32'bz;
-                                // data_read_14 <= 32'bz;
-                                // data_read_15 <= 32'bz;
+                            if (image_cnt == NUM_IMG) 
+                            begin    
+                                $display("%t \tEND READ ALL %d IMAGE", $time, image_cnt);
+                                $display("%t \tSTART TEMP IMAGE = %d", $time, image_cnt + 1);
                             end
                             else
-                            begin
-                                fifo_wrreq <= 0;
-                                // data_read <= 32'bz;
-                                data_read_0 <= 32'bz;
-                                data_read_1 <= 32'bz;
-                                data_read_2 <= 32'bz;
+                                $display("%t \tSTART TEMP IMAGE = %d", $time, image_cnt + 1);
 
-                                // EXTEND
-                                data_read_3 <= 32'bz;
-                                data_read_4 <= 32'bz;
-                                data_read_5 <= 32'bz;
-                                data_read_6 <= 32'bz;
-                                data_read_7 <= 32'bz;
 
-                                // data_read_8  <= 32'bz;
-                                // data_read_9  <= 32'bz;
-                                // data_read_10 <= 32'bz;
-                                // data_read_11 <= 32'bz;
-                                // data_read_12 <= 32'bz;
-                                // data_read_13 <= 32'bz;
-                                // data_read_14 <= 32'bz;
-                                // data_read_15 <= 32'bz;
-                            end
-                        end
+                        // data_read <= data;
+                        data_read_0 <= data_channel_0;
+                        data_read_1 <= data_channel_1;
+                        data_read_2 <= data_channel_2;
+
+                        fifo_wrreq <= 1;
+                        // $display("%t \tend read data", $time);
+
+                        // EXTEND
+                        data_read_3 <= data_channel_3;
+                        data_read_4 <= data_channel_4;
+                        data_read_5 <= data_channel_5;
+                        data_read_6 <= data_channel_6;
+                        data_read_7 <= data_channel_7;
+
+                        // data_read_8  <= data_channel_8 ;
+                        // data_read_9  <= data_channel_9 ;
+                        // data_read_10 <= data_channel_10;
+                        // data_read_11 <= data_channel_11;
+                        // data_read_12 <= data_channel_12;
+                        // data_read_13 <= data_channel_13;
+                        // data_read_14 <= data_channel_14;
+                        // data_read_15 <= data_channel_15;
+                    end
                 end 
                 else 
                 begin

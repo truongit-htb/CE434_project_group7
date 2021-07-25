@@ -6,6 +6,14 @@
     `include "max_pooling.v"
     `define MAX_POOLING_INCLUDED
 `endif
+`ifndef FC_INCLUDED
+    `include "fully_connected_16.v"
+    `define FC_INCLUDED
+`endif
+`ifndef SIGMOID_INCLUDED
+    `include "sigmoid.v"
+    `define SIGMOID_INCLUDED
+`endif
 
 module block_demo #(
     parameter DATA_WIDTH = 32,
@@ -25,22 +33,27 @@ module block_demo #(
 	input	[DATA_WIDTH-1:0]	data_in_5,
 	input	[DATA_WIDTH-1:0]	data_in_6,
 	input	[DATA_WIDTH-1:0]	data_in_7,
-	output	[DATA_WIDTH-1:0]	data_out_0,
-	output	[DATA_WIDTH-1:0]	data_out_1,
-	output	[DATA_WIDTH-1:0]	data_out_2,
-	output	[DATA_WIDTH-1:0]	data_out_3,
-	output	[DATA_WIDTH-1:0]	data_out_4,
-	output	[DATA_WIDTH-1:0]	data_out_5,
-	output	[DATA_WIDTH-1:0]	data_out_6,
-	output	[DATA_WIDTH-1:0]	data_out_7,
-	output	[DATA_WIDTH-1:0]	data_out_8,
-	output	[DATA_WIDTH-1:0]	data_out_9,
-	output	[DATA_WIDTH-1:0]	data_out_10,
-	output	[DATA_WIDTH-1:0]	data_out_11,
-	output	[DATA_WIDTH-1:0]	data_out_12,
-	output	[DATA_WIDTH-1:0]	data_out_13,
-	output	[DATA_WIDTH-1:0]	data_out_14,
-	output	[DATA_WIDTH-1:0]	data_out_15,
+
+	// output	[DATA_WIDTH-1:0]	data_out_0,
+	// output	[DATA_WIDTH-1:0]	data_out_1,
+	// output	[DATA_WIDTH-1:0]	data_out_2,
+	// output	[DATA_WIDTH-1:0]	data_out_3,
+	// output	[DATA_WIDTH-1:0]	data_out_4,
+	// output	[DATA_WIDTH-1:0]	data_out_5,
+	// output	[DATA_WIDTH-1:0]	data_out_6,
+	// output	[DATA_WIDTH-1:0]	data_out_7,
+	// output	[DATA_WIDTH-1:0]	data_out_8,
+	// output	[DATA_WIDTH-1:0]	data_out_9,
+	// output	[DATA_WIDTH-1:0]	data_out_10,
+	// output	[DATA_WIDTH-1:0]	data_out_11,
+	// output	[DATA_WIDTH-1:0]	data_out_12,
+	// output	[DATA_WIDTH-1:0]	data_out_13,
+	// output	[DATA_WIDTH-1:0]	data_out_14,
+	// output	[DATA_WIDTH-1:0]	data_out_15,
+
+
+	output	[DATA_WIDTH-1:0]	data_out,
+	output 	image_class,
 	output	valid_out,
 	output	done
     );
@@ -57,38 +70,92 @@ module block_demo #(
     wire conv_valid_out_4_3;
     wire done_conv_4_3;
 
+	wire [DATA_WIDTH-1:0] conv_out_5_1  [0: CHANNEL_OUT -1];    
+    wire conv_valid_out_5_1;
+    wire done_conv_5_1;
 
-    // WITH RELU AND MAX_POOLING
-    wire [DATA_WIDTH-1:0] relu_out  [0: CHANNEL_OUT -1];
+	wire [DATA_WIDTH-1:0] conv_out_5_2  [0: CHANNEL_OUT -1];    
+    wire conv_valid_out_5_2;
+    wire done_conv_5_2;
 
-    wire [DATA_WIDTH-1:0] data_out_pool [0: CHANNEL_OUT -1];
-    wire [CHANNEL_OUT -1 : 0] valid_out_pool;
-    wire [CHANNEL_OUT -1 : 0] done_pool;
+	wire [DATA_WIDTH-1:0] conv_out_5_3  [0: CHANNEL_OUT -1];    
+    wire conv_valid_out_5_3;
+    wire done_conv_5_3;
+
+
+	// Declare wire for RELU and Max-pooling
+    wire [DATA_WIDTH-1:0] relu_out_4_3  [0: CHANNEL_OUT -1];
+
+    wire [DATA_WIDTH-1:0] data_out_pool_4_3 [0: CHANNEL_OUT -1];
+    wire [CHANNEL_OUT -1 : 0] valid_out_pool_4_3;
+    wire [CHANNEL_OUT -1 : 0] done_pool_4_3;
     
-    assign data_out_0 = data_out_pool[0];
-    assign data_out_1 = data_out_pool[1];
-    assign data_out_2 = data_out_pool[2];
-    assign data_out_3 = data_out_pool[3];
-    assign data_out_4 = data_out_pool[4];
-    assign data_out_5 = data_out_pool[5];
-    assign data_out_6 = data_out_pool[6];
-    assign data_out_7 = data_out_pool[7];
-    assign data_out_8 = data_out_pool[8];
-	assign data_out_9 = data_out_pool[9];
-	assign data_out_10 = data_out_pool[10];
-	assign data_out_11 = data_out_pool[11];
-	assign data_out_12 = data_out_pool[12];
-	assign data_out_13 = data_out_pool[13];
-	assign data_out_14 = data_out_pool[14];
-	assign data_out_15 = data_out_pool[15];
 
-    assign valid_out = valid_out_pool[CHANNEL_OUT -1];
-    assign done = done_pool[CHANNEL_OUT -1];
-    // -------------------------------------
+    wire [DATA_WIDTH-1:0] relu_out_5_1  [0: CHANNEL_OUT -1];
+    wire [DATA_WIDTH-1:0] relu_out_5_2  [0: CHANNEL_OUT -1];
+    wire [DATA_WIDTH-1:0] relu_out_5_3  [0: CHANNEL_OUT -1];
+
+    wire [DATA_WIDTH-1:0] data_out_pool_5_3 [0: CHANNEL_OUT -1];
+    wire [CHANNEL_OUT -1 : 0] valid_out_pool_5_3;
+    wire [CHANNEL_OUT -1 : 0] done_pool_5_3;
 
 
+	wire done_sigmoid;
+	wire [DATA_WIDTH-1:0] data_out_sigmoid;
 
-    // ONLY CONV - WITHOUT RELU AND MAX_POOLING
+    // // ASSIGN OUTPUT WITH SIGMOID ACTIVATION
+	assign data_out = data_out_sigmoid;
+	assign valid_out = done_sigmoid;
+	assign done = done_sigmoid;
+
+
+    // // ASSIGN OUTPUT WITH RELU AND MAX_POOLING
+    // assign data_out_0 = data_out_pool_5_3[0];
+    // assign data_out_1 = data_out_pool_5_3[1];
+    // assign data_out_2 = data_out_pool_5_3[2];
+    // assign data_out_3 = data_out_pool_5_3[3];
+    // assign data_out_4 = data_out_pool_5_3[4];
+    // assign data_out_5 = data_out_pool_5_3[5];
+    // assign data_out_6 = data_out_pool_5_3[6];
+    // assign data_out_7 = data_out_pool_5_3[7];
+    // assign data_out_8 = data_out_pool_5_3[8];
+	// assign data_out_9 = data_out_pool_5_3[9];
+	// assign data_out_10 = data_out_pool_5_3[10];
+	// assign data_out_11 = data_out_pool_5_3[11];
+	// assign data_out_12 = data_out_pool_5_3[12];
+	// assign data_out_13 = data_out_pool_5_3[13];
+	// assign data_out_14 = data_out_pool_5_3[14];
+	// assign data_out_15 = data_out_pool_5_3[15];
+
+    // assign valid_out = valid_out_pool_5_3[CHANNEL_OUT -1];
+    // assign done = done_pool_5_3[CHANNEL_OUT -1];
+	// // -------------------------------------
+
+
+	// // ASSIGN OUTPUT WITH RELU AND WITHOUT MAX_POOLING
+	// assign data_out_0 = relu_out_5_1[0];
+    // assign data_out_1 = relu_out_5_1[1];
+    // assign data_out_2 = relu_out_5_1[2];
+    // assign data_out_3 = relu_out_5_1[3];
+    // assign data_out_4 = relu_out_5_1[4];
+    // assign data_out_5 = relu_out_5_1[5];
+    // assign data_out_6 = relu_out_5_1[6];
+    // assign data_out_7 = relu_out_5_1[7];
+    // assign data_out_8 = relu_out_5_1[8];
+	// assign data_out_9 = relu_out_5_1[9];
+	// assign data_out_10 = relu_out_5_1[10];
+	// assign data_out_11 = relu_out_5_1[11];
+	// assign data_out_12 = relu_out_5_1[12];
+	// assign data_out_13 = relu_out_5_1[13];
+	// assign data_out_14 = relu_out_5_1[14];
+	// assign data_out_15 = relu_out_5_1[15];
+
+    // assign valid_out = conv_valid_out_5_1;
+    // assign done = done_conv_5_1;
+	// // -------------------------------------
+
+
+    // ASSIGN OUTPUT ONLY CONV - WITHOUT RELU AND MAX_POOLING
     // assign valid_out = conv_valid_out_4_2;	// Edit here
     // assign done = done_conv_4_2;				// Edit here
 
@@ -978,21 +1045,21 @@ module block_demo #(
 
     generate
     for (i = 0; i < CHANNEL_OUT; i=i+1) 
-    begin : gen_relu // needs CHANNEL_OUT relu
+    begin : relu_4_3 // needs CHANNEL_OUT relu		// Edit here - name
 
         activate #(
             .DATA_WIDTH(32)
         )
         relu (
             .in(conv_out_4_3[i]),			// Edit here
-            .out(relu_out[i])
+            .out(relu_out_4_3[i])
         );
     end
     endgenerate
 
     generate
     for (i = 0; i < CHANNEL_OUT; i=i+1) 
-    begin : gen_max_pool // needs CHANNEL_OUT max_pooling
+    begin : max_pool_4 // needs CHANNEL_OUT max_pooling		// Edit here - name
 
         max_pooling #(
             .DATA_WIDTH(32),
@@ -1004,12 +1071,1127 @@ module block_demo #(
 			.ack(done_conv_4_3),					// Edit here
             .resetn(resetn),
             .valid_in(conv_valid_out_4_3),			// Edit here
-            .data_in(relu_out[i]),
-            .data_out(data_out_pool[i]),
-            .valid_out(valid_out_pool[i]),
-            .done(done_pool[i])
+            .data_in(relu_out_4_3[i]),
+            .data_out(data_out_pool_4_3[i]),
+            .valid_out(valid_out_pool_4_3[i]),
+            .done(done_pool_4_3[i])
         );
     end
     endgenerate
+
+
+
+
+
+	conv3d_16_kernel_16_channel_size_3 #(
+		.DATA_WIDTH(32),.IMG_WIDTH(WIDTH>>1),.IMG_HEIGHT(HEIGHT>>1),	// Edit here
+		.K0_C0_W0(32'h3de2b41e), .K0_C0_W1(32'h3d6c3cb3), .K0_C0_W2(32'h3e0bbdf5), .K0_C0_W3(32'hbde378ca), .K0_C0_W4(32'hbdf12877), .K0_C0_W5(32'h3dd9f5c1), .K0_C0_W6(32'h3dbeee67), .K0_C0_W7(32'hbde74dba), .K0_C0_W8(32'h3e0ffaa9), 
+		.K0_C1_W0(32'h3dad775a), .K0_C1_W1(32'hbe067455), .K0_C1_W2(32'h3d882864), .K0_C1_W3(32'h3e19d2d6), .K0_C1_W4(32'h3dee30d6), .K0_C1_W5(32'h3d4b6548), .K0_C1_W6(32'hbdc7545d), .K0_C1_W7(32'h3ddaf733), .K0_C1_W8(32'hbdaf348c), 
+		.K0_C2_W0(32'hbe0cf991), .K0_C2_W1(32'h3d6bfd91), .K0_C2_W2(32'h3d6723d1), .K0_C2_W3(32'h3d864215), .K0_C2_W4(32'h3cbdfb81), .K0_C2_W5(32'h3d318ade), .K0_C2_W6(32'h3dceadb0), .K0_C2_W7(32'h3dc240d2), .K0_C2_W8(32'hbdaa8eac), 
+		.K0_C3_W0(32'h3c8ecb52), .K0_C3_W1(32'h3ddb2aa2), .K0_C3_W2(32'hbd0754d4), .K0_C3_W3(32'hbc15ad2c), .K0_C3_W4(32'hba70efce), .K0_C3_W5(32'hbd1fc71d), .K0_C3_W6(32'hbdd641c4), .K0_C3_W7(32'hbd19d58e), .K0_C3_W8(32'hbc8c5303), 
+		.K0_C4_W0(32'hbc7c4dab), .K0_C4_W1(32'h3d4beb7e), .K0_C4_W2(32'h3dce99e0), .K0_C4_W3(32'hbca92060), .K0_C4_W4(32'hbd3c6d61), .K0_C4_W5(32'hbe0c389e), .K0_C4_W6(32'h3dcedee0), .K0_C4_W7(32'hbc5ae0a9), .K0_C4_W8(32'h3d9ef6a9), 
+		.K0_C5_W0(32'h3e1e446d), .K0_C5_W1(32'hbe11a741), .K0_C5_W2(32'hbe0ba081), .K0_C5_W3(32'h3d3519a6), .K0_C5_W4(32'h3db9e300), .K0_C5_W5(32'h3e04c94e), .K0_C5_W6(32'hbd5080cb), .K0_C5_W7(32'hbe19bb42), .K0_C5_W8(32'h3d25cb7f), 
+		.K0_C6_W0(32'h3dea2872), .K0_C6_W1(32'hbdb85f98), .K0_C6_W2(32'h3dfac6a3), .K0_C6_W3(32'hbc8d9d66), .K0_C6_W4(32'h3da2babc), .K0_C6_W5(32'h3e163544), .K0_C6_W6(32'h3c406735), .K0_C6_W7(32'h3dd1138c), .K0_C6_W8(32'h3e475944), 
+		.K0_C7_W0(32'h3da7f394), .K0_C7_W1(32'h3c2c7176), .K0_C7_W2(32'h3c873a9e), .K0_C7_W3(32'hbd392820), .K0_C7_W4(32'h3e3a9e0e), .K0_C7_W5(32'hbd84a43f), .K0_C7_W6(32'h3d0b20b6), .K0_C7_W7(32'hbca7746e), .K0_C7_W8(32'hbda16f7e), 
+		.K0_C8_W0(32'h3c89a0a5), .K0_C8_W1(32'hbdf58345), .K0_C8_W2(32'hbe0cfed7), .K0_C8_W3(32'hbdf554da), .K0_C8_W4(32'h3de291b2), .K0_C8_W5(32'h3e0bf4a9), .K0_C8_W6(32'hbcbd3efa), .K0_C8_W7(32'h3c85bde7), .K0_C8_W8(32'h3e10a02f), 
+		.K0_C9_W0(32'h3ceecf21), .K0_C9_W1(32'hbdf0a21f), .K0_C9_W2(32'hbdcc5f99), .K0_C9_W3(32'hbb465bbb), .K0_C9_W4(32'h3dfd47a1), .K0_C9_W5(32'hbd4320d9), .K0_C9_W6(32'hbce38240), .K0_C9_W7(32'hbe21fef7), .K0_C9_W8(32'hbe0e14cb), 
+		.K0_C10_W0(32'hbb8fc1ab), .K0_C10_W1(32'hbcff5ef7), .K0_C10_W2(32'hbcb9c9d7), .K0_C10_W3(32'hbd1c2cfd), .K0_C10_W4(32'h3d9439d3), .K0_C10_W5(32'hbde5e965), .K0_C10_W6(32'h3cfdf296), .K0_C10_W7(32'hbdc7a1e8), .K0_C10_W8(32'h3da004ad), 
+		.K0_C11_W0(32'h3d0b6bcf), .K0_C11_W1(32'hbd3eaac4), .K0_C11_W2(32'h3d2e4851), .K0_C11_W3(32'h3d155fa3), .K0_C11_W4(32'h3deef882), .K0_C11_W5(32'h3dfe081b), .K0_C11_W6(32'h3d44ecdb), .K0_C11_W7(32'h3d2855fc), .K0_C11_W8(32'hbd870f83), 
+		.K0_C12_W0(32'hbdf09006), .K0_C12_W1(32'hbdcc1680), .K0_C12_W2(32'hbe37ceb5), .K0_C12_W3(32'h3df58f10), .K0_C12_W4(32'hbd9cd4c7), .K0_C12_W5(32'hbcec15a9), .K0_C12_W6(32'h3d0fea6c), .K0_C12_W7(32'h3e0552ab), .K0_C12_W8(32'h3d8e6893), 
+		.K0_C13_W0(32'h3e01eb49), .K0_C13_W1(32'h3d3e6864), .K0_C13_W2(32'h39b625c9), .K0_C13_W3(32'h3d1b4ec9), .K0_C13_W4(32'h3d07f0e7), .K0_C13_W5(32'hbd004146), .K0_C13_W6(32'h3d8e1e0f), .K0_C13_W7(32'h3cacbb96), .K0_C13_W8(32'hbdc4190d), 
+		.K0_C14_W0(32'h3c96e1f8), .K0_C14_W1(32'hbd99cf94), .K0_C14_W2(32'hbe02f4d5), .K0_C14_W3(32'h3d044c69), .K0_C14_W4(32'hbe0cb141), .K0_C14_W5(32'hbe16fd73), .K0_C14_W6(32'hbe2704a0), .K0_C14_W7(32'hbdddd673), .K0_C14_W8(32'hbc62d361), 
+		.K0_C15_W0(32'hbd45d122), .K0_C15_W1(32'h3d079991), .K0_C15_W2(32'h3dc4ee2e), .K0_C15_W3(32'hbd82c84c), .K0_C15_W4(32'hbba4d345), .K0_C15_W5(32'hbc7c4f18), .K0_C15_W6(32'hbda63e2e), .K0_C15_W7(32'h3d8aba82), .K0_C15_W8(32'hbd5a9cb2), 
+		.K0_BIAS (32'hbc74d63e),
+
+		.K1_C0_W0(32'h3dbc6b5b), .K1_C0_W1(32'hbce51b65), .K1_C0_W2(32'h3df1d6af), .K1_C0_W3(32'h3be555bc), .K1_C0_W4(32'h3dd15e95), .K1_C0_W5(32'h3bb24618), .K1_C0_W6(32'hbc3931a3), .K1_C0_W7(32'hbd2d400c), .K1_C0_W8(32'hbd4c9c18), 
+		.K1_C1_W0(32'hbd7063dd), .K1_C1_W1(32'hbda79f1f), .K1_C1_W2(32'hbce11ab5), .K1_C1_W3(32'h3c9864a1), .K1_C1_W4(32'hbd8163f8), .K1_C1_W5(32'h3d882b8f), .K1_C1_W6(32'h3d184a78), .K1_C1_W7(32'h3d70e522), .K1_C1_W8(32'h3df27a83), 
+		.K1_C2_W0(32'h3dfcbe41), .K1_C2_W1(32'h3e079028), .K1_C2_W2(32'hbe01742b), .K1_C2_W3(32'hbca1864a), .K1_C2_W4(32'hbd51f063), .K1_C2_W5(32'hbcb128c0), .K1_C2_W6(32'h3cfc3e60), .K1_C2_W7(32'hbd3caa91), .K1_C2_W8(32'h3c3d2b26), 
+		.K1_C3_W0(32'h3e249ca0), .K1_C3_W1(32'hbd64a351), .K1_C3_W2(32'hbe01f2b1), .K1_C3_W3(32'hbc4df3a1), .K1_C3_W4(32'h3dbe2d36), .K1_C3_W5(32'h3c975f51), .K1_C3_W6(32'hbdc46b15), .K1_C3_W7(32'h3d0392e4), .K1_C3_W8(32'h3cf341ed), 
+		.K1_C4_W0(32'hbd64de7f), .K1_C4_W1(32'h3db82675), .K1_C4_W2(32'hbdd8156e), .K1_C4_W3(32'h3bae9464), .K1_C4_W4(32'h3d76d12d), .K1_C4_W5(32'hbd9e042f), .K1_C4_W6(32'hbce53524), .K1_C4_W7(32'hbdeef841), .K1_C4_W8(32'h3e1b9cef), 
+		.K1_C5_W0(32'hbb7934ac), .K1_C5_W1(32'hbdecac9b), .K1_C5_W2(32'h3cde8204), .K1_C5_W3(32'h3ccbc680), .K1_C5_W4(32'h3d4e6c47), .K1_C5_W5(32'h3d80b2e2), .K1_C5_W6(32'hbd734588), .K1_C5_W7(32'h3cb00e6f), .K1_C5_W8(32'hbd0b3dcb), 
+		.K1_C6_W0(32'hbd04c8d4), .K1_C6_W1(32'h3d15252a), .K1_C6_W2(32'h3d6cacfe), .K1_C6_W3(32'h3d863a3d), .K1_C6_W4(32'h3d391c17), .K1_C6_W5(32'hbca18a65), .K1_C6_W6(32'h3da360ce), .K1_C6_W7(32'hbe2d9607), .K1_C6_W8(32'hbd3a7612), 
+		.K1_C7_W0(32'hbdc1f862), .K1_C7_W1(32'hbdf1c0ea), .K1_C7_W2(32'hbc97ba29), .K1_C7_W3(32'hbde4978f), .K1_C7_W4(32'hbdc818aa), .K1_C7_W5(32'hbd9d9533), .K1_C7_W6(32'hbb48117e), .K1_C7_W7(32'hbdd1f1fa), .K1_C7_W8(32'h3d78c274), 
+		.K1_C8_W0(32'hbdac82bd), .K1_C8_W1(32'h3d8481d5), .K1_C8_W2(32'hbd804d40), .K1_C8_W3(32'hbc5f8bda), .K1_C8_W4(32'hbc8c574a), .K1_C8_W5(32'hbd9c6284), .K1_C8_W6(32'h3dd5e248), .K1_C8_W7(32'hbcdca690), .K1_C8_W8(32'h3de53dde), 
+		.K1_C9_W0(32'h3e168bd1), .K1_C9_W1(32'h3c46704d), .K1_C9_W2(32'hbe14d437), .K1_C9_W3(32'hbd3d3fc5), .K1_C9_W4(32'hbd40587f), .K1_C9_W5(32'hbd36c68b), .K1_C9_W6(32'hbdc9f393), .K1_C9_W7(32'hbd7e832c), .K1_C9_W8(32'hbd8801e5), 
+		.K1_C10_W0(32'hbe0aadf2), .K1_C10_W1(32'hbd44652b), .K1_C10_W2(32'hbd5552df), .K1_C10_W3(32'h3cb91951), .K1_C10_W4(32'hbd98a1e3), .K1_C10_W5(32'h3bea5ae6), .K1_C10_W6(32'hbd1c9d45), .K1_C10_W7(32'hbda5d799), .K1_C10_W8(32'hbd0c5bbd), 
+		.K1_C11_W0(32'h3ca5e6b6), .K1_C11_W1(32'h3d2afb1d), .K1_C11_W2(32'hbce90503), .K1_C11_W3(32'h3dbafe91), .K1_C11_W4(32'h3c8ec645), .K1_C11_W5(32'hbce3b83a), .K1_C11_W6(32'h3ddb56e7), .K1_C11_W7(32'hbc55f065), .K1_C11_W8(32'h3ddd70b2), 
+		.K1_C12_W0(32'h3d85b1da), .K1_C12_W1(32'h3def09b7), .K1_C12_W2(32'hbe0cd89f), .K1_C12_W3(32'hbcc8ac00), .K1_C12_W4(32'h3ded790d), .K1_C12_W5(32'h3de0d326), .K1_C12_W6(32'hbbb0e539), .K1_C12_W7(32'h3e1e1f9e), .K1_C12_W8(32'hbd83665a), 
+		.K1_C13_W0(32'hbcdd7338), .K1_C13_W1(32'h3d0436e1), .K1_C13_W2(32'hbd9e7aea), .K1_C13_W3(32'h3dbe5b34), .K1_C13_W4(32'h3ddaccfe), .K1_C13_W5(32'hbdbbd838), .K1_C13_W6(32'hbd8d3150), .K1_C13_W7(32'h3d2eb127), .K1_C13_W8(32'h3cf00a5e), 
+		.K1_C14_W0(32'h3d9d1746), .K1_C14_W1(32'h3c4e6506), .K1_C14_W2(32'hbc29e231), .K1_C14_W3(32'hbe028c37), .K1_C14_W4(32'hbdf5582e), .K1_C14_W5(32'hbccae300), .K1_C14_W6(32'h3cff2f94), .K1_C14_W7(32'h3b2b2169), .K1_C14_W8(32'hbe065f2e), 
+		.K1_C15_W0(32'h3e01a9ba), .K1_C15_W1(32'hbd2ed7c1), .K1_C15_W2(32'h3dadb804), .K1_C15_W3(32'h3d1cfe54), .K1_C15_W4(32'h3d675585), .K1_C15_W5(32'hbdb336da), .K1_C15_W6(32'h3c4170a2), .K1_C15_W7(32'hbc0bff44), .K1_C15_W8(32'h3db0eb67), 
+		.K1_BIAS (32'h3caf4b73),
+
+		.K2_C0_W0(32'h3cd21c8e), .K2_C0_W1(32'hbd3a0582), .K2_C0_W2(32'hbd1897b6), .K2_C0_W3(32'h3d94268d), .K2_C0_W4(32'hbd4c3042), .K2_C0_W5(32'hbdcb1e2a), .K2_C0_W6(32'hbdbe3fe2), .K2_C0_W7(32'hbce39b7d), .K2_C0_W8(32'hbd4fedbd), 
+		.K2_C1_W0(32'h3e0024ac), .K2_C1_W1(32'h3dd7dbf3), .K2_C1_W2(32'h3df07126), .K2_C1_W3(32'h3d16d0a1), .K2_C1_W4(32'h3dec919e), .K2_C1_W5(32'h3df25776), .K2_C1_W6(32'h3d648ec6), .K2_C1_W7(32'h3e13bc81), .K2_C1_W8(32'h3c11669d), 
+		.K2_C2_W0(32'hbdc42e69), .K2_C2_W1(32'hbdba56dd), .K2_C2_W2(32'hbe0aea68), .K2_C2_W3(32'h3d8cab12), .K2_C2_W4(32'h3d8c8dab), .K2_C2_W5(32'hbd6bafb7), .K2_C2_W6(32'hbca43893), .K2_C2_W7(32'h3e19d176), .K2_C2_W8(32'h3db3a82f), 
+		.K2_C3_W0(32'hbd438b9e), .K2_C3_W1(32'h3ddcd678), .K2_C3_W2(32'hbdf9b7fa), .K2_C3_W3(32'h3daf2bbf), .K2_C3_W4(32'h3adaa1f0), .K2_C3_W5(32'h3d2fd636), .K2_C3_W6(32'h3e1dc8e9), .K2_C3_W7(32'h3cbaca37), .K2_C3_W8(32'h3ddb94dc), 
+		.K2_C4_W0(32'hbc9e2f2b), .K2_C4_W1(32'hbe15bca7), .K2_C4_W2(32'hbde30910), .K2_C4_W3(32'h3e22cc1f), .K2_C4_W4(32'hbd22307d), .K2_C4_W5(32'h3deb8bd2), .K2_C4_W6(32'h3d733313), .K2_C4_W7(32'h3c94fb25), .K2_C4_W8(32'hbdc564a1), 
+		.K2_C5_W0(32'h3db19c95), .K2_C5_W1(32'h3cb33310), .K2_C5_W2(32'h3ca9f04d), .K2_C5_W3(32'hbdabbf8b), .K2_C5_W4(32'h3d301f0d), .K2_C5_W5(32'hbdb02021), .K2_C5_W6(32'hbbd7be24), .K2_C5_W7(32'hbd971942), .K2_C5_W8(32'hbce02397), 
+		.K2_C6_W0(32'h3da35b6f), .K2_C6_W1(32'hbd1c60f1), .K2_C6_W2(32'hbc949d40), .K2_C6_W3(32'h3e02214c), .K2_C6_W4(32'hbce371e1), .K2_C6_W5(32'h3da6c6d0), .K2_C6_W6(32'hbde784cb), .K2_C6_W7(32'h3dd09195), .K2_C6_W8(32'h3cccb77c), 
+		.K2_C7_W0(32'h3e472a97), .K2_C7_W1(32'hbc528896), .K2_C7_W2(32'h3dee3bb7), .K2_C7_W3(32'h3dc11c2a), .K2_C7_W4(32'h3d7b6183), .K2_C7_W5(32'h3e373b3f), .K2_C7_W6(32'h3b36b86e), .K2_C7_W7(32'h3da49c49), .K2_C7_W8(32'hbdcdacab), 
+		.K2_C8_W0(32'h3e0aa0b2), .K2_C8_W1(32'hbcca8b88), .K2_C8_W2(32'h3db16ee1), .K2_C8_W3(32'hbd32157a), .K2_C8_W4(32'hbcd633bc), .K2_C8_W5(32'hbd9c6daf), .K2_C8_W6(32'hbbb2217f), .K2_C8_W7(32'hbdeecdb1), .K2_C8_W8(32'h3dcfcc30), 
+		.K2_C9_W0(32'hbced1bef), .K2_C9_W1(32'h3dff872a), .K2_C9_W2(32'hbd0af89c), .K2_C9_W3(32'hbe0741bd), .K2_C9_W4(32'hbda2544a), .K2_C9_W5(32'hbe0e0520), .K2_C9_W6(32'hbbb35b4a), .K2_C9_W7(32'h3e02c074), .K2_C9_W8(32'hbd811d6d), 
+		.K2_C10_W0(32'h3d3a3976), .K2_C10_W1(32'hbd9c8db6), .K2_C10_W2(32'h3d78bfd2), .K2_C10_W3(32'hbd2083f3), .K2_C10_W4(32'h3dc408a5), .K2_C10_W5(32'hbd241ece), .K2_C10_W6(32'hbc714fa6), .K2_C10_W7(32'hbda00438), .K2_C10_W8(32'hbe2d38fe), 
+		.K2_C11_W0(32'h3e07cbe8), .K2_C11_W1(32'h3c2286fd), .K2_C11_W2(32'h3e2a4b3d), .K2_C11_W3(32'h3d414ff3), .K2_C11_W4(32'h3d9856d0), .K2_C11_W5(32'h3cffdf6f), .K2_C11_W6(32'h3def2f1c), .K2_C11_W7(32'hbe09302b), .K2_C11_W8(32'h3db948c6), 
+		.K2_C12_W0(32'hbcb0f961), .K2_C12_W1(32'hbd941196), .K2_C12_W2(32'h3d0e2d28), .K2_C12_W3(32'hbe027950), .K2_C12_W4(32'h3d244f32), .K2_C12_W5(32'h3dcd0ee0), .K2_C12_W6(32'hbcc37359), .K2_C12_W7(32'h3e1d3115), .K2_C12_W8(32'h3cba3e43), 
+		.K2_C13_W0(32'hbd9a756d), .K2_C13_W1(32'h3df73ed3), .K2_C13_W2(32'h3d0d60c5), .K2_C13_W3(32'hbdf6a864), .K2_C13_W4(32'h3c911c70), .K2_C13_W5(32'h3e1befd5), .K2_C13_W6(32'h3c955b57), .K2_C13_W7(32'hbc84fcdb), .K2_C13_W8(32'h3d9bbd86), 
+		.K2_C14_W0(32'h3dc5a604), .K2_C14_W1(32'hbc424820), .K2_C14_W2(32'h3cf64b53), .K2_C14_W3(32'h3d8aa91f), .K2_C14_W4(32'hbd857f72), .K2_C14_W5(32'h3e0de147), .K2_C14_W6(32'hbd7e3afc), .K2_C14_W7(32'hb9842b70), .K2_C14_W8(32'h3d095f1e), 
+		.K2_C15_W0(32'h3ce1ffd2), .K2_C15_W1(32'h3e26da12), .K2_C15_W2(32'h3d9df1c0), .K2_C15_W3(32'hbd08a776), .K2_C15_W4(32'hbde6605c), .K2_C15_W5(32'h3dba0335), .K2_C15_W6(32'h3e18af58), .K2_C15_W7(32'hbd80535d), .K2_C15_W8(32'hbd9ec627), 
+		.K2_BIAS (32'hbbbfd0ce),
+
+		.K3_C0_W0(32'hbdb63c10), .K3_C0_W1(32'hbd995030), .K3_C0_W2(32'h3df4feaa), .K3_C0_W3(32'h3db351da), .K3_C0_W4(32'hbe05f060), .K3_C0_W5(32'h3bc66c0c), .K3_C0_W6(32'h3dad0b66), .K3_C0_W7(32'hbd9447cc), .K3_C0_W8(32'h3c745143), 
+		.K3_C1_W0(32'h3e0611a0), .K3_C1_W1(32'hbdde9d83), .K3_C1_W2(32'h3db636fb), .K3_C1_W3(32'hbe1b6cef), .K3_C1_W4(32'h3d9be141), .K3_C1_W5(32'h3dcc5e41), .K3_C1_W6(32'hbddddc8e), .K3_C1_W7(32'h3da8f072), .K3_C1_W8(32'h3d0eaf3e), 
+		.K3_C2_W0(32'h3b22a731), .K3_C2_W1(32'hbce36907), .K3_C2_W2(32'hbc18b4f9), .K3_C2_W3(32'h3d130f51), .K3_C2_W4(32'h3d10f4b9), .K3_C2_W5(32'hbdc5c435), .K3_C2_W6(32'h3d1b2c9a), .K3_C2_W7(32'hbd987209), .K3_C2_W8(32'hbd95a1e9), 
+		.K3_C3_W0(32'hbcc35743), .K3_C3_W1(32'h3d5b6a50), .K3_C3_W2(32'h3b927737), .K3_C3_W3(32'hbc0f10f6), .K3_C3_W4(32'h3bc55ba6), .K3_C3_W5(32'hbd8f4baa), .K3_C3_W6(32'hbdb0d5a0), .K3_C3_W7(32'h3c454a8c), .K3_C3_W8(32'h3dcfd9c3), 
+		.K3_C4_W0(32'h3d22b1a8), .K3_C4_W1(32'h3d113ee0), .K3_C4_W2(32'h3dfbefe5), .K3_C4_W3(32'h3d92a282), .K3_C4_W4(32'hbcdb0b89), .K3_C4_W5(32'hbe1d12f3), .K3_C4_W6(32'hbe17cf63), .K3_C4_W7(32'hbd9bf312), .K3_C4_W8(32'hbe0246f3), 
+		.K3_C5_W0(32'hbe296fca), .K3_C5_W1(32'hbcb8e5af), .K3_C5_W2(32'h3c4f46d6), .K3_C5_W3(32'hbd792489), .K3_C5_W4(32'h3d53ab48), .K3_C5_W5(32'hbd6e3b08), .K3_C5_W6(32'h3abb0453), .K3_C5_W7(32'hbd50fb5c), .K3_C5_W8(32'h3c13c080), 
+		.K3_C6_W0(32'hbb6fc6de), .K3_C6_W1(32'h3cd469f2), .K3_C6_W2(32'h3d080abb), .K3_C6_W3(32'hbda84d23), .K3_C6_W4(32'hbd799b97), .K3_C6_W5(32'hbcb59675), .K3_C6_W6(32'h3de8bc26), .K3_C6_W7(32'hbd92f88b), .K3_C6_W8(32'hbc7c8703), 
+		.K3_C7_W0(32'h3e1382b0), .K3_C7_W1(32'hbd4c64cf), .K3_C7_W2(32'h3d730478), .K3_C7_W3(32'hbd97cea4), .K3_C7_W4(32'hbc9a7adc), .K3_C7_W5(32'hbdc3ebc3), .K3_C7_W6(32'h3e00723f), .K3_C7_W7(32'hbdbe0ef7), .K3_C7_W8(32'hbdc147a5), 
+		.K3_C8_W0(32'hbe02a91d), .K3_C8_W1(32'hbd11c463), .K3_C8_W2(32'h3d4b6d8d), .K3_C8_W3(32'hbdf770ad), .K3_C8_W4(32'hbd647e5a), .K3_C8_W5(32'h3ce21218), .K3_C8_W6(32'hbd28be56), .K3_C8_W7(32'hbe1414c1), .K3_C8_W8(32'h3d988b8b), 
+		.K3_C9_W0(32'h3cfde936), .K3_C9_W1(32'hbdcd64a4), .K3_C9_W2(32'h3e0bbccc), .K3_C9_W3(32'hbd1a73aa), .K3_C9_W4(32'h3d587257), .K3_C9_W5(32'h3e19883f), .K3_C9_W6(32'hbc253c44), .K3_C9_W7(32'h3e0157c5), .K3_C9_W8(32'hbcc8fc16), 
+		.K3_C10_W0(32'h3d7b635f), .K3_C10_W1(32'hbda15178), .K3_C10_W2(32'hbd4e1709), .K3_C10_W3(32'h3e17b109), .K3_C10_W4(32'hbd3b7cd8), .K3_C10_W5(32'h3e087080), .K3_C10_W6(32'hbb68218a), .K3_C10_W7(32'h3e20d88e), .K3_C10_W8(32'hbd78430d), 
+		.K3_C11_W0(32'h3d4a9481), .K3_C11_W1(32'hbb5e35c3), .K3_C11_W2(32'hbddd9ae7), .K3_C11_W3(32'hbdd18fb5), .K3_C11_W4(32'hbc45253f), .K3_C11_W5(32'h3de941ce), .K3_C11_W6(32'h3d68f0b8), .K3_C11_W7(32'hbe00e892), .K3_C11_W8(32'h3de8f396), 
+		.K3_C12_W0(32'hbde1ae1c), .K3_C12_W1(32'hbd371093), .K3_C12_W2(32'hbdd79d46), .K3_C12_W3(32'hbcb2cab7), .K3_C12_W4(32'hbc639a69), .K3_C12_W5(32'hbe0dfb57), .K3_C12_W6(32'h3dfb4805), .K3_C12_W7(32'hbdaf963a), .K3_C12_W8(32'h3cdc404d), 
+		.K3_C13_W0(32'hbcdabe83), .K3_C13_W1(32'h3df4a197), .K3_C13_W2(32'h3dbfb16a), .K3_C13_W3(32'hbdc0ed72), .K3_C13_W4(32'h3cc97877), .K3_C13_W5(32'h3e01afa7), .K3_C13_W6(32'hbdb1e165), .K3_C13_W7(32'h3d640a36), .K3_C13_W8(32'hbd1c55de), 
+		.K3_C14_W0(32'hbd519d59), .K3_C14_W1(32'hbe09027e), .K3_C14_W2(32'h3d79b6be), .K3_C14_W3(32'h3de5ce45), .K3_C14_W4(32'h3e16de25), .K3_C14_W5(32'h3e1304dd), .K3_C14_W6(32'hbd922bbc), .K3_C14_W7(32'h3df34f89), .K3_C14_W8(32'hbd2e66e5), 
+		.K3_C15_W0(32'hbdc4127c), .K3_C15_W1(32'h3cca9415), .K3_C15_W2(32'h3e3a27f7), .K3_C15_W3(32'h3e2c3c4b), .K3_C15_W4(32'h3d2e224a), .K3_C15_W5(32'h3e279375), .K3_C15_W6(32'hbc1d7e14), .K3_C15_W7(32'h3d3fd11b), .K3_C15_W8(32'h3db39417), 
+		.K3_BIAS (32'hbb4218d1),
+
+		.K4_C0_W0(32'h3d30b1d5), .K4_C0_W1(32'hbdf79efd), .K4_C0_W2(32'h3cbc2e2d), .K4_C0_W3(32'h3cf537d2), .K4_C0_W4(32'h3dddb66b), .K4_C0_W5(32'h3d8fcb12), .K4_C0_W6(32'h3d8517a5), .K4_C0_W7(32'hbd155b74), .K4_C0_W8(32'hbe0d0f89), 
+		.K4_C1_W0(32'h3d9a0614), .K4_C1_W1(32'hbc98e3ed), .K4_C1_W2(32'hbd9defa5), .K4_C1_W3(32'h3dd636da), .K4_C1_W4(32'hbd98ce37), .K4_C1_W5(32'h3c1cab95), .K4_C1_W6(32'h3b519f56), .K4_C1_W7(32'hbd8ebfe6), .K4_C1_W8(32'hbda7f52e), 
+		.K4_C2_W0(32'hbd5d0a8d), .K4_C2_W1(32'hbe1e5673), .K4_C2_W2(32'h3c3fa301), .K4_C2_W3(32'h3e0bf4cf), .K4_C2_W4(32'h3d615953), .K4_C2_W5(32'hbe0f1c91), .K4_C2_W6(32'hbdc1ec2a), .K4_C2_W7(32'hbd7057c0), .K4_C2_W8(32'h3dd5dd70), 
+		.K4_C3_W0(32'hbe0d1ac5), .K4_C3_W1(32'h3dcea876), .K4_C3_W2(32'h3dd8f7ef), .K4_C3_W3(32'hbdeea80e), .K4_C3_W4(32'hbdc0917f), .K4_C3_W5(32'hbe136a93), .K4_C3_W6(32'h3dfd38f5), .K4_C3_W7(32'h3d892be3), .K4_C3_W8(32'h3de8ebec), 
+		.K4_C4_W0(32'h3cfd8a04), .K4_C4_W1(32'hbe1a049a), .K4_C4_W2(32'hbdca6758), .K4_C4_W3(32'hbda5f363), .K4_C4_W4(32'h3d6db392), .K4_C4_W5(32'hbdcf9b14), .K4_C4_W6(32'h3d3fa1ac), .K4_C4_W7(32'hbda19593), .K4_C4_W8(32'hbbecfb25), 
+		.K4_C5_W0(32'h3d348384), .K4_C5_W1(32'hbc751cfc), .K4_C5_W2(32'hbd0fb8c2), .K4_C5_W3(32'hbe00839b), .K4_C5_W4(32'h3d7005f6), .K4_C5_W5(32'h3c582d36), .K4_C5_W6(32'h3df15727), .K4_C5_W7(32'hbd8ffffa), .K4_C5_W8(32'hbe18ef61), 
+		.K4_C6_W0(32'h3d4ec8fe), .K4_C6_W1(32'hbdde78b7), .K4_C6_W2(32'h3bc3c747), .K4_C6_W3(32'h3d592234), .K4_C6_W4(32'hbd7dc911), .K4_C6_W5(32'hbdaf6fea), .K4_C6_W6(32'hbd4ee164), .K4_C6_W7(32'h3dc9df06), .K4_C6_W8(32'hbddf2e99), 
+		.K4_C7_W0(32'h3d0ca0a2), .K4_C7_W1(32'h3dd2d1e5), .K4_C7_W2(32'hbe150164), .K4_C7_W3(32'hbc44c4f7), .K4_C7_W4(32'h3b8a6fe1), .K4_C7_W5(32'hbd60d8d1), .K4_C7_W6(32'hbdfac4ef), .K4_C7_W7(32'h3df0785e), .K4_C7_W8(32'hbd8e7586), 
+		.K4_C8_W0(32'hbd265206), .K4_C8_W1(32'hbb238033), .K4_C8_W2(32'hbde0ff7f), .K4_C8_W3(32'hbe06c8c8), .K4_C8_W4(32'h3d5c9421), .K4_C8_W5(32'h3b13d4de), .K4_C8_W6(32'h3d630bd7), .K4_C8_W7(32'h3c03d920), .K4_C8_W8(32'h3dd49e50), 
+		.K4_C9_W0(32'h3d456f84), .K4_C9_W1(32'hbe1599f4), .K4_C9_W2(32'hbdc03b07), .K4_C9_W3(32'hbd0108d9), .K4_C9_W4(32'hbe03a3b8), .K4_C9_W5(32'h3ca86c4d), .K4_C9_W6(32'h3c9c220f), .K4_C9_W7(32'hbca2b3f2), .K4_C9_W8(32'hbe211cc5), 
+		.K4_C10_W0(32'h3da0a6c2), .K4_C10_W1(32'hbdbba0c7), .K4_C10_W2(32'h3d1d8a2d), .K4_C10_W3(32'hbd7c87f2), .K4_C10_W4(32'hbe13b1d6), .K4_C10_W5(32'hbd8d0a16), .K4_C10_W6(32'hbdab18b7), .K4_C10_W7(32'hbdefeae9), .K4_C10_W8(32'h3d97d478), 
+		.K4_C11_W0(32'h3d821006), .K4_C11_W1(32'hbde3d9ea), .K4_C11_W2(32'hbcb22888), .K4_C11_W3(32'h3dd5c097), .K4_C11_W4(32'h3d16281a), .K4_C11_W5(32'hbe2fe79a), .K4_C11_W6(32'h3dbda30d), .K4_C11_W7(32'hbdbea558), .K4_C11_W8(32'hbe265282), 
+		.K4_C12_W0(32'hbdd316ab), .K4_C12_W1(32'hbd995b2c), .K4_C12_W2(32'h3df94cde), .K4_C12_W3(32'h3e0985ad), .K4_C12_W4(32'hbdd28560), .K4_C12_W5(32'h3ba1dc64), .K4_C12_W6(32'hbcbb3381), .K4_C12_W7(32'hbdf825ba), .K4_C12_W8(32'hbd430901), 
+		.K4_C13_W0(32'h3ddbd4e8), .K4_C13_W1(32'hbe0542c8), .K4_C13_W2(32'hbc65d98d), .K4_C13_W3(32'h3dc0a761), .K4_C13_W4(32'h3deee53a), .K4_C13_W5(32'h3d82ac86), .K4_C13_W6(32'h3caa5a1f), .K4_C13_W7(32'hbc19910e), .K4_C13_W8(32'hbd73ee73), 
+		.K4_C14_W0(32'hbe14d9fa), .K4_C14_W1(32'hbc980be7), .K4_C14_W2(32'h3dc4551c), .K4_C14_W3(32'hbcd2fec9), .K4_C14_W4(32'h3d15222d), .K4_C14_W5(32'h3d20f7cd), .K4_C14_W6(32'hbddd2273), .K4_C14_W7(32'h3e0a822d), .K4_C14_W8(32'hbda79cef), 
+		.K4_C15_W0(32'h3d8e2104), .K4_C15_W1(32'h3d7823f5), .K4_C15_W2(32'hbdb87990), .K4_C15_W3(32'h3c62006b), .K4_C15_W4(32'hbd28478e), .K4_C15_W5(32'hbe27f133), .K4_C15_W6(32'hbd111959), .K4_C15_W7(32'hbda6247c), .K4_C15_W8(32'hbe053b64), 
+		.K4_BIAS (32'hbc0a482a),
+
+		.K5_C0_W0(32'h3dbb9f9e), .K5_C0_W1(32'h3dd1c0e5), .K5_C0_W2(32'hbde14e83), .K5_C0_W3(32'h3d97a658), .K5_C0_W4(32'h3cc04dc0), .K5_C0_W5(32'h3dde7b92), .K5_C0_W6(32'h3d9ce815), .K5_C0_W7(32'h3dc77729), .K5_C0_W8(32'h3e02b0c4), 
+		.K5_C1_W0(32'h3c9d9646), .K5_C1_W1(32'h3dbe177e), .K5_C1_W2(32'h3da57925), .K5_C1_W3(32'hbd08d971), .K5_C1_W4(32'h3ddddd5e), .K5_C1_W5(32'hbe0e960b), .K5_C1_W6(32'h3dc0ec2e), .K5_C1_W7(32'h3d7ab795), .K5_C1_W8(32'h3df52a6b), 
+		.K5_C2_W0(32'hbe039249), .K5_C2_W1(32'h3dfebe11), .K5_C2_W2(32'h3c960391), .K5_C2_W3(32'h3de8e044), .K5_C2_W4(32'hbd54e86b), .K5_C2_W5(32'h3da80e4c), .K5_C2_W6(32'h3db68610), .K5_C2_W7(32'hbdeccf30), .K5_C2_W8(32'h3e09b512), 
+		.K5_C3_W0(32'hbe08072b), .K5_C3_W1(32'h3dfea0af), .K5_C3_W2(32'h3cc27c0d), .K5_C3_W3(32'h3d539c00), .K5_C3_W4(32'hbd951f3d), .K5_C3_W5(32'hbdca3ce5), .K5_C3_W6(32'h3de29f07), .K5_C3_W7(32'hbdc1c377), .K5_C3_W8(32'hbdf2216c), 
+		.K5_C4_W0(32'h3e1cb4b9), .K5_C4_W1(32'hbce1951e), .K5_C4_W2(32'hbcd4c2dc), .K5_C4_W3(32'h3dca52fb), .K5_C4_W4(32'hbc6eb69e), .K5_C4_W5(32'h3e014883), .K5_C4_W6(32'h3d1b123b), .K5_C4_W7(32'h3d279790), .K5_C4_W8(32'hbc760298), 
+		.K5_C5_W0(32'h3cca98a4), .K5_C5_W1(32'h3db81ed6), .K5_C5_W2(32'h3db17a9a), .K5_C5_W3(32'h3de79f29), .K5_C5_W4(32'h3e22d2cb), .K5_C5_W5(32'hbd64c4c2), .K5_C5_W6(32'h3d8bcf2d), .K5_C5_W7(32'h3c19c03a), .K5_C5_W8(32'hbe33b2c5), 
+		.K5_C6_W0(32'h3d2f9ef6), .K5_C6_W1(32'h3d105f57), .K5_C6_W2(32'h3ccd7034), .K5_C6_W3(32'h3d830a97), .K5_C6_W4(32'hbc8b5a6c), .K5_C6_W5(32'hbc3f4310), .K5_C6_W6(32'hbd0a0d10), .K5_C6_W7(32'h3db26222), .K5_C6_W8(32'h3d840ca4), 
+		.K5_C7_W0(32'hbe1465c1), .K5_C7_W1(32'hbd7a57ff), .K5_C7_W2(32'hbdd04caa), .K5_C7_W3(32'hbdeec71e), .K5_C7_W4(32'h3e0374c9), .K5_C7_W5(32'hbdf4d813), .K5_C7_W6(32'h3c9742ff), .K5_C7_W7(32'h3d81227f), .K5_C7_W8(32'h3c2f9d56), 
+		.K5_C8_W0(32'h3d653d00), .K5_C8_W1(32'h3dd38f72), .K5_C8_W2(32'h3dab0e99), .K5_C8_W3(32'hbe09de0f), .K5_C8_W4(32'hbcc2831b), .K5_C8_W5(32'hbd21d908), .K5_C8_W6(32'hbe122c18), .K5_C8_W7(32'hbc3850eb), .K5_C8_W8(32'h3d938b84), 
+		.K5_C9_W0(32'hbbc6e8e9), .K5_C9_W1(32'h3cb26d99), .K5_C9_W2(32'hbcc8c719), .K5_C9_W3(32'hbdf996cd), .K5_C9_W4(32'hbd4dff80), .K5_C9_W5(32'hbc805d93), .K5_C9_W6(32'hbde0ea64), .K5_C9_W7(32'h3d7bf42f), .K5_C9_W8(32'hbe082a14), 
+		.K5_C10_W0(32'hbd5b3fef), .K5_C10_W1(32'h3e0f26f8), .K5_C10_W2(32'hbd84dfc7), .K5_C10_W3(32'h3cf47019), .K5_C10_W4(32'h3e0b1e1f), .K5_C10_W5(32'hbc2b6c4a), .K5_C10_W6(32'h3cfbcc9d), .K5_C10_W7(32'h3de95441), .K5_C10_W8(32'hbc0e6033), 
+		.K5_C11_W0(32'hbdf5d035), .K5_C11_W1(32'hbe2c916e), .K5_C11_W2(32'hbe15dda4), .K5_C11_W3(32'hbdf57ae8), .K5_C11_W4(32'h3cbe8a54), .K5_C11_W5(32'h3b49d12b), .K5_C11_W6(32'hbcfd3e75), .K5_C11_W7(32'h3deb43fc), .K5_C11_W8(32'hbe197f39), 
+		.K5_C12_W0(32'hbe57478a), .K5_C12_W1(32'h3d8f5d9d), .K5_C12_W2(32'hbe227129), .K5_C12_W3(32'hbd4f5596), .K5_C12_W4(32'h3dad74c0), .K5_C12_W5(32'h3dc5ee61), .K5_C12_W6(32'hbe0815e6), .K5_C12_W7(32'hbd2d7da5), .K5_C12_W8(32'hbe0da5ad), 
+		.K5_C13_W0(32'h3cb77ec9), .K5_C13_W1(32'hbcff7a78), .K5_C13_W2(32'h3d0d94a8), .K5_C13_W3(32'hbdc07823), .K5_C13_W4(32'hbdded8e1), .K5_C13_W5(32'hbe107ac1), .K5_C13_W6(32'h3dfc02b7), .K5_C13_W7(32'hbdfb5a75), .K5_C13_W8(32'h3c11590b), 
+		.K5_C14_W0(32'h3df58120), .K5_C14_W1(32'h3c899778), .K5_C14_W2(32'h3c518df9), .K5_C14_W3(32'hbd0cf9e8), .K5_C14_W4(32'h3dc5e25c), .K5_C14_W5(32'h3d58c79e), .K5_C14_W6(32'h3cce233d), .K5_C14_W7(32'h3d3f8718), .K5_C14_W8(32'hbe214f5b), 
+		.K5_C15_W0(32'h3e2a0418), .K5_C15_W1(32'hbd8aebbd), .K5_C15_W2(32'h3daa9d74), .K5_C15_W3(32'hbcb240d8), .K5_C15_W4(32'h3da33879), .K5_C15_W5(32'hbe488ccf), .K5_C15_W6(32'h3dcab03f), .K5_C15_W7(32'h3d6aac1e), .K5_C15_W8(32'hbcd28bc7), 
+		.K5_BIAS (32'h3cbe9e2f),
+
+		.K6_C0_W0(32'hbda8e24d), .K6_C0_W1(32'hbb8d44cc), .K6_C0_W2(32'hbcb2a981), .K6_C0_W3(32'h3d902038), .K6_C0_W4(32'hbd633c93), .K6_C0_W5(32'hbdde3273), .K6_C0_W6(32'hbcbe706e), .K6_C0_W7(32'hbc2cf696), .K6_C0_W8(32'hbd65e195), 
+		.K6_C1_W0(32'hbdd70120), .K6_C1_W1(32'hbe007d29), .K6_C1_W2(32'h3d676e61), .K6_C1_W3(32'hbd74df81), .K6_C1_W4(32'hbdbec00b), .K6_C1_W5(32'hbdbf92d9), .K6_C1_W6(32'hbdbc07ae), .K6_C1_W7(32'hbd9f23d5), .K6_C1_W8(32'hbd65ec13), 
+		.K6_C2_W0(32'hbdaaef5f), .K6_C2_W1(32'h3d958be5), .K6_C2_W2(32'h3df99a79), .K6_C2_W3(32'h3e1b0a3f), .K6_C2_W4(32'h3da4b6a4), .K6_C2_W5(32'hbd79516a), .K6_C2_W6(32'hbb980d95), .K6_C2_W7(32'hbd641e30), .K6_C2_W8(32'h3dda117f), 
+		.K6_C3_W0(32'hbafb0566), .K6_C3_W1(32'hbd7a8e6b), .K6_C3_W2(32'h3ce86af0), .K6_C3_W3(32'h3d1311ac), .K6_C3_W4(32'hbd70bfd8), .K6_C3_W5(32'hbda0da3c), .K6_C3_W6(32'h3ab5aff6), .K6_C3_W7(32'hbc59ec48), .K6_C3_W8(32'hbdbdba5d), 
+		.K6_C4_W0(32'hbd573e1c), .K6_C4_W1(32'h3d79a2f7), .K6_C4_W2(32'h3ccd4734), .K6_C4_W3(32'hbcd1504d), .K6_C4_W4(32'hbdac8555), .K6_C4_W5(32'hbd2316e3), .K6_C4_W6(32'hbe063477), .K6_C4_W7(32'h3ce729f6), .K6_C4_W8(32'h3d2b0f91), 
+		.K6_C5_W0(32'hbdf26110), .K6_C5_W1(32'h3d220f9e), .K6_C5_W2(32'hbc9da4ff), .K6_C5_W3(32'h3daa373f), .K6_C5_W4(32'h3cf3a98d), .K6_C5_W5(32'hbbd6fbc4), .K6_C5_W6(32'h3d05c064), .K6_C5_W7(32'h3d5ff313), .K6_C5_W8(32'hbcbf991a), 
+		.K6_C6_W0(32'h3c6d07f2), .K6_C6_W1(32'h3d8eae39), .K6_C6_W2(32'h3dc36ee1), .K6_C6_W3(32'hbdef6414), .K6_C6_W4(32'hbdad969c), .K6_C6_W5(32'h3d3c71ba), .K6_C6_W6(32'h3ce95da3), .K6_C6_W7(32'h3d52bfa0), .K6_C6_W8(32'h3d9b3612), 
+		.K6_C7_W0(32'hbdca3340), .K6_C7_W1(32'hbcfe62c7), .K6_C7_W2(32'h3cc26518), .K6_C7_W3(32'h3d8c4ef6), .K6_C7_W4(32'hbe2bd32c), .K6_C7_W5(32'h3d7b5911), .K6_C7_W6(32'h3ccb15b6), .K6_C7_W7(32'h3cc00cb0), .K6_C7_W8(32'hbd9be79a), 
+		.K6_C8_W0(32'h3a03eb77), .K6_C8_W1(32'h3daa1b76), .K6_C8_W2(32'h3ced9b1e), .K6_C8_W3(32'h3e29bc0b), .K6_C8_W4(32'h3ccab59a), .K6_C8_W5(32'hbcef1f33), .K6_C8_W6(32'h3b085db0), .K6_C8_W7(32'hbdd33d40), .K6_C8_W8(32'hbe1960ef), 
+		.K6_C9_W0(32'hbd097f2e), .K6_C9_W1(32'h3d852565), .K6_C9_W2(32'hbd96f0e6), .K6_C9_W3(32'h3d417395), .K6_C9_W4(32'hbdd8053d), .K6_C9_W5(32'h3e43deb7), .K6_C9_W6(32'hbdaa68e0), .K6_C9_W7(32'h3decb89a), .K6_C9_W8(32'h3dc111e5), 
+		.K6_C10_W0(32'h3dc1d855), .K6_C10_W1(32'h3e170102), .K6_C10_W2(32'h3e267c23), .K6_C10_W3(32'h3db467a5), .K6_C10_W4(32'hbe0e9700), .K6_C10_W5(32'h3daaaa94), .K6_C10_W6(32'h3cdaf094), .K6_C10_W7(32'h3dd30fd5), .K6_C10_W8(32'hbde2dc0d), 
+		.K6_C11_W0(32'hbc479fc4), .K6_C11_W1(32'hbd3fd55c), .K6_C11_W2(32'hbe0fdeb3), .K6_C11_W3(32'hbd1cba24), .K6_C11_W4(32'h3c4eef67), .K6_C11_W5(32'hbde20429), .K6_C11_W6(32'h3def1e9a), .K6_C11_W7(32'h3d9253c4), .K6_C11_W8(32'hbdeff2c2), 
+		.K6_C12_W0(32'hbd066336), .K6_C12_W1(32'hbe25a2a0), .K6_C12_W2(32'hbd5ead35), .K6_C12_W3(32'hbc0a43a2), .K6_C12_W4(32'hbe0e3320), .K6_C12_W5(32'h3e213e68), .K6_C12_W6(32'hbdad3ea3), .K6_C12_W7(32'h3ba11838), .K6_C12_W8(32'hbd3a19a8), 
+		.K6_C13_W0(32'h3d6a6529), .K6_C13_W1(32'hbd64b41b), .K6_C13_W2(32'h3d391da6), .K6_C13_W3(32'h3cb8d4e0), .K6_C13_W4(32'hbe0c2ad0), .K6_C13_W5(32'hbdbbccf4), .K6_C13_W6(32'hbc297b0e), .K6_C13_W7(32'h3e22e812), .K6_C13_W8(32'hbd6dd59d), 
+		.K6_C14_W0(32'hbc4cfe5b), .K6_C14_W1(32'h3ca2c2cf), .K6_C14_W2(32'h3e0b9400), .K6_C14_W3(32'hbd96cd5c), .K6_C14_W4(32'h3e080356), .K6_C14_W5(32'h3dca83f9), .K6_C14_W6(32'h3c270a1b), .K6_C14_W7(32'hbd647c07), .K6_C14_W8(32'hbe0d0c02), 
+		.K6_C15_W0(32'h3de884cd), .K6_C15_W1(32'h3ca2baf7), .K6_C15_W2(32'hbd8ef5ec), .K6_C15_W3(32'hbd62f350), .K6_C15_W4(32'h3d906f78), .K6_C15_W5(32'hbd063748), .K6_C15_W6(32'hbd669ba8), .K6_C15_W7(32'h3df95968), .K6_C15_W8(32'h3da9dff5), 
+		.K6_BIAS (32'h3c8ef77e),
+
+		.K7_C0_W0(32'h3d09da57), .K7_C0_W1(32'h3d90a73e), .K7_C0_W2(32'hbd872fe1), .K7_C0_W3(32'h3dab7967), .K7_C0_W4(32'h3babb747), .K7_C0_W5(32'h3c9f4a4e), .K7_C0_W6(32'h3db3e03a), .K7_C0_W7(32'h3df8b48f), .K7_C0_W8(32'hbdada1d1), 
+		.K7_C1_W0(32'hbdc9d21b), .K7_C1_W1(32'h3dca8354), .K7_C1_W2(32'h3cdc0bc8), .K7_C1_W3(32'h3da4938f), .K7_C1_W4(32'hbc762d21), .K7_C1_W5(32'h3da80e6e), .K7_C1_W6(32'h3e0ba1ee), .K7_C1_W7(32'hbdb0fca4), .K7_C1_W8(32'hbd3b4400), 
+		.K7_C2_W0(32'h3dc66fcc), .K7_C2_W1(32'h3d0df294), .K7_C2_W2(32'hbd7589da), .K7_C2_W3(32'h3e10b107), .K7_C2_W4(32'hbbe2bdb1), .K7_C2_W5(32'hbb4a4eb4), .K7_C2_W6(32'hbdc58e58), .K7_C2_W7(32'h3c8d53c6), .K7_C2_W8(32'hbd614080), 
+		.K7_C3_W0(32'h3e50f12b), .K7_C3_W1(32'hbb8a8754), .K7_C3_W2(32'h3bc6f362), .K7_C3_W3(32'hbdb003a5), .K7_C3_W4(32'hbd9e164b), .K7_C3_W5(32'h3ded9eb5), .K7_C3_W6(32'h3d9384ae), .K7_C3_W7(32'h3de1dd29), .K7_C3_W8(32'hbcc20867), 
+		.K7_C4_W0(32'h3da2a257), .K7_C4_W1(32'h3de6df9e), .K7_C4_W2(32'h3d1f8c09), .K7_C4_W3(32'h3d7b212b), .K7_C4_W4(32'h3d5d79e1), .K7_C4_W5(32'hba50c84f), .K7_C4_W6(32'hbdd53626), .K7_C4_W7(32'h3d021a84), .K7_C4_W8(32'hbd8a6c39), 
+		.K7_C5_W0(32'hbdc5c685), .K7_C5_W1(32'hbdc6feb8), .K7_C5_W2(32'h3c49275e), .K7_C5_W3(32'h3de698d6), .K7_C5_W4(32'h3d504769), .K7_C5_W5(32'h3d926c13), .K7_C5_W6(32'hbd18d4b3), .K7_C5_W7(32'hbd3e3118), .K7_C5_W8(32'h3dc5835e), 
+		.K7_C6_W0(32'hbd8219c0), .K7_C6_W1(32'hbdc3460c), .K7_C6_W2(32'h3cf979e5), .K7_C6_W3(32'hbd98232e), .K7_C6_W4(32'hbb999b31), .K7_C6_W5(32'hbbdab076), .K7_C6_W6(32'h3e2d3b97), .K7_C6_W7(32'h3ab0a12b), .K7_C6_W8(32'h3e313d92), 
+		.K7_C7_W0(32'hbbb35879), .K7_C7_W1(32'h3d478cfb), .K7_C7_W2(32'hbe1b9470), .K7_C7_W3(32'h3b11ffbc), .K7_C7_W4(32'hbcb260dc), .K7_C7_W5(32'h3d82debd), .K7_C7_W6(32'hbc1a9c3d), .K7_C7_W7(32'hbd6c1b5e), .K7_C7_W8(32'h3d3d7096), 
+		.K7_C8_W0(32'hbda5e8d9), .K7_C8_W1(32'h3df3f8fc), .K7_C8_W2(32'h3d78fae4), .K7_C8_W3(32'hbd5e6389), .K7_C8_W4(32'hbd3796db), .K7_C8_W5(32'hbe14844f), .K7_C8_W6(32'hbdc3b714), .K7_C8_W7(32'h3ddae8d1), .K7_C8_W8(32'hbdcec1fd), 
+		.K7_C9_W0(32'hbe1455dc), .K7_C9_W1(32'h3d87d9d6), .K7_C9_W2(32'h3c905ccb), .K7_C9_W3(32'h3de4ea03), .K7_C9_W4(32'hbdce8a9b), .K7_C9_W5(32'hbca858f7), .K7_C9_W6(32'hbd91beec), .K7_C9_W7(32'hbdebd50e), .K7_C9_W8(32'h3d9814ad), 
+		.K7_C10_W0(32'hbcdc700e), .K7_C10_W1(32'h3dfc56a2), .K7_C10_W2(32'h3d94b72e), .K7_C10_W3(32'hbde4ff4f), .K7_C10_W4(32'hbc6cf852), .K7_C10_W5(32'h3e09a0eb), .K7_C10_W6(32'h3d09c494), .K7_C10_W7(32'h3df5e886), .K7_C10_W8(32'h3da65e45), 
+		.K7_C11_W0(32'h3d27d7a3), .K7_C11_W1(32'hbdb9758c), .K7_C11_W2(32'hbc7f0f3a), .K7_C11_W3(32'hba64c7ee), .K7_C11_W4(32'hbdf5202c), .K7_C11_W5(32'hbc9a9c19), .K7_C11_W6(32'h3d3755b2), .K7_C11_W7(32'hbdf96961), .K7_C11_W8(32'h3dcce449), 
+		.K7_C12_W0(32'hbd804519), .K7_C12_W1(32'hbe15ede9), .K7_C12_W2(32'hbd25bf36), .K7_C12_W3(32'h3c2e4973), .K7_C12_W4(32'h3dd31e82), .K7_C12_W5(32'h3d4e1f0b), .K7_C12_W6(32'hbca0ff8e), .K7_C12_W7(32'hbdd5149f), .K7_C12_W8(32'hbcf5bd8f), 
+		.K7_C13_W0(32'hbde224b5), .K7_C13_W1(32'h3dbe2649), .K7_C13_W2(32'hbdf7f9d3), .K7_C13_W3(32'h3d949155), .K7_C13_W4(32'hbdd7b8d5), .K7_C13_W5(32'hbd3dde97), .K7_C13_W6(32'hbc08e665), .K7_C13_W7(32'h3b65abdf), .K7_C13_W8(32'hbe05b277), 
+		.K7_C14_W0(32'h3e0efa6f), .K7_C14_W1(32'h3e1c4698), .K7_C14_W2(32'hbd7aeba6), .K7_C14_W3(32'hbdae73e5), .K7_C14_W4(32'hbd6b5027), .K7_C14_W5(32'hbc6a6ae9), .K7_C14_W6(32'h3cc5ae9d), .K7_C14_W7(32'h3d9dbb62), .K7_C14_W8(32'h3cd67f97), 
+		.K7_C15_W0(32'h3d034e58), .K7_C15_W1(32'h3dddda19), .K7_C15_W2(32'h3dbe243d), .K7_C15_W3(32'h3dc33e75), .K7_C15_W4(32'hbd2babd5), .K7_C15_W5(32'hbd58cee6), .K7_C15_W6(32'hbdcff5c9), .K7_C15_W7(32'h3bb111af), .K7_C15_W8(32'h3e19b635), 
+		.K7_BIAS (32'h3d410ea5),
+
+		.K8_C0_W0(32'hbb80ffcc), .K8_C0_W1(32'h3e0ae418), .K8_C0_W2(32'hbcddcb8b), .K8_C0_W3(32'hbdfa350c), .K8_C0_W4(32'h3d2399fe), .K8_C0_W5(32'h3e35fd41), .K8_C0_W6(32'h3c43c5f6), .K8_C0_W7(32'h3dbbb87b), .K8_C0_W8(32'hbdd1198e), 
+		.K8_C1_W0(32'h3d460201), .K8_C1_W1(32'h3d999c38), .K8_C1_W2(32'h3d465bd0), .K8_C1_W3(32'hbc019d23), .K8_C1_W4(32'hbdaa622c), .K8_C1_W5(32'hbdbab082), .K8_C1_W6(32'h3d85388a), .K8_C1_W7(32'h3dcdd6d3), .K8_C1_W8(32'h3d66a3a5), 
+		.K8_C2_W0(32'hbe24afa3), .K8_C2_W1(32'hbdb430a9), .K8_C2_W2(32'h3e098a3b), .K8_C2_W3(32'hbdb17763), .K8_C2_W4(32'h3a932020), .K8_C2_W5(32'hbd302aa7), .K8_C2_W6(32'h3d053c0f), .K8_C2_W7(32'h3db7278f), .K8_C2_W8(32'hbd72d622), 
+		.K8_C3_W0(32'h3c6faf30), .K8_C3_W1(32'h3da29ff8), .K8_C3_W2(32'h3db289fe), .K8_C3_W3(32'hbd90282e), .K8_C3_W4(32'h3d739d13), .K8_C3_W5(32'hbdeb46fc), .K8_C3_W6(32'hbdfae652), .K8_C3_W7(32'hbcc29650), .K8_C3_W8(32'hbe03089d), 
+		.K8_C4_W0(32'hbd9637c9), .K8_C4_W1(32'hbd320c96), .K8_C4_W2(32'hbd3ee78c), .K8_C4_W3(32'h3cf0b799), .K8_C4_W4(32'h3ce5bdb1), .K8_C4_W5(32'hbd747dfc), .K8_C4_W6(32'hbd04f746), .K8_C4_W7(32'hbe1564fe), .K8_C4_W8(32'hbe11c338), 
+		.K8_C5_W0(32'hbcf3886d), .K8_C5_W1(32'hbca9eda6), .K8_C5_W2(32'h3dad1330), .K8_C5_W3(32'h3d1c5299), .K8_C5_W4(32'hbd9893b4), .K8_C5_W5(32'hbdce3bde), .K8_C5_W6(32'hbd54f9cf), .K8_C5_W7(32'hbda9ab62), .K8_C5_W8(32'h3dbd8b5b), 
+		.K8_C6_W0(32'hbe1a2cc9), .K8_C6_W1(32'h3c148219), .K8_C6_W2(32'h3d6bbbd3), .K8_C6_W3(32'hbe45be6c), .K8_C6_W4(32'hbdc47097), .K8_C6_W5(32'hbd9ccf08), .K8_C6_W6(32'h3dae9735), .K8_C6_W7(32'hbcb1dba3), .K8_C6_W8(32'hbc0d3cea), 
+		.K8_C7_W0(32'hbb923a1c), .K8_C7_W1(32'hbd2b65c5), .K8_C7_W2(32'hbdea7153), .K8_C7_W3(32'hbde9df36), .K8_C7_W4(32'h3d8acdb5), .K8_C7_W5(32'hbc21a11c), .K8_C7_W6(32'hbd25e170), .K8_C7_W7(32'h3c2e54d8), .K8_C7_W8(32'h3d9f80ea), 
+		.K8_C8_W0(32'h3d1b3448), .K8_C8_W1(32'h3db8e581), .K8_C8_W2(32'h3cbc9124), .K8_C8_W3(32'hbcb820b8), .K8_C8_W4(32'h3cb67977), .K8_C8_W5(32'h3db45edb), .K8_C8_W6(32'hbb971de4), .K8_C8_W7(32'hbe0f2981), .K8_C8_W8(32'h3cc47e64), 
+		.K8_C9_W0(32'h3c1e15a2), .K8_C9_W1(32'h3d9079fb), .K8_C9_W2(32'h3e192eff), .K8_C9_W3(32'hbceb4339), .K8_C9_W4(32'hbe0386ad), .K8_C9_W5(32'hbccb7f2c), .K8_C9_W6(32'h3e0c9c73), .K8_C9_W7(32'h3e044228), .K8_C9_W8(32'hbd1ea3da), 
+		.K8_C10_W0(32'h3dd57029), .K8_C10_W1(32'hbdcc245b), .K8_C10_W2(32'hbcf8cf9b), .K8_C10_W3(32'hbe28dea7), .K8_C10_W4(32'h3e05f976), .K8_C10_W5(32'h3dcb22db), .K8_C10_W6(32'h3d8e6cbb), .K8_C10_W7(32'hbd114e8f), .K8_C10_W8(32'h3d904c37), 
+		.K8_C11_W0(32'hbd341342), .K8_C11_W1(32'hbde8622a), .K8_C11_W2(32'hbdb317be), .K8_C11_W3(32'h3d18b0b2), .K8_C11_W4(32'h3ddbb742), .K8_C11_W5(32'hba2634aa), .K8_C11_W6(32'h3dc7843d), .K8_C11_W7(32'h3ad0ad05), .K8_C11_W8(32'h3e05b4ec), 
+		.K8_C12_W0(32'hbe21492c), .K8_C12_W1(32'hbd9760d0), .K8_C12_W2(32'h3e1a6d4f), .K8_C12_W3(32'hbd1f498a), .K8_C12_W4(32'h3dc1c981), .K8_C12_W5(32'hbdcb0124), .K8_C12_W6(32'h3d90d487), .K8_C12_W7(32'hbd62e43f), .K8_C12_W8(32'hbd3d519e), 
+		.K8_C13_W0(32'hbe2445c1), .K8_C13_W1(32'hbd93de28), .K8_C13_W2(32'hbdec56b5), .K8_C13_W3(32'hbdb8fb5c), .K8_C13_W4(32'hbde0f277), .K8_C13_W5(32'h3dc94db3), .K8_C13_W6(32'hbd769b7f), .K8_C13_W7(32'hbda63153), .K8_C13_W8(32'h3cd3475b), 
+		.K8_C14_W0(32'h3d3aa2db), .K8_C14_W1(32'h3cb549b3), .K8_C14_W2(32'hbc4277eb), .K8_C14_W3(32'hbe24c3f3), .K8_C14_W4(32'hbd8b5b32), .K8_C14_W5(32'hbcf5c367), .K8_C14_W6(32'h3d9322d4), .K8_C14_W7(32'h3d63077c), .K8_C14_W8(32'hbdab0b5e), 
+		.K8_C15_W0(32'hbd42305a), .K8_C15_W1(32'h3d46da0f), .K8_C15_W2(32'h3e0fdd44), .K8_C15_W3(32'hbd997dc8), .K8_C15_W4(32'h3d39f873), .K8_C15_W5(32'h3cca6ede), .K8_C15_W6(32'hbcb6e89b), .K8_C15_W7(32'h3d918fa6), .K8_C15_W8(32'hbdad4bcd), 
+		.K8_BIAS (32'h3d4fe3ad),
+
+		.K9_C0_W0(32'h3de51afa), .K9_C0_W1(32'h3e1c3718), .K9_C0_W2(32'hbdea19ec), .K9_C0_W3(32'hbda838eb), .K9_C0_W4(32'hbd1c30f1), .K9_C0_W5(32'hbe0b641b), .K9_C0_W6(32'hbd9f8dde), .K9_C0_W7(32'hbddda1d1), .K9_C0_W8(32'hbd7a3413), 
+		.K9_C1_W0(32'h3ba6e06d), .K9_C1_W1(32'hbdbfd9d9), .K9_C1_W2(32'h3e285dbe), .K9_C1_W3(32'h3c7fca36), .K9_C1_W4(32'hbd1f8a1c), .K9_C1_W5(32'hbd922059), .K9_C1_W6(32'h3dc55f73), .K9_C1_W7(32'hbc9a2445), .K9_C1_W8(32'hbdb84600), 
+		.K9_C2_W0(32'h3e153568), .K9_C2_W1(32'hbd9b5ae9), .K9_C2_W2(32'hbdb3261a), .K9_C2_W3(32'hbbbfe7e4), .K9_C2_W4(32'hbce70531), .K9_C2_W5(32'h3e1c0630), .K9_C2_W6(32'hbd9ca4de), .K9_C2_W7(32'h3d935616), .K9_C2_W8(32'hba790ed0), 
+		.K9_C3_W0(32'h3d479458), .K9_C3_W1(32'hbce75eaf), .K9_C3_W2(32'hbe18951c), .K9_C3_W3(32'hbcbd9208), .K9_C3_W4(32'h3c5a4dc4), .K9_C3_W5(32'hbe067368), .K9_C3_W6(32'hbe0309fa), .K9_C3_W7(32'hbdb1c1b7), .K9_C3_W8(32'hbdeca4a1), 
+		.K9_C4_W0(32'h3c515e0f), .K9_C4_W1(32'hbd473c18), .K9_C4_W2(32'hbcd42b01), .K9_C4_W3(32'hbe09db27), .K9_C4_W4(32'h3df579e4), .K9_C4_W5(32'h3dc6fed6), .K9_C4_W6(32'hbe0bc348), .K9_C4_W7(32'h3c34cdbc), .K9_C4_W8(32'hbcea8551), 
+		.K9_C5_W0(32'hbe01e6ec), .K9_C5_W1(32'h3e1c4294), .K9_C5_W2(32'hbd1f538e), .K9_C5_W3(32'hbe07bf83), .K9_C5_W4(32'h3e0a4d25), .K9_C5_W5(32'hbd8cb87c), .K9_C5_W6(32'hbdd0a148), .K9_C5_W7(32'h3d960b0b), .K9_C5_W8(32'h3d8962e4), 
+		.K9_C6_W0(32'h3df925e5), .K9_C6_W1(32'h3d7597d7), .K9_C6_W2(32'hbd80e778), .K9_C6_W3(32'h3c777d41), .K9_C6_W4(32'hbcfb8dd5), .K9_C6_W5(32'hba2f07f6), .K9_C6_W6(32'h3e3ef673), .K9_C6_W7(32'hbda3685d), .K9_C6_W8(32'h3d4d4d80), 
+		.K9_C7_W0(32'hbd8f9b72), .K9_C7_W1(32'h3db97de2), .K9_C7_W2(32'hbd8d4036), .K9_C7_W3(32'h3e0d002c), .K9_C7_W4(32'h3ddde329), .K9_C7_W5(32'h3c6d373d), .K9_C7_W6(32'hbbe264e8), .K9_C7_W7(32'h3d6d3481), .K9_C7_W8(32'hbdeb5fab), 
+		.K9_C8_W0(32'h3de499fd), .K9_C8_W1(32'hbafcbfe2), .K9_C8_W2(32'h3d4dc1ef), .K9_C8_W3(32'hbb051d54), .K9_C8_W4(32'h3c5d78b3), .K9_C8_W5(32'hbcb1083c), .K9_C8_W6(32'h3d8ea6db), .K9_C8_W7(32'h3c9bcefb), .K9_C8_W8(32'hbd441c5a), 
+		.K9_C9_W0(32'hbd84eda5), .K9_C9_W1(32'hbdbd00e3), .K9_C9_W2(32'hbd3990ce), .K9_C9_W3(32'h3db0b1d1), .K9_C9_W4(32'h3e11dd01), .K9_C9_W5(32'h3c86c569), .K9_C9_W6(32'h3b932f6e), .K9_C9_W7(32'h3d1df169), .K9_C9_W8(32'h3d0c6d26), 
+		.K9_C10_W0(32'h3e3d0899), .K9_C10_W1(32'hbd842fbc), .K9_C10_W2(32'hbd1b7bee), .K9_C10_W3(32'hbc85415d), .K9_C10_W4(32'hbdfbb925), .K9_C10_W5(32'h3c917841), .K9_C10_W6(32'h3dbebff7), .K9_C10_W7(32'hbd9dc63f), .K9_C10_W8(32'hbd5f7589), 
+		.K9_C11_W0(32'hbd143f42), .K9_C11_W1(32'hbe0393f2), .K9_C11_W2(32'hbde55c95), .K9_C11_W3(32'hbde996bd), .K9_C11_W4(32'h3dfc2bd9), .K9_C11_W5(32'hbe0fbdf1), .K9_C11_W6(32'hbe2a3eb1), .K9_C11_W7(32'hbe077834), .K9_C11_W8(32'hbdd905e0), 
+		.K9_C12_W0(32'hbde6932b), .K9_C12_W1(32'hbcb9eb63), .K9_C12_W2(32'h3d92490e), .K9_C12_W3(32'hbdfc5f1f), .K9_C12_W4(32'hbc6de354), .K9_C12_W5(32'h3d21e31f), .K9_C12_W6(32'h3dd9e06e), .K9_C12_W7(32'h3cfe6de8), .K9_C12_W8(32'hbca98194), 
+		.K9_C13_W0(32'hbdf92248), .K9_C13_W1(32'hbe310c74), .K9_C13_W2(32'h3e2f8bef), .K9_C13_W3(32'h3d03d3f9), .K9_C13_W4(32'h3d4a49ca), .K9_C13_W5(32'hba849dec), .K9_C13_W6(32'h3dd92618), .K9_C13_W7(32'hbd39d060), .K9_C13_W8(32'h3a5a1ff8), 
+		.K9_C14_W0(32'h3d12be69), .K9_C14_W1(32'h3de82493), .K9_C14_W2(32'hbdddd04d), .K9_C14_W3(32'h3daac169), .K9_C14_W4(32'h3d90ce59), .K9_C14_W5(32'hbdc3d3ec), .K9_C14_W6(32'h3d744530), .K9_C14_W7(32'hbdb7d1d1), .K9_C14_W8(32'hbe04e3a7), 
+		.K9_C15_W0(32'h3d8c6f81), .K9_C15_W1(32'h3d04f9e4), .K9_C15_W2(32'hbdc44b7c), .K9_C15_W3(32'h3d32ef19), .K9_C15_W4(32'h3d893fd3), .K9_C15_W5(32'h3da10e49), .K9_C15_W6(32'hbdb98671), .K9_C15_W7(32'h3c373f67), .K9_C15_W8(32'hbdc8cda4), 
+		.K9_BIAS (32'h3d376573),
+
+		.K10_C0_W0(32'h3dedd337), .K10_C0_W1(32'h3d5cae04), .K10_C0_W2(32'hbd969948), .K10_C0_W3(32'hbd8d19db), .K10_C0_W4(32'hbdd6b3b4), .K10_C0_W5(32'h3df9a428), .K10_C0_W6(32'h3cdc7b73), .K10_C0_W7(32'hbd4df471), .K10_C0_W8(32'h3c9fd02b), 
+		.K10_C1_W0(32'hbc2658ff), .K10_C1_W1(32'h3c82d787), .K10_C1_W2(32'hbda91e8c), .K10_C1_W3(32'h3cefcaaa), .K10_C1_W4(32'h3d5edbcd), .K10_C1_W5(32'h3de3596c), .K10_C1_W6(32'h3b420afa), .K10_C1_W7(32'h3dfa2c02), .K10_C1_W8(32'h3df2b850), 
+		.K10_C2_W0(32'hbde316b2), .K10_C2_W1(32'hbdcf70b4), .K10_C2_W2(32'hbdbc6e47), .K10_C2_W3(32'h3d478961), .K10_C2_W4(32'hbb4a7ac1), .K10_C2_W5(32'hbd284731), .K10_C2_W6(32'h3e26fc43), .K10_C2_W7(32'hbdf964a7), .K10_C2_W8(32'h3cd3fb15), 
+		.K10_C3_W0(32'hbd9b9f0c), .K10_C3_W1(32'h3d5d775d), .K10_C3_W2(32'h3de2f73c), .K10_C3_W3(32'hbe016424), .K10_C3_W4(32'hbe3d459b), .K10_C3_W5(32'hbd26c599), .K10_C3_W6(32'hbe1dcdc8), .K10_C3_W7(32'hbd7f7957), .K10_C3_W8(32'hbd7a0c06), 
+		.K10_C4_W0(32'hbd4d4cc8), .K10_C4_W1(32'hbe03026f), .K10_C4_W2(32'hbca9c1ca), .K10_C4_W3(32'hbcffc952), .K10_C4_W4(32'h3e09e9e8), .K10_C4_W5(32'hbcce29e0), .K10_C4_W6(32'h3e2ff4a2), .K10_C4_W7(32'hbdc0c13b), .K10_C4_W8(32'h3db14c62), 
+		.K10_C5_W0(32'h3d6bbf8f), .K10_C5_W1(32'hbdb6956e), .K10_C5_W2(32'h3df22d3a), .K10_C5_W3(32'hbd9e97ce), .K10_C5_W4(32'hbd8fcf67), .K10_C5_W5(32'h3d60bf62), .K10_C5_W6(32'h3e052c63), .K10_C5_W7(32'h3de24231), .K10_C5_W8(32'hbcbbae2b), 
+		.K10_C6_W0(32'h3e05df13), .K10_C6_W1(32'hbe12dc43), .K10_C6_W2(32'hbdf4aa89), .K10_C6_W3(32'h3ca2d407), .K10_C6_W4(32'hbd517b41), .K10_C6_W5(32'hbdf992bd), .K10_C6_W6(32'h3ccfa0ed), .K10_C6_W7(32'hbdcd0f29), .K10_C6_W8(32'hbb682562), 
+		.K10_C7_W0(32'h3de998c1), .K10_C7_W1(32'hbd2fce94), .K10_C7_W2(32'hbd618c93), .K10_C7_W3(32'hbca2742a), .K10_C7_W4(32'hbbff31da), .K10_C7_W5(32'h3df5a5f0), .K10_C7_W6(32'hbd72dd8a), .K10_C7_W7(32'hbe2231ae), .K10_C7_W8(32'hbdd7dff5), 
+		.K10_C8_W0(32'hbda3f25d), .K10_C8_W1(32'hbdce0719), .K10_C8_W2(32'hbdeaca5c), .K10_C8_W3(32'hbd645625), .K10_C8_W4(32'h3d98016f), .K10_C8_W5(32'hbc58ea39), .K10_C8_W6(32'hbc8b1b85), .K10_C8_W7(32'hbc2fe481), .K10_C8_W8(32'hbe0061a6), 
+		.K10_C9_W0(32'h3d50be3e), .K10_C9_W1(32'hbc7eec27), .K10_C9_W2(32'hbd99e3a3), .K10_C9_W3(32'h3b4bb9b2), .K10_C9_W4(32'h3db061c5), .K10_C9_W5(32'h3a680768), .K10_C9_W6(32'h3d469c56), .K10_C9_W7(32'hbdf62d54), .K10_C9_W8(32'h3d6967cb), 
+		.K10_C10_W0(32'h3df4e1d5), .K10_C10_W1(32'h3c58aed5), .K10_C10_W2(32'hbdba2b6b), .K10_C10_W3(32'h3d3f95d4), .K10_C10_W4(32'hbd6a186c), .K10_C10_W5(32'hbdccd73d), .K10_C10_W6(32'hbc326a91), .K10_C10_W7(32'h3d806151), .K10_C10_W8(32'hbe13583c), 
+		.K10_C11_W0(32'hbdf1e5b8), .K10_C11_W1(32'hbe046f3e), .K10_C11_W2(32'h3ce7bb9f), .K10_C11_W3(32'hbd9b99d2), .K10_C11_W4(32'h3d5a4b99), .K10_C11_W5(32'hbb3adb61), .K10_C11_W6(32'hbd7147cb), .K10_C11_W7(32'hbdacb2b5), .K10_C11_W8(32'hbdf7c6ac), 
+		.K10_C12_W0(32'hbcdd2039), .K10_C12_W1(32'h3deabfa8), .K10_C12_W2(32'hbd3e305f), .K10_C12_W3(32'h3c20dcf0), .K10_C12_W4(32'h3d97a721), .K10_C12_W5(32'hbdc8e968), .K10_C12_W6(32'hbcf1b2bb), .K10_C12_W7(32'h3da1b669), .K10_C12_W8(32'h3dd839d3), 
+		.K10_C13_W0(32'hbd2efa2f), .K10_C13_W1(32'hbd3ac765), .K10_C13_W2(32'hbd5d8378), .K10_C13_W3(32'hbc8808a9), .K10_C13_W4(32'hbe19f9e6), .K10_C13_W5(32'hbd01839e), .K10_C13_W6(32'hbe254d39), .K10_C13_W7(32'h3d527f81), .K10_C13_W8(32'h3d1899a1), 
+		.K10_C14_W0(32'hbe1d0f6e), .K10_C14_W1(32'h3dd2cf3f), .K10_C14_W2(32'h3c34abe7), .K10_C14_W3(32'hbd011191), .K10_C14_W4(32'hbdb268de), .K10_C14_W5(32'hbd894923), .K10_C14_W6(32'h3da183b9), .K10_C14_W7(32'hbd3ec7ed), .K10_C14_W8(32'hbdc5afaf), 
+		.K10_C15_W0(32'h3da32945), .K10_C15_W1(32'hbdba8778), .K10_C15_W2(32'hbd87c1c9), .K10_C15_W3(32'hbbb3e058), .K10_C15_W4(32'hbc8e1338), .K10_C15_W5(32'h3d825076), .K10_C15_W6(32'h3d6d341f), .K10_C15_W7(32'hbe229fe1), .K10_C15_W8(32'hbd0d1888), 
+		.K10_BIAS (32'h3c299adc),
+
+		.K11_C0_W0(32'h3d1a3bba), .K11_C0_W1(32'h3d30535a), .K11_C0_W2(32'h3cbdd7f4), .K11_C0_W3(32'h3daa8f7e), .K11_C0_W4(32'hbe076b57), .K11_C0_W5(32'h3d8c7a11), .K11_C0_W6(32'hbd9ff30b), .K11_C0_W7(32'h3ca0b39e), .K11_C0_W8(32'h3c4873ac), 
+		.K11_C1_W0(32'h3e34058f), .K11_C1_W1(32'h3e0909b8), .K11_C1_W2(32'hbc1629cb), .K11_C1_W3(32'hbdad6c77), .K11_C1_W4(32'h3dcd5461), .K11_C1_W5(32'hbdddee98), .K11_C1_W6(32'hbc9ee844), .K11_C1_W7(32'hbcc2fcab), .K11_C1_W8(32'h3dfb6a99), 
+		.K11_C2_W0(32'h3e073029), .K11_C2_W1(32'h3da63dc0), .K11_C2_W2(32'h3d37faf3), .K11_C2_W3(32'h3d7a8337), .K11_C2_W4(32'hbe0a22ae), .K11_C2_W5(32'hbd1f1933), .K11_C2_W6(32'h3d7de84e), .K11_C2_W7(32'hbd3ed286), .K11_C2_W8(32'hbde01a9c), 
+		.K11_C3_W0(32'h3daed175), .K11_C3_W1(32'h3cfdfddd), .K11_C3_W2(32'h3da6ae77), .K11_C3_W3(32'h3e238b55), .K11_C3_W4(32'h3dfc62b6), .K11_C3_W5(32'hbc18c6a5), .K11_C3_W6(32'h3dc1120c), .K11_C3_W7(32'hbce3ffe3), .K11_C3_W8(32'h3d52dff0), 
+		.K11_C4_W0(32'hbd879c8c), .K11_C4_W1(32'h3d7db9cb), .K11_C4_W2(32'h3dc0b64a), .K11_C4_W3(32'h3e0b6280), .K11_C4_W4(32'hbdbc7aca), .K11_C4_W5(32'hbd107c1b), .K11_C4_W6(32'h3c755f83), .K11_C4_W7(32'h3dcd297e), .K11_C4_W8(32'hbc4ea8a7), 
+		.K11_C5_W0(32'hbcfc1402), .K11_C5_W1(32'h3d9e30db), .K11_C5_W2(32'h3dea8531), .K11_C5_W3(32'h3da1baf8), .K11_C5_W4(32'h3da73505), .K11_C5_W5(32'hbd5efc6f), .K11_C5_W6(32'hbe1e2d02), .K11_C5_W7(32'h3de6dcb5), .K11_C5_W8(32'hbdff52f5), 
+		.K11_C6_W0(32'hbc717d93), .K11_C6_W1(32'h3ccd4714), .K11_C6_W2(32'h3c24e728), .K11_C6_W3(32'h3d70394d), .K11_C6_W4(32'hbe1223eb), .K11_C6_W5(32'hbdddc2e9), .K11_C6_W6(32'hbe12f6f2), .K11_C6_W7(32'hbcd8dd93), .K11_C6_W8(32'h3ced5271), 
+		.K11_C7_W0(32'h3d7e9bdf), .K11_C7_W1(32'h3e29c3a0), .K11_C7_W2(32'h3dbc9e16), .K11_C7_W3(32'hbd5df280), .K11_C7_W4(32'hbca9edb2), .K11_C7_W5(32'h3d610334), .K11_C7_W6(32'h3d8a2c36), .K11_C7_W7(32'hbd8a6452), .K11_C7_W8(32'h3df07f36), 
+		.K11_C8_W0(32'h3d5e166d), .K11_C8_W1(32'h3cf004db), .K11_C8_W2(32'hbbeebe0c), .K11_C8_W3(32'hbd413001), .K11_C8_W4(32'h3de38f39), .K11_C8_W5(32'h3d8aea54), .K11_C8_W6(32'h3dac05a9), .K11_C8_W7(32'h3da378d5), .K11_C8_W8(32'hbe301175), 
+		.K11_C9_W0(32'h3d02e971), .K11_C9_W1(32'hbbee271d), .K11_C9_W2(32'h3e17b5e4), .K11_C9_W3(32'h3e187aaa), .K11_C9_W4(32'h3cc82d22), .K11_C9_W5(32'h3da3b5c3), .K11_C9_W6(32'hbe05c945), .K11_C9_W7(32'h3de2c1af), .K11_C9_W8(32'hbcb496eb), 
+		.K11_C10_W0(32'hbd2cb298), .K11_C10_W1(32'hbd5c2791), .K11_C10_W2(32'hbd8a62b4), .K11_C10_W3(32'h3deea0fb), .K11_C10_W4(32'h3dbe0710), .K11_C10_W5(32'h3dec4416), .K11_C10_W6(32'hbe2782a5), .K11_C10_W7(32'hbdef1c4a), .K11_C10_W8(32'hbca357ea), 
+		.K11_C11_W0(32'h3e29aadc), .K11_C11_W1(32'hbd1440ff), .K11_C11_W2(32'h3e3b5809), .K11_C11_W3(32'h3db06654), .K11_C11_W4(32'h3c415c0d), .K11_C11_W5(32'hbe067fb8), .K11_C11_W6(32'hbe09fff0), .K11_C11_W7(32'h3e1f5038), .K11_C11_W8(32'h3d48e24e), 
+		.K11_C12_W0(32'hbd7cf983), .K11_C12_W1(32'hbd0b009d), .K11_C12_W2(32'hbd9ffab7), .K11_C12_W3(32'hbd83047f), .K11_C12_W4(32'hbd6b7c38), .K11_C12_W5(32'hbcc035ea), .K11_C12_W6(32'h3b7b0c7d), .K11_C12_W7(32'h3dc6ea2b), .K11_C12_W8(32'hbdf63694), 
+		.K11_C13_W0(32'hbcffb8fa), .K11_C13_W1(32'h3ddfd22a), .K11_C13_W2(32'h3d1a0889), .K11_C13_W3(32'h3d255e91), .K11_C13_W4(32'hbc5a5492), .K11_C13_W5(32'h3ded8712), .K11_C13_W6(32'h3e0374fd), .K11_C13_W7(32'hbc81cf82), .K11_C13_W8(32'h3c8b7ad6), 
+		.K11_C14_W0(32'h3d65a7e4), .K11_C14_W1(32'hbbbfd498), .K11_C14_W2(32'h3d812bab), .K11_C14_W3(32'h3db03873), .K11_C14_W4(32'hbdcaeb15), .K11_C14_W5(32'h3b7f8ee8), .K11_C14_W6(32'h3dbbda71), .K11_C14_W7(32'h3d98710d), .K11_C14_W8(32'h3c0f02ed), 
+		.K11_C15_W0(32'h3dafcef1), .K11_C15_W1(32'hbc845229), .K11_C15_W2(32'hbd7fc2ec), .K11_C15_W3(32'hbd876a1c), .K11_C15_W4(32'hbd4f7324), .K11_C15_W5(32'h3d80322a), .K11_C15_W6(32'h3def5ce6), .K11_C15_W7(32'h3e0c1ec0), .K11_C15_W8(32'hbde0c1e2), 
+		.K11_BIAS (32'hbce47018),
+
+		.K12_C0_W0(32'h3e07eff5), .K12_C0_W1(32'hbafbd346), .K12_C0_W2(32'h3da56969), .K12_C0_W3(32'h3de724b2), .K12_C0_W4(32'h3da174d3), .K12_C0_W5(32'h3e0d6abc), .K12_C0_W6(32'hbdc1b8a8), .K12_C0_W7(32'h3e02d38e), .K12_C0_W8(32'h3e0cf921), 
+		.K12_C1_W0(32'hbbd951eb), .K12_C1_W1(32'hbbafe76f), .K12_C1_W2(32'hbdc0e2a5), .K12_C1_W3(32'h3df5d01e), .K12_C1_W4(32'h3e37fa11), .K12_C1_W5(32'hbcb05d04), .K12_C1_W6(32'hbcc8fe9f), .K12_C1_W7(32'h3e1ae10f), .K12_C1_W8(32'hbd007930), 
+		.K12_C2_W0(32'h3d758179), .K12_C2_W1(32'hbcfadfae), .K12_C2_W2(32'h3c8ba5ee), .K12_C2_W3(32'hbd4285e2), .K12_C2_W4(32'h3c22221f), .K12_C2_W5(32'hbd688c49), .K12_C2_W6(32'h3def8abc), .K12_C2_W7(32'hbd4b626d), .K12_C2_W8(32'hbde1f6a9), 
+		.K12_C3_W0(32'hbe0e5630), .K12_C3_W1(32'hbd5135b6), .K12_C3_W2(32'h3de5e21b), .K12_C3_W3(32'h3df222fa), .K12_C3_W4(32'hbd65bc6e), .K12_C3_W5(32'h3e3bfc4d), .K12_C3_W6(32'hbbe82196), .K12_C3_W7(32'hbdae7385), .K12_C3_W8(32'hbdd51bb3), 
+		.K12_C4_W0(32'hbda9d79d), .K12_C4_W1(32'h3ce0f772), .K12_C4_W2(32'h3e2287b6), .K12_C4_W3(32'h3c9a8b38), .K12_C4_W4(32'h3c77893e), .K12_C4_W5(32'h3e19144f), .K12_C4_W6(32'h3dedcaf4), .K12_C4_W7(32'hbb610c32), .K12_C4_W8(32'h3daec2c5), 
+		.K12_C5_W0(32'hbb3d446e), .K12_C5_W1(32'hbe1bb7c4), .K12_C5_W2(32'h3d48c9c2), .K12_C5_W3(32'h3cf1d9e4), .K12_C5_W4(32'h3dc6fe85), .K12_C5_W5(32'h3e1710ab), .K12_C5_W6(32'h3d226c7a), .K12_C5_W7(32'h3d19b315), .K12_C5_W8(32'hbde4a3c7), 
+		.K12_C6_W0(32'h3d32886a), .K12_C6_W1(32'hbdf44de2), .K12_C6_W2(32'h3cb72445), .K12_C6_W3(32'h3d3b6b2d), .K12_C6_W4(32'hbd6ce51f), .K12_C6_W5(32'h3d10ad85), .K12_C6_W6(32'h3e000f85), .K12_C6_W7(32'h3c7aca96), .K12_C6_W8(32'h3e196148), 
+		.K12_C7_W0(32'hbd88307b), .K12_C7_W1(32'hbe01c03c), .K12_C7_W2(32'hbe0fdec0), .K12_C7_W3(32'h3e1b98a0), .K12_C7_W4(32'h3d7cdd4c), .K12_C7_W5(32'hbdb53377), .K12_C7_W6(32'h3d3b8526), .K12_C7_W7(32'h3dba228b), .K12_C7_W8(32'hbdb71d97), 
+		.K12_C8_W0(32'h3e0d4aae), .K12_C8_W1(32'h3d8279c4), .K12_C8_W2(32'h3dd8f411), .K12_C8_W3(32'h3d845719), .K12_C8_W4(32'hbd219b33), .K12_C8_W5(32'hbc5d36e1), .K12_C8_W6(32'h3d42ee45), .K12_C8_W7(32'hbe1e8276), .K12_C8_W8(32'hb99acda2), 
+		.K12_C9_W0(32'hbdae9c8c), .K12_C9_W1(32'hbdd80cf4), .K12_C9_W2(32'hbc6b19d6), .K12_C9_W3(32'h3d420dbe), .K12_C9_W4(32'h3e003fe1), .K12_C9_W5(32'h3e2d9e98), .K12_C9_W6(32'h3cbce7e0), .K12_C9_W7(32'h3d9163c3), .K12_C9_W8(32'hbd659cfa), 
+		.K12_C10_W0(32'hbd858339), .K12_C10_W1(32'hbd30ef1a), .K12_C10_W2(32'h3d342fd7), .K12_C10_W3(32'hbdef6438), .K12_C10_W4(32'h3d0b3077), .K12_C10_W5(32'h3d3b0c8c), .K12_C10_W6(32'hbe084172), .K12_C10_W7(32'hbdf52b70), .K12_C10_W8(32'h3d227898), 
+		.K12_C11_W0(32'hbd3ce973), .K12_C11_W1(32'h3e22bf86), .K12_C11_W2(32'h3dc47635), .K12_C11_W3(32'hbcf70a5d), .K12_C11_W4(32'h3dfd4b1d), .K12_C11_W5(32'h3cfb2dbf), .K12_C11_W6(32'h3e084205), .K12_C11_W7(32'h3d8ad4a3), .K12_C11_W8(32'hbe215cbf), 
+		.K12_C12_W0(32'h3d6d11de), .K12_C12_W1(32'h3db33e90), .K12_C12_W2(32'hbbc33e53), .K12_C12_W3(32'h3bf45ca8), .K12_C12_W4(32'h3cb6ac30), .K12_C12_W5(32'hbe0743d7), .K12_C12_W6(32'hbd8a2999), .K12_C12_W7(32'h3d8b4147), .K12_C12_W8(32'h3d3946b1), 
+		.K12_C13_W0(32'hbcaa0e23), .K12_C13_W1(32'hbcd1b8b6), .K12_C13_W2(32'hbe2ae4fc), .K12_C13_W3(32'h3d97b7f9), .K12_C13_W4(32'hbdb42c05), .K12_C13_W5(32'hbdf7794a), .K12_C13_W6(32'hbd9d96d6), .K12_C13_W7(32'h3d93c4f0), .K12_C13_W8(32'hbd05c540), 
+		.K12_C14_W0(32'hbd944cde), .K12_C14_W1(32'h3e11d209), .K12_C14_W2(32'h3d510ffa), .K12_C14_W3(32'hbc43ff4e), .K12_C14_W4(32'hbc35e646), .K12_C14_W5(32'hbd58ac98), .K12_C14_W6(32'h3e0430b2), .K12_C14_W7(32'hbcc23403), .K12_C14_W8(32'hbdbb325c), 
+		.K12_C15_W0(32'h3d810dd1), .K12_C15_W1(32'hbd8ac132), .K12_C15_W2(32'hbe04695f), .K12_C15_W3(32'h3d2f8879), .K12_C15_W4(32'h3deebd61), .K12_C15_W5(32'hbe247677), .K12_C15_W6(32'hbdedddb3), .K12_C15_W7(32'hbd1ba08f), .K12_C15_W8(32'hbe1a1797), 
+		.K12_BIAS (32'hbbb55caa),
+
+		.K13_C0_W0(32'h3e0ab894), .K13_C0_W1(32'hbd45b552), .K13_C0_W2(32'hbb8559c3), .K13_C0_W3(32'h3de8f4a6), .K13_C0_W4(32'hbe083a1d), .K13_C0_W5(32'h3ca1ed24), .K13_C0_W6(32'h3dad3712), .K13_C0_W7(32'h3cb7c592), .K13_C0_W8(32'h3dd4f7ce), 
+		.K13_C1_W0(32'hbda9cbca), .K13_C1_W1(32'hbd5d31f8), .K13_C1_W2(32'hbdd4d520), .K13_C1_W3(32'h3d82c7ec), .K13_C1_W4(32'h3d4a1972), .K13_C1_W5(32'h3dff0dd9), .K13_C1_W6(32'h3e246153), .K13_C1_W7(32'hbc9a8061), .K13_C1_W8(32'h3e04ebfe), 
+		.K13_C2_W0(32'hbdce06ac), .K13_C2_W1(32'h3b95d963), .K13_C2_W2(32'hbd465fc7), .K13_C2_W3(32'hbcb72e11), .K13_C2_W4(32'h3d3ba347), .K13_C2_W5(32'h3bb8f0d9), .K13_C2_W6(32'h3de2cb86), .K13_C2_W7(32'hbd47322f), .K13_C2_W8(32'hb940c282), 
+		.K13_C3_W0(32'hbdbdd03f), .K13_C3_W1(32'h3dfc2217), .K13_C3_W2(32'h3dc2d4d4), .K13_C3_W3(32'h3de977ae), .K13_C3_W4(32'hbd9b5712), .K13_C3_W5(32'h3e06654d), .K13_C3_W6(32'hbd56e571), .K13_C3_W7(32'hbb03b2bc), .K13_C3_W8(32'h3ddb1b84), 
+		.K13_C4_W0(32'h3dbe0352), .K13_C4_W1(32'h3e113d74), .K13_C4_W2(32'h3e0a251d), .K13_C4_W3(32'hbde6ea9a), .K13_C4_W4(32'h3dc11add), .K13_C4_W5(32'h3d572ba8), .K13_C4_W6(32'h3cccb48e), .K13_C4_W7(32'h3d04b3d6), .K13_C4_W8(32'h3dccadc3), 
+		.K13_C5_W0(32'h3bbb72db), .K13_C5_W1(32'h3d3bc12c), .K13_C5_W2(32'hbb11bbdc), .K13_C5_W3(32'hbe0c8fee), .K13_C5_W4(32'h3d8bdc31), .K13_C5_W5(32'hbc9de684), .K13_C5_W6(32'hbda61fc5), .K13_C5_W7(32'h3d6230d5), .K13_C5_W8(32'h3a12b3ea), 
+		.K13_C6_W0(32'hbe0e5f9b), .K13_C6_W1(32'h3de9a6ba), .K13_C6_W2(32'hbcbdf290), .K13_C6_W3(32'hbdfbf4bf), .K13_C6_W4(32'h3d107e50), .K13_C6_W5(32'h3c1c4597), .K13_C6_W6(32'hbd8a3705), .K13_C6_W7(32'hbd27313f), .K13_C6_W8(32'h3e292468), 
+		.K13_C7_W0(32'hbd36e9b3), .K13_C7_W1(32'h3e017b0f), .K13_C7_W2(32'h3e42fefb), .K13_C7_W3(32'hbdc1378f), .K13_C7_W4(32'h3dcb90c2), .K13_C7_W5(32'h3da92c22), .K13_C7_W6(32'hbdecc58c), .K13_C7_W7(32'hbdbfe431), .K13_C7_W8(32'hbdae54e9), 
+		.K13_C8_W0(32'h3d6918df), .K13_C8_W1(32'hbd4f3275), .K13_C8_W2(32'h3df6e68d), .K13_C8_W3(32'hbdd7fed8), .K13_C8_W4(32'h3dcb25e6), .K13_C8_W5(32'h3dad2e10), .K13_C8_W6(32'hbdae169b), .K13_C8_W7(32'hbdcd2736), .K13_C8_W8(32'hbc49c41a), 
+		.K13_C9_W0(32'hbd49be71), .K13_C9_W1(32'hbe0ab648), .K13_C9_W2(32'hbbc5529b), .K13_C9_W3(32'h3e0a3e7c), .K13_C9_W4(32'hbd3a43cd), .K13_C9_W5(32'hbd4afd15), .K13_C9_W6(32'hbe112ea6), .K13_C9_W7(32'h3dd901fb), .K13_C9_W8(32'hbdf87756), 
+		.K13_C10_W0(32'hbcb7d8c1), .K13_C10_W1(32'hbd88079f), .K13_C10_W2(32'hbd27756a), .K13_C10_W3(32'h3e2153ad), .K13_C10_W4(32'hbd84ba93), .K13_C10_W5(32'hbdef565f), .K13_C10_W6(32'h3de43624), .K13_C10_W7(32'h3d9f61cd), .K13_C10_W8(32'h3e2aad25), 
+		.K13_C11_W0(32'h3da757d7), .K13_C11_W1(32'h3d9eb44b), .K13_C11_W2(32'hbd720f27), .K13_C11_W3(32'hbd89d074), .K13_C11_W4(32'hbd9081d5), .K13_C11_W5(32'h3d734f96), .K13_C11_W6(32'hbd91ec6a), .K13_C11_W7(32'hbc78ffe7), .K13_C11_W8(32'hbcd3a0ee), 
+		.K13_C12_W0(32'h3d4aa667), .K13_C12_W1(32'h3d1039a5), .K13_C12_W2(32'hbd2bd340), .K13_C12_W3(32'h3bc358ee), .K13_C12_W4(32'hbd008832), .K13_C12_W5(32'hbdc15498), .K13_C12_W6(32'h3dbe997a), .K13_C12_W7(32'h3bf2ee60), .K13_C12_W8(32'hbd346e7a), 
+		.K13_C13_W0(32'hbe25f51c), .K13_C13_W1(32'hbe0632b2), .K13_C13_W2(32'hbc5f7066), .K13_C13_W3(32'hbd9cb49b), .K13_C13_W4(32'hbd30d361), .K13_C13_W5(32'h3dc53034), .K13_C13_W6(32'h3cd60e13), .K13_C13_W7(32'hbc86bb8c), .K13_C13_W8(32'h3dba5ef8), 
+		.K13_C14_W0(32'hbde620a0), .K13_C14_W1(32'hbcc31da3), .K13_C14_W2(32'h3d8a6855), .K13_C14_W3(32'h3de6d86b), .K13_C14_W4(32'h3dfc5a53), .K13_C14_W5(32'h3df35b28), .K13_C14_W6(32'h3c84d911), .K13_C14_W7(32'h3d28ae94), .K13_C14_W8(32'hbd57e3d4), 
+		.K13_C15_W0(32'hbd6d3f77), .K13_C15_W1(32'h3cac4dce), .K13_C15_W2(32'h3973450b), .K13_C15_W3(32'hbd40729e), .K13_C15_W4(32'hbd743e99), .K13_C15_W5(32'h3d26e4e6), .K13_C15_W6(32'h3e1676d7), .K13_C15_W7(32'h3d610ca1), .K13_C15_W8(32'h3e07d6a8), 
+		.K13_BIAS (32'h3d03d650),
+
+		.K14_C0_W0(32'hbd380493), .K14_C0_W1(32'hbdff766a), .K14_C0_W2(32'hbde5866d), .K14_C0_W3(32'h3db0c94b), .K14_C0_W4(32'hbdbfd4d6), .K14_C0_W5(32'h3dc4da9a), .K14_C0_W6(32'h3dca5dc7), .K14_C0_W7(32'h3d8412e7), .K14_C0_W8(32'h3d0b56ac), 
+		.K14_C1_W0(32'h3e0e0a4b), .K14_C1_W1(32'h3d9099dc), .K14_C1_W2(32'h3ddaca81), .K14_C1_W3(32'h3d79f820), .K14_C1_W4(32'hbcc2c6c6), .K14_C1_W5(32'hbd1d0404), .K14_C1_W6(32'hbe1b1daa), .K14_C1_W7(32'h3da336bf), .K14_C1_W8(32'hbd853a9c), 
+		.K14_C2_W0(32'hbde8130b), .K14_C2_W1(32'hbe12145f), .K14_C2_W2(32'hbc727abb), .K14_C2_W3(32'hbb6cbd9f), .K14_C2_W4(32'h3d84f5e1), .K14_C2_W5(32'hbdfed89a), .K14_C2_W6(32'h3e00aa8f), .K14_C2_W7(32'h3d586c99), .K14_C2_W8(32'hbdcc4ead), 
+		.K14_C3_W0(32'h3bb5212b), .K14_C3_W1(32'hbe21f855), .K14_C3_W2(32'hbe0f5e30), .K14_C3_W3(32'h3d805fbc), .K14_C3_W4(32'hbdb6126c), .K14_C3_W5(32'h3db40451), .K14_C3_W6(32'h3cee7223), .K14_C3_W7(32'h3e13e9f9), .K14_C3_W8(32'h3ce82ad9), 
+		.K14_C4_W0(32'hbc4eaeb8), .K14_C4_W1(32'h3d313a58), .K14_C4_W2(32'h3d8e9747), .K14_C4_W3(32'h3d2f1b0d), .K14_C4_W4(32'hbe100029), .K14_C4_W5(32'hbcf9818c), .K14_C4_W6(32'h3dcea6a4), .K14_C4_W7(32'h3dc42bfd), .K14_C4_W8(32'h3dd33679), 
+		.K14_C5_W0(32'h3d329ddd), .K14_C5_W1(32'hbc351017), .K14_C5_W2(32'hbdb447e5), .K14_C5_W3(32'hbde28ebb), .K14_C5_W4(32'h3dfcbd2a), .K14_C5_W5(32'hbd8aa13c), .K14_C5_W6(32'hbdcc15ce), .K14_C5_W7(32'hbcd8e2b7), .K14_C5_W8(32'hbdd489d6), 
+		.K14_C6_W0(32'h3db36c4f), .K14_C6_W1(32'h3da91dc7), .K14_C6_W2(32'h3d85b278), .K14_C6_W3(32'h3d347063), .K14_C6_W4(32'hbdf01ac0), .K14_C6_W5(32'h3d896a67), .K14_C6_W6(32'h3c8f3484), .K14_C6_W7(32'hbde80c9d), .K14_C6_W8(32'h3d94559c), 
+		.K14_C7_W0(32'hbca0a19b), .K14_C7_W1(32'hbbed6939), .K14_C7_W2(32'h3d313fd7), .K14_C7_W3(32'hbe14a655), .K14_C7_W4(32'hbb856519), .K14_C7_W5(32'hbdcb62e4), .K14_C7_W6(32'hbcfa1645), .K14_C7_W7(32'hbd2b3c3b), .K14_C7_W8(32'hbe0b1fe4), 
+		.K14_C8_W0(32'hbcf2f0de), .K14_C8_W1(32'hbcf1e90c), .K14_C8_W2(32'h3d5deec9), .K14_C8_W3(32'h3d8a8157), .K14_C8_W4(32'hbdfb8555), .K14_C8_W5(32'hbd0e2073), .K14_C8_W6(32'hbde3ce7b), .K14_C8_W7(32'hbdca0b6f), .K14_C8_W8(32'h3dccdc0c), 
+		.K14_C9_W0(32'hbe04021e), .K14_C9_W1(32'h392b1608), .K14_C9_W2(32'h3c836e83), .K14_C9_W3(32'h3ce714fd), .K14_C9_W4(32'hbccccc8e), .K14_C9_W5(32'hbdc9a8a1), .K14_C9_W6(32'hbdd68d22), .K14_C9_W7(32'h3cc742a2), .K14_C9_W8(32'h3dc32536), 
+		.K14_C10_W0(32'hbda6bf85), .K14_C10_W1(32'h3cf587fb), .K14_C10_W2(32'hbda024a4), .K14_C10_W3(32'h3db1cfc7), .K14_C10_W4(32'h3dffb5a0), .K14_C10_W5(32'hbde38bb9), .K14_C10_W6(32'hb9f55949), .K14_C10_W7(32'h3d7bfe63), .K14_C10_W8(32'hbbee40fd), 
+		.K14_C11_W0(32'h3c08c26a), .K14_C11_W1(32'h3e173025), .K14_C11_W2(32'hbd5bc033), .K14_C11_W3(32'h3dd83e41), .K14_C11_W4(32'h3dc1a950), .K14_C11_W5(32'hbe070d02), .K14_C11_W6(32'h3cad3941), .K14_C11_W7(32'h3943e528), .K14_C11_W8(32'hbd0c8911), 
+		.K14_C12_W0(32'hbdfc2b20), .K14_C12_W1(32'h3d7b98b4), .K14_C12_W2(32'hbdda7ae7), .K14_C12_W3(32'hbe205443), .K14_C12_W4(32'hbd1697a4), .K14_C12_W5(32'h3e13eb64), .K14_C12_W6(32'h3d9189bd), .K14_C12_W7(32'hbd18bf90), .K14_C12_W8(32'hbd9a7938), 
+		.K14_C13_W0(32'h3bf05e0f), .K14_C13_W1(32'h3d9f05db), .K14_C13_W2(32'h3e15e99f), .K14_C13_W3(32'hbe09892d), .K14_C13_W4(32'h3ae19646), .K14_C13_W5(32'hbdd776d6), .K14_C13_W6(32'hbd16d470), .K14_C13_W7(32'hbe0e8f87), .K14_C13_W8(32'hbc2aeb74), 
+		.K14_C14_W0(32'h3d970c49), .K14_C14_W1(32'hbcb13269), .K14_C14_W2(32'h3cf2c386), .K14_C14_W3(32'hbd5fee6f), .K14_C14_W4(32'h3d56ec87), .K14_C14_W5(32'hbd3c4aa3), .K14_C14_W6(32'hbdf13ec0), .K14_C14_W7(32'hbdecc1cf), .K14_C14_W8(32'hbcd3f0ca), 
+		.K14_C15_W0(32'hbdd3816e), .K14_C15_W1(32'h3d210755), .K14_C15_W2(32'hbda77c27), .K14_C15_W3(32'h3d8a99ec), .K14_C15_W4(32'h3df26a55), .K14_C15_W5(32'hbde26513), .K14_C15_W6(32'hbd779bbf), .K14_C15_W7(32'hbcdd7f80), .K14_C15_W8(32'hbdc7205b), 
+		.K14_BIAS (32'hbd04e4ad),
+
+		.K15_C0_W0(32'h3df2c6be), .K15_C0_W1(32'h3caf174b), .K15_C0_W2(32'h3d8ad2df), .K15_C0_W3(32'h3d638121), .K15_C0_W4(32'hbde09203), .K15_C0_W5(32'h3dbab3ad), .K15_C0_W6(32'hbd0b20e5), .K15_C0_W7(32'h3e0198aa), .K15_C0_W8(32'hbd776237), 
+		.K15_C1_W0(32'h3c69e2d3), .K15_C1_W1(32'h3d91c10f), .K15_C1_W2(32'h3bbf77dd), .K15_C1_W3(32'h3d25a1ad), .K15_C1_W4(32'hbcb42657), .K15_C1_W5(32'hbddf9e33), .K15_C1_W6(32'h3c28a6fa), .K15_C1_W7(32'h3cd9cbdf), .K15_C1_W8(32'hbd85f2cf), 
+		.K15_C2_W0(32'hbd825587), .K15_C2_W1(32'hbdc6a345), .K15_C2_W2(32'hbdafe27a), .K15_C2_W3(32'h3dc2227d), .K15_C2_W4(32'h3de00ada), .K15_C2_W5(32'hbdbcd6bb), .K15_C2_W6(32'h3d1dfd17), .K15_C2_W7(32'h3d2ae58f), .K15_C2_W8(32'h3d29fee9), 
+		.K15_C3_W0(32'h3d387dc0), .K15_C3_W1(32'hbde2e3d5), .K15_C3_W2(32'hbcec8b28), .K15_C3_W3(32'h3df03799), .K15_C3_W4(32'hbd8fee81), .K15_C3_W5(32'hbe1f781a), .K15_C3_W6(32'h3e31e38a), .K15_C3_W7(32'h3dfc00dc), .K15_C3_W8(32'hbcdcf1ca), 
+		.K15_C4_W0(32'h3dfe27fc), .K15_C4_W1(32'hbdee8631), .K15_C4_W2(32'h3d949f3a), .K15_C4_W3(32'h3dba27c0), .K15_C4_W4(32'h3d47f7f6), .K15_C4_W5(32'h3e15748d), .K15_C4_W6(32'hbd94e67a), .K15_C4_W7(32'hbd410e23), .K15_C4_W8(32'h3e143a1d), 
+		.K15_C5_W0(32'h3d50655a), .K15_C5_W1(32'h3ccabc9b), .K15_C5_W2(32'h3dc31b1e), .K15_C5_W3(32'hbdc3819c), .K15_C5_W4(32'hbe16fda0), .K15_C5_W5(32'h3da8bd13), .K15_C5_W6(32'hbe051684), .K15_C5_W7(32'hbb7c0f58), .K15_C5_W8(32'hbcf0fcb7), 
+		.K15_C6_W0(32'hbdd0dbce), .K15_C6_W1(32'h3cb4ddd4), .K15_C6_W2(32'hbdd807fc), .K15_C6_W3(32'h3e2d018c), .K15_C6_W4(32'h3d946bec), .K15_C6_W5(32'h3db18af6), .K15_C6_W6(32'hbde62bac), .K15_C6_W7(32'h3dbc56c2), .K15_C6_W8(32'hbd1a1cd5), 
+		.K15_C7_W0(32'hbd810e35), .K15_C7_W1(32'hbc899349), .K15_C7_W2(32'hbbad403a), .K15_C7_W3(32'h3cdc0d88), .K15_C7_W4(32'hbd6c9112), .K15_C7_W5(32'h3e305964), .K15_C7_W6(32'hbe1b1b45), .K15_C7_W7(32'h3c21fe58), .K15_C7_W8(32'hbdd6ee0c), 
+		.K15_C8_W0(32'hbcf0f6c6), .K15_C8_W1(32'hbde124ec), .K15_C8_W2(32'h3d98c042), .K15_C8_W3(32'hbdf8130e), .K15_C8_W4(32'hbd033c0a), .K15_C8_W5(32'hbd4fdf55), .K15_C8_W6(32'hbc1f44d7), .K15_C8_W7(32'h3e29e4a4), .K15_C8_W8(32'h3e2363f7), 
+		.K15_C9_W0(32'hbda2439a), .K15_C9_W1(32'hbd1132d1), .K15_C9_W2(32'hbdd92dd3), .K15_C9_W3(32'hbd714ec6), .K15_C9_W4(32'hbd8e7a32), .K15_C9_W5(32'hbd086076), .K15_C9_W6(32'h3da2dd36), .K15_C9_W7(32'h3dfb80be), .K15_C9_W8(32'h3d811e56), 
+		.K15_C10_W0(32'h3d620fc5), .K15_C10_W1(32'hbda26dc8), .K15_C10_W2(32'h3c94fc17), .K15_C10_W3(32'h3e27a454), .K15_C10_W4(32'h3e2acd96), .K15_C10_W5(32'h3dae1225), .K15_C10_W6(32'h3c9707a8), .K15_C10_W7(32'h3da82f4e), .K15_C10_W8(32'hbe1766c0), 
+		.K15_C11_W0(32'hbbe9add6), .K15_C11_W1(32'h3d9600f4), .K15_C11_W2(32'h3e0e9dd3), .K15_C11_W3(32'h3d5569e7), .K15_C11_W4(32'hbd8edc6d), .K15_C11_W5(32'hbd8047ce), .K15_C11_W6(32'h3de63e01), .K15_C11_W7(32'hbd97bd95), .K15_C11_W8(32'h3da63adc), 
+		.K15_C12_W0(32'h3e4577bc), .K15_C12_W1(32'h3e4b5ddf), .K15_C12_W2(32'h3d152923), .K15_C12_W3(32'hbdadcce5), .K15_C12_W4(32'h3d639aba), .K15_C12_W5(32'h3d4c3571), .K15_C12_W6(32'hbdcdaad7), .K15_C12_W7(32'hbda904e4), .K15_C12_W8(32'hbd842681), 
+		.K15_C13_W0(32'h3e3a1178), .K15_C13_W1(32'h3d98f40f), .K15_C13_W2(32'hbd0dd970), .K15_C13_W3(32'hbdf943f0), .K15_C13_W4(32'h3d96b4f7), .K15_C13_W5(32'hbcea8df4), .K15_C13_W6(32'h3dce0add), .K15_C13_W7(32'h3d8c18d9), .K15_C13_W8(32'h3cd0453d), 
+		.K15_C14_W0(32'h3d53b17b), .K15_C14_W1(32'h3d99eea2), .K15_C14_W2(32'hbca9d165), .K15_C14_W3(32'hb9ad621b), .K15_C14_W4(32'hbe03e7ae), .K15_C14_W5(32'h3df02e80), .K15_C14_W6(32'h3d9bf0e5), .K15_C14_W7(32'hbc1d9f08), .K15_C14_W8(32'h3d14bf29), 
+		.K15_C15_W0(32'h3e14814f), .K15_C15_W1(32'h3cc7cc05), .K15_C15_W2(32'hbd4594e6), .K15_C15_W3(32'hbdc913c6), .K15_C15_W4(32'hbdaca14d), .K15_C15_W5(32'hbda1de85), .K15_C15_W6(32'h3e0c141d), .K15_C15_W7(32'h3d9bea04), .K15_C15_W8(32'hbdaede04), 
+		.K15_BIAS (32'hbbaf1269)
+		)
+		block5_conv1(
+		.clk(clk),
+		.resetn(resetn),
+		.data_valid_in(valid_out_pool_4_3[CHANNEL_OUT -1]),		// Edit here - [index]
+		.data_in_0(data_out_pool_4_3[0]),
+		.data_in_1(data_out_pool_4_3[1]),
+		.data_in_2(data_out_pool_4_3[2]),
+		.data_in_3(data_out_pool_4_3[3]),
+		.data_in_4(data_out_pool_4_3[4]),
+		.data_in_5(data_out_pool_4_3[5]),
+		.data_in_6(data_out_pool_4_3[6]),
+		.data_in_7(data_out_pool_4_3[7]),
+		.data_in_8(data_out_pool_4_3[8]),
+		.data_in_9(data_out_pool_4_3[9]),
+		.data_in_10(data_out_pool_4_3[10]),
+		.data_in_11(data_out_pool_4_3[11]),
+		.data_in_12(data_out_pool_4_3[12]),
+		.data_in_13(data_out_pool_4_3[13]),
+		.data_in_14(data_out_pool_4_3[14]),
+		.data_in_15(data_out_pool_4_3[15]),
+		.data_out_conv_0(conv_out_5_1[0]),
+		.data_out_conv_1(conv_out_5_1[1]),
+		.data_out_conv_2(conv_out_5_1[2]),
+		.data_out_conv_3(conv_out_5_1[3]),
+		.data_out_conv_4(conv_out_5_1[4]),
+		.data_out_conv_5(conv_out_5_1[5]),
+		.data_out_conv_6(conv_out_5_1[6]),
+		.data_out_conv_7(conv_out_5_1[7]),
+		.data_out_conv_8(conv_out_5_1[8]),
+		.data_out_conv_9(conv_out_5_1[9]),
+		.data_out_conv_10(conv_out_5_1[10]),
+		.data_out_conv_11(conv_out_5_1[11]),
+		.data_out_conv_12(conv_out_5_1[12]),
+		.data_out_conv_13(conv_out_5_1[13]),
+		.data_out_conv_14(conv_out_5_1[14]),
+		.data_out_conv_15(conv_out_5_1[15]),
+		.valid_out_pixel(conv_valid_out_5_1),
+		.done(done_conv_5_1)
+		);
+
+
+
+	generate
+    for (i = 0; i < CHANNEL_OUT; i=i+1) 
+    begin : relu_5_1 // needs CHANNEL_OUT relu
+
+        activate #(
+            .DATA_WIDTH(32)
+        )
+        relu (
+            .in(conv_out_5_1[i]),			// Edit here
+            .out(relu_out_5_1[i])
+        );
+    end
+    endgenerate
+
+
+
+
+	conv3d_16_kernel_16_channel_size_3 #(
+		.DATA_WIDTH(32),.IMG_WIDTH(WIDTH>>1),.IMG_HEIGHT(HEIGHT>>1),	// Edit here
+		.K0_C0_W0(32'hbd85b42f), .K0_C0_W1(32'h3dceeb4e), .K0_C0_W2(32'h3e34fa16), .K0_C0_W3(32'hbdab5411), .K0_C0_W4(32'hbdba0e5a), .K0_C0_W5(32'h3dde5897), .K0_C0_W6(32'hbe0609f3), .K0_C0_W7(32'h3e406b4f), .K0_C0_W8(32'hbe04d642), 
+		.K0_C1_W0(32'hbdc0abec), .K0_C1_W1(32'hbc839d8a), .K0_C1_W2(32'h3d81190e), .K0_C1_W3(32'hbe0839e4), .K0_C1_W4(32'h3e0a2141), .K0_C1_W5(32'hbd7563e9), .K0_C1_W6(32'h3db7a708), .K0_C1_W7(32'hbd8a98aa), .K0_C1_W8(32'hbe09d424), 
+		.K0_C2_W0(32'h3e0a222e), .K0_C2_W1(32'hbdf650cf), .K0_C2_W2(32'h3c85140d), .K0_C2_W3(32'h3de3d30c), .K0_C2_W4(32'hbdee9ea5), .K0_C2_W5(32'hbcda4c8a), .K0_C2_W6(32'h3df33dce), .K0_C2_W7(32'h3c8f857e), .K0_C2_W8(32'hbd311223), 
+		.K0_C3_W0(32'hbdbe8a92), .K0_C3_W1(32'h3e0733ab), .K0_C3_W2(32'hbdd7a09e), .K0_C3_W3(32'hbc496133), .K0_C3_W4(32'h3e1a598c), .K0_C3_W5(32'hbe12e5d9), .K0_C3_W6(32'h3d7c1acb), .K0_C3_W7(32'h3d0503df), .K0_C3_W8(32'hbd8def55), 
+		.K0_C4_W0(32'h3d39e354), .K0_C4_W1(32'h3d43e705), .K0_C4_W2(32'h3d0e3f82), .K0_C4_W3(32'hbde7c823), .K0_C4_W4(32'hbdc901b4), .K0_C4_W5(32'h3cf6cb13), .K0_C4_W6(32'h3dc54f0d), .K0_C4_W7(32'hbd84d725), .K0_C4_W8(32'hbd9f1651), 
+		.K0_C5_W0(32'hbd931b36), .K0_C5_W1(32'hbddfdd67), .K0_C5_W2(32'hbdf33669), .K0_C5_W3(32'h3c596ecd), .K0_C5_W4(32'h3e28fcf7), .K0_C5_W5(32'h3ddb1195), .K0_C5_W6(32'h3d0c6295), .K0_C5_W7(32'h3d0bcb86), .K0_C5_W8(32'hbde71975), 
+		.K0_C6_W0(32'hbdb64392), .K0_C6_W1(32'h3da5f3fd), .K0_C6_W2(32'h3e341b09), .K0_C6_W3(32'hbd7bbed2), .K0_C6_W4(32'hbd17d24b), .K0_C6_W5(32'hbe21afec), .K0_C6_W6(32'h3c853604), .K0_C6_W7(32'h3d52f96b), .K0_C6_W8(32'h3c899d01), 
+		.K0_C7_W0(32'h3da88e4f), .K0_C7_W1(32'h3cdfbad8), .K0_C7_W2(32'h3dbe9726), .K0_C7_W3(32'h3cc96451), .K0_C7_W4(32'hbd15d146), .K0_C7_W5(32'h3d22a2f5), .K0_C7_W6(32'h3bb7bab0), .K0_C7_W7(32'h3d069788), .K0_C7_W8(32'h3e186800), 
+		.K0_C8_W0(32'h3d4f8d52), .K0_C8_W1(32'h3e10c7d2), .K0_C8_W2(32'h3dd9be00), .K0_C8_W3(32'hbddacbd9), .K0_C8_W4(32'h3dea219b), .K0_C8_W5(32'h3ced4767), .K0_C8_W6(32'h3d94f836), .K0_C8_W7(32'h3ddb286f), .K0_C8_W8(32'h3dbcc300), 
+		.K0_C9_W0(32'h3d910421), .K0_C9_W1(32'hbd996570), .K0_C9_W2(32'h3d9aa8db), .K0_C9_W3(32'h3def3119), .K0_C9_W4(32'hbd1c5e0a), .K0_C9_W5(32'hbdbbabf6), .K0_C9_W6(32'hbc94407c), .K0_C9_W7(32'h3e028c9c), .K0_C9_W8(32'h3dbd3820), 
+		.K0_C10_W0(32'h3d73f893), .K0_C10_W1(32'hbc30be87), .K0_C10_W2(32'h3df7a839), .K0_C10_W3(32'h3e07ce6e), .K0_C10_W4(32'h3aa23174), .K0_C10_W5(32'hbd678bdd), .K0_C10_W6(32'hbc073fef), .K0_C10_W7(32'h3dd377a7), .K0_C10_W8(32'hbdd71ffb), 
+		.K0_C11_W0(32'hbcb41ce3), .K0_C11_W1(32'h3ca32c91), .K0_C11_W2(32'h3c404814), .K0_C11_W3(32'h3e08ea84), .K0_C11_W4(32'hbdaf7cda), .K0_C11_W5(32'h3ddc1578), .K0_C11_W6(32'hbdb56eb5), .K0_C11_W7(32'h3ddc9c63), .K0_C11_W8(32'h3d848383), 
+		.K0_C12_W0(32'h3c48fd1d), .K0_C12_W1(32'h3e0a34e9), .K0_C12_W2(32'h3dee5965), .K0_C12_W3(32'h3cd8d1d2), .K0_C12_W4(32'h3d324819), .K0_C12_W5(32'hbd42d986), .K0_C12_W6(32'h3e189189), .K0_C12_W7(32'hbdc5d32f), .K0_C12_W8(32'hbdda9974), 
+		.K0_C13_W0(32'hbd46ea40), .K0_C13_W1(32'hbba77c80), .K0_C13_W2(32'h3de74ac3), .K0_C13_W3(32'hbdbe48f1), .K0_C13_W4(32'hbe1c5877), .K0_C13_W5(32'hbd2b15e4), .K0_C13_W6(32'h3cc2ae63), .K0_C13_W7(32'h3da9550c), .K0_C13_W8(32'h3daad7ce), 
+		.K0_C14_W0(32'h3d92e551), .K0_C14_W1(32'h3c5fd2d1), .K0_C14_W2(32'hbd312a1f), .K0_C14_W3(32'h3d9240f4), .K0_C14_W4(32'h3cee7b02), .K0_C14_W5(32'h3df4efce), .K0_C14_W6(32'hbcd6e005), .K0_C14_W7(32'hbe001862), .K0_C14_W8(32'h3db40c65), 
+		.K0_C15_W0(32'hbd8b6fbc), .K0_C15_W1(32'hbdafe874), .K0_C15_W2(32'h3dd000e8), .K0_C15_W3(32'h3ca39064), .K0_C15_W4(32'h3e069394), .K0_C15_W5(32'hbd8a35bf), .K0_C15_W6(32'hbdec21f6), .K0_C15_W7(32'h3dec90e6), .K0_C15_W8(32'hbdf88062), 
+		.K0_BIAS (32'h3c53aab6),
+
+		.K1_C0_W0(32'hbdf912fb), .K1_C0_W1(32'h3ce160fd), .K1_C0_W2(32'hbcd76c58), .K1_C0_W3(32'hbda93327), .K1_C0_W4(32'hbde03f67), .K1_C0_W5(32'h3d971df0), .K1_C0_W6(32'h3cf97008), .K1_C0_W7(32'h3cc50fe6), .K1_C0_W8(32'hbce24322), 
+		.K1_C1_W0(32'h3e09a9bf), .K1_C1_W1(32'hbdfd7c0a), .K1_C1_W2(32'hbc945ac7), .K1_C1_W3(32'hbdc28b81), .K1_C1_W4(32'hbd47524b), .K1_C1_W5(32'h3d6b08df), .K1_C1_W6(32'hbd991abf), .K1_C1_W7(32'h3caa0a8a), .K1_C1_W8(32'h3d527deb), 
+		.K1_C2_W0(32'h3de74739), .K1_C2_W1(32'h3e0fd2e2), .K1_C2_W2(32'h3c606aac), .K1_C2_W3(32'h3dd29da5), .K1_C2_W4(32'hbdbb313c), .K1_C2_W5(32'h3dbeba5d), .K1_C2_W6(32'hbd18cb94), .K1_C2_W7(32'hbd93c313), .K1_C2_W8(32'h3e0c70ba), 
+		.K1_C3_W0(32'hbd5341e8), .K1_C3_W1(32'h3df0bfbf), .K1_C3_W2(32'h3d6bf4f0), .K1_C3_W3(32'h3c395774), .K1_C3_W4(32'h3c9c1a16), .K1_C3_W5(32'h3e060c32), .K1_C3_W6(32'h3d77c838), .K1_C3_W7(32'hbe135e3b), .K1_C3_W8(32'h3e277ee3), 
+		.K1_C4_W0(32'hbdc2a69d), .K1_C4_W1(32'h3d61368e), .K1_C4_W2(32'hbd4e2fe6), .K1_C4_W3(32'h3dc0de13), .K1_C4_W4(32'hbce6f53e), .K1_C4_W5(32'h3d97b6d2), .K1_C4_W6(32'hbd5843cf), .K1_C4_W7(32'hbd9107a9), .K1_C4_W8(32'h3dd0209f), 
+		.K1_C5_W0(32'hbde22c71), .K1_C5_W1(32'hbdd4b600), .K1_C5_W2(32'hbd0a3092), .K1_C5_W3(32'hbc80ba07), .K1_C5_W4(32'h3ddbc3a5), .K1_C5_W5(32'h3dd9249c), .K1_C5_W6(32'hbdc35b87), .K1_C5_W7(32'h3d84e34a), .K1_C5_W8(32'h3890258a), 
+		.K1_C6_W0(32'hbd0dc2d7), .K1_C6_W1(32'h3c005d75), .K1_C6_W2(32'h3c9d40a7), .K1_C6_W3(32'h3b6247d3), .K1_C6_W4(32'h3db51eeb), .K1_C6_W5(32'hbe0f9ebe), .K1_C6_W6(32'hbdcf159a), .K1_C6_W7(32'hbdad86ae), .K1_C6_W8(32'h3dbba6a4), 
+		.K1_C7_W0(32'h3c469509), .K1_C7_W1(32'h3d866f05), .K1_C7_W2(32'hbd4f4c22), .K1_C7_W3(32'hbdefcda3), .K1_C7_W4(32'hbbb94777), .K1_C7_W5(32'hbe0b5a80), .K1_C7_W6(32'h3dc5b9b0), .K1_C7_W7(32'h3dc39fea), .K1_C7_W8(32'hbd0fc7d7), 
+		.K1_C8_W0(32'hbd9d6d9d), .K1_C8_W1(32'hbdbda538), .K1_C8_W2(32'h3ddbcf6a), .K1_C8_W3(32'hbbb096b7), .K1_C8_W4(32'hbe12573b), .K1_C8_W5(32'hbc579a5f), .K1_C8_W6(32'hbe19329b), .K1_C8_W7(32'hbe0aab78), .K1_C8_W8(32'h3d82a0d3), 
+		.K1_C9_W0(32'h3d00f46b), .K1_C9_W1(32'h3c0a53a7), .K1_C9_W2(32'hbe039987), .K1_C9_W3(32'h3ca29661), .K1_C9_W4(32'hbbd5469e), .K1_C9_W5(32'hbc6d1985), .K1_C9_W6(32'hbdba371d), .K1_C9_W7(32'h3da60363), .K1_C9_W8(32'hbd27aa5b), 
+		.K1_C10_W0(32'hbdd8b6c1), .K1_C10_W1(32'hbe1a4311), .K1_C10_W2(32'hbd9470e7), .K1_C10_W3(32'h3e228c67), .K1_C10_W4(32'hbe0e1405), .K1_C10_W5(32'hbc470011), .K1_C10_W6(32'h3e0ebc6b), .K1_C10_W7(32'hbdb065f0), .K1_C10_W8(32'h3cb46d47), 
+		.K1_C11_W0(32'h3bb04c75), .K1_C11_W1(32'hbbc12fc1), .K1_C11_W2(32'h3c57e177), .K1_C11_W3(32'h3d3fb7df), .K1_C11_W4(32'hbe04af7f), .K1_C11_W5(32'h3e03fecb), .K1_C11_W6(32'hbd628661), .K1_C11_W7(32'hbdd82742), .K1_C11_W8(32'h3dd5d10c), 
+		.K1_C12_W0(32'hbda5c094), .K1_C12_W1(32'h3d3d43ca), .K1_C12_W2(32'h3dc425fe), .K1_C12_W3(32'h3d4087a5), .K1_C12_W4(32'hbd3d74f2), .K1_C12_W5(32'hbd256e1e), .K1_C12_W6(32'h3de300eb), .K1_C12_W7(32'h3de50073), .K1_C12_W8(32'hbdd1e9d4), 
+		.K1_C13_W0(32'h3dec3dee), .K1_C13_W1(32'h3d825a65), .K1_C13_W2(32'hbcf4e3bb), .K1_C13_W3(32'h3b8e49af), .K1_C13_W4(32'hbe0aa962), .K1_C13_W5(32'hbd11e345), .K1_C13_W6(32'hbc481889), .K1_C13_W7(32'hbdca2780), .K1_C13_W8(32'hbdf46d7a), 
+		.K1_C14_W0(32'h3d73ceab), .K1_C14_W1(32'h3d1b2ced), .K1_C14_W2(32'h3cda2525), .K1_C14_W3(32'hbda2e142), .K1_C14_W4(32'hbc7a4a9f), .K1_C14_W5(32'hbcdc0112), .K1_C14_W6(32'hbd6e90e8), .K1_C14_W7(32'h3d224daf), .K1_C14_W8(32'hbde2ef7f), 
+		.K1_C15_W0(32'h3c985d32), .K1_C15_W1(32'h3dd01902), .K1_C15_W2(32'hbd384e4e), .K1_C15_W3(32'h3d126c7b), .K1_C15_W4(32'h3d97e26c), .K1_C15_W5(32'h3da8f7c4), .K1_C15_W6(32'hbe32cd19), .K1_C15_W7(32'hbde06a65), .K1_C15_W8(32'h3e0a9003), 
+		.K1_BIAS (32'hbc61431b),
+
+		.K2_C0_W0(32'h3deb1248), .K2_C0_W1(32'hbdb9cfd9), .K2_C0_W2(32'hbe2d6f5e), .K2_C0_W3(32'hbdb10769), .K2_C0_W4(32'hbdacad32), .K2_C0_W5(32'h3db89093), .K2_C0_W6(32'h3e356564), .K2_C0_W7(32'h3e2b0687), .K2_C0_W8(32'hbdbe3398), 
+		.K2_C1_W0(32'h3dc02831), .K2_C1_W1(32'h3cc820aa), .K2_C1_W2(32'hbd926e5e), .K2_C1_W3(32'h3e0dd43a), .K2_C1_W4(32'hbdba32e3), .K2_C1_W5(32'h3d6e9d17), .K2_C1_W6(32'hbdb43894), .K2_C1_W7(32'hbe00f350), .K2_C1_W8(32'h3b883efc), 
+		.K2_C2_W0(32'hbdeed3f9), .K2_C2_W1(32'h3d645309), .K2_C2_W2(32'hbd706dca), .K2_C2_W3(32'h3d7fc5bd), .K2_C2_W4(32'hbdb4ec05), .K2_C2_W5(32'h3e0eb5fe), .K2_C2_W6(32'h3d1dd70d), .K2_C2_W7(32'h3cbe21ec), .K2_C2_W8(32'h3dfb3222), 
+		.K2_C3_W0(32'hbcdc071e), .K2_C3_W1(32'h3e18151d), .K2_C3_W2(32'h3e1d4f3a), .K2_C3_W3(32'h3d1e790b), .K2_C3_W4(32'hbe201b2f), .K2_C3_W5(32'hbc55c8e6), .K2_C3_W6(32'h3dd57a8d), .K2_C3_W7(32'hbd760825), .K2_C3_W8(32'hbbffe5b7), 
+		.K2_C4_W0(32'hbd43156d), .K2_C4_W1(32'hbe08973c), .K2_C4_W2(32'hbdef080c), .K2_C4_W3(32'hbcd83cee), .K2_C4_W4(32'h3dd721db), .K2_C4_W5(32'h3dee3872), .K2_C4_W6(32'h3c1295b8), .K2_C4_W7(32'hbde5dc7c), .K2_C4_W8(32'hbd921c61), 
+		.K2_C5_W0(32'h3d818c4a), .K2_C5_W1(32'h3e16dc9d), .K2_C5_W2(32'h3ce6a000), .K2_C5_W3(32'h3c8de191), .K2_C5_W4(32'h3dbd053b), .K2_C5_W5(32'h3ddcae8c), .K2_C5_W6(32'h3cbf3fb9), .K2_C5_W7(32'hbdb3d4a6), .K2_C5_W8(32'hbd9111f8), 
+		.K2_C6_W0(32'h3c99d387), .K2_C6_W1(32'hbda5c288), .K2_C6_W2(32'h3e08c550), .K2_C6_W3(32'hbc2d8379), .K2_C6_W4(32'hbce15d33), .K2_C6_W5(32'h3cfe6c05), .K2_C6_W6(32'hbd85ca72), .K2_C6_W7(32'hbe0f6538), .K2_C6_W8(32'hbe04d72a), 
+		.K2_C7_W0(32'h3e02854c), .K2_C7_W1(32'h3c0966b3), .K2_C7_W2(32'hbd862577), .K2_C7_W3(32'h3d3b82e0), .K2_C7_W4(32'h3dfc25a9), .K2_C7_W5(32'h3cbbbb7a), .K2_C7_W6(32'h3d2bb4a1), .K2_C7_W7(32'hbda719cc), .K2_C7_W8(32'h3cafa134), 
+		.K2_C8_W0(32'hbd291794), .K2_C8_W1(32'hbdbe67e6), .K2_C8_W2(32'hbdf7152c), .K2_C8_W3(32'h3e1a0ce8), .K2_C8_W4(32'hbdaa96f0), .K2_C8_W5(32'h3cee0d94), .K2_C8_W6(32'h3e0a0d03), .K2_C8_W7(32'hbc46f04b), .K2_C8_W8(32'hbe2bb1e5), 
+		.K2_C9_W0(32'h3dcbb0f8), .K2_C9_W1(32'hbe2b5367), .K2_C9_W2(32'hbd8131af), .K2_C9_W3(32'hbde414df), .K2_C9_W4(32'hbda74b61), .K2_C9_W5(32'h3d92ce9b), .K2_C9_W6(32'h3dfd6a7b), .K2_C9_W7(32'hb86bfb7c), .K2_C9_W8(32'h3c8ca975), 
+		.K2_C10_W0(32'hbd9a7592), .K2_C10_W1(32'hbc1892ba), .K2_C10_W2(32'hbd886b52), .K2_C10_W3(32'h3d8f7d37), .K2_C10_W4(32'h3c96546c), .K2_C10_W5(32'h3ddc18ac), .K2_C10_W6(32'hbd24b36c), .K2_C10_W7(32'h3c4aa2ea), .K2_C10_W8(32'hbcd357ce), 
+		.K2_C11_W0(32'hbd399b0a), .K2_C11_W1(32'hbd8553c5), .K2_C11_W2(32'hbd0bc702), .K2_C11_W3(32'h3e048493), .K2_C11_W4(32'h3d885173), .K2_C11_W5(32'hbdb2a3ad), .K2_C11_W6(32'hbdf19a62), .K2_C11_W7(32'h3dc1432e), .K2_C11_W8(32'hbe14c953), 
+		.K2_C12_W0(32'h3ded17b1), .K2_C12_W1(32'h3dc13c28), .K2_C12_W2(32'h3c8b2f49), .K2_C12_W3(32'hbdebe489), .K2_C12_W4(32'h3df4ad41), .K2_C12_W5(32'hbd26fbd9), .K2_C12_W6(32'h3ddc68cf), .K2_C12_W7(32'hbe39b1aa), .K2_C12_W8(32'hbe16aa40), 
+		.K2_C13_W0(32'h3da2fadf), .K2_C13_W1(32'hbddd8bf1), .K2_C13_W2(32'hbd422acf), .K2_C13_W3(32'hbd871bfd), .K2_C13_W4(32'h3cc936b3), .K2_C13_W5(32'hbdcaa0f3), .K2_C13_W6(32'h3d0c410a), .K2_C13_W7(32'hbdb7f280), .K2_C13_W8(32'hbe0dc92e), 
+		.K2_C14_W0(32'hbd2e2f04), .K2_C14_W1(32'h3d841556), .K2_C14_W2(32'hbe0e8cb4), .K2_C14_W3(32'hbb162d52), .K2_C14_W4(32'hbd637fa8), .K2_C14_W5(32'hbe099b5a), .K2_C14_W6(32'hbd86bb9e), .K2_C14_W7(32'hbd854024), .K2_C14_W8(32'h3d795aeb), 
+		.K2_C15_W0(32'hbe1ea82a), .K2_C15_W1(32'hbdcf0c54), .K2_C15_W2(32'h3dfba544), .K2_C15_W3(32'hbc9fc56e), .K2_C15_W4(32'hbd891aca), .K2_C15_W5(32'h3cc1ea16), .K2_C15_W6(32'hbda3d428), .K2_C15_W7(32'hbdc12d54), .K2_C15_W8(32'hbc1b1e80), 
+		.K2_BIAS (32'h3d10f482),
+
+		.K3_C0_W0(32'hbda9460b), .K3_C0_W1(32'h3df7f0ef), .K3_C0_W2(32'h3e359523), .K3_C0_W3(32'hbc8cecf6), .K3_C0_W4(32'hba2ec4b2), .K3_C0_W5(32'hbe0273e0), .K3_C0_W6(32'hbd850691), .K3_C0_W7(32'hbd5a9f39), .K3_C0_W8(32'hbdbd3e2f), 
+		.K3_C1_W0(32'h3d355b3a), .K3_C1_W1(32'hbd0e5294), .K3_C1_W2(32'hbdda30ff), .K3_C1_W3(32'hbe097394), .K3_C1_W4(32'h3be13dc4), .K3_C1_W5(32'hbd898043), .K3_C1_W6(32'hbdb48e84), .K3_C1_W7(32'hbd47c31a), .K3_C1_W8(32'h3d949725), 
+		.K3_C2_W0(32'h3e019daf), .K3_C2_W1(32'h3ba43446), .K3_C2_W2(32'hbdabff0e), .K3_C2_W3(32'h3ce7ffcd), .K3_C2_W4(32'hbc6cd258), .K3_C2_W5(32'h3d3976fe), .K3_C2_W6(32'hbd1d8164), .K3_C2_W7(32'hbd390e9f), .K3_C2_W8(32'hbc6301ea), 
+		.K3_C3_W0(32'hbc81ae93), .K3_C3_W1(32'h3e3b8aaf), .K3_C3_W2(32'hbd20351c), .K3_C3_W3(32'h3e2619eb), .K3_C3_W4(32'h3d950a2e), .K3_C3_W5(32'hbdef5729), .K3_C3_W6(32'hbd940aa1), .K3_C3_W7(32'hbbe98ece), .K3_C3_W8(32'h3d3a86e3), 
+		.K3_C4_W0(32'hbdfb98ab), .K3_C4_W1(32'h3dabc3a7), .K3_C4_W2(32'h3d492ec5), .K3_C4_W3(32'hbc1abdf1), .K3_C4_W4(32'hbdf78863), .K3_C4_W5(32'hbdb49eae), .K3_C4_W6(32'hbcdddd7d), .K3_C4_W7(32'hbdc8662c), .K3_C4_W8(32'hbe1e829e), 
+		.K3_C5_W0(32'h3ddf45d4), .K3_C5_W1(32'hbd06b24e), .K3_C5_W2(32'h3beb8f36), .K3_C5_W3(32'hbdc777e0), .K3_C5_W4(32'h3db08de7), .K3_C5_W5(32'hbdc5f93d), .K3_C5_W6(32'h3d899d65), .K3_C5_W7(32'h3d46e73a), .K3_C5_W8(32'h3db77a9d), 
+		.K3_C6_W0(32'h3c734d41), .K3_C6_W1(32'h3d44f7b2), .K3_C6_W2(32'h3d1ce830), .K3_C6_W3(32'h3c21a9a1), .K3_C6_W4(32'hbe13657a), .K3_C6_W5(32'hbdae5200), .K3_C6_W6(32'hbd8eb529), .K3_C6_W7(32'h3dea26e7), .K3_C6_W8(32'h3e07c725), 
+		.K3_C7_W0(32'h3dc2b39a), .K3_C7_W1(32'h3d791612), .K3_C7_W2(32'hbda609da), .K3_C7_W3(32'h3d6cd315), .K3_C7_W4(32'h3cb0ffb7), .K3_C7_W5(32'h3e1267c4), .K3_C7_W6(32'hbce84ebe), .K3_C7_W7(32'h3d19d73a), .K3_C7_W8(32'h3dc20616), 
+		.K3_C8_W0(32'h3d72d62c), .K3_C8_W1(32'h3deebfbf), .K3_C8_W2(32'h3d7fa143), .K3_C8_W3(32'hbe095327), .K3_C8_W4(32'h3d16e1bc), .K3_C8_W5(32'h3e0691d0), .K3_C8_W6(32'h3d40f5c8), .K3_C8_W7(32'hbe03e2f5), .K3_C8_W8(32'hbdab1d05), 
+		.K3_C9_W0(32'hbdbafed4), .K3_C9_W1(32'hbdd5c494), .K3_C9_W2(32'h3dfdcaae), .K3_C9_W3(32'hbcdd0bd3), .K3_C9_W4(32'hbc8707bf), .K3_C9_W5(32'h3c2608cd), .K3_C9_W6(32'hbd3b93a7), .K3_C9_W7(32'h3dd35581), .K3_C9_W8(32'hbde4742e), 
+		.K3_C10_W0(32'h3d31ea0c), .K3_C10_W1(32'h3e16f988), .K3_C10_W2(32'h3d4af062), .K3_C10_W3(32'hbd7a8a18), .K3_C10_W4(32'hbd116a65), .K3_C10_W5(32'h3c36b0a5), .K3_C10_W6(32'h3e0389d5), .K3_C10_W7(32'h3d2319e0), .K3_C10_W8(32'h3cff3e37), 
+		.K3_C11_W0(32'hbcb90226), .K3_C11_W1(32'h3df991c4), .K3_C11_W2(32'h3c334539), .K3_C11_W3(32'h3d2e93e3), .K3_C11_W4(32'hbd23bf26), .K3_C11_W5(32'hba8c2c7e), .K3_C11_W6(32'hbdb0f677), .K3_C11_W7(32'h3dad6067), .K3_C11_W8(32'h3db37f49), 
+		.K3_C12_W0(32'hbdab9a41), .K3_C12_W1(32'h3decfe9d), .K3_C12_W2(32'hbc511d86), .K3_C12_W3(32'hbdbea258), .K3_C12_W4(32'hbe0ee99b), .K3_C12_W5(32'h3b88f5d3), .K3_C12_W6(32'h3db15cab), .K3_C12_W7(32'h3df1f6ca), .K3_C12_W8(32'h3dbb525a), 
+		.K3_C13_W0(32'hbc05a2ab), .K3_C13_W1(32'h3dcd6814), .K3_C13_W2(32'h3d0c0a0b), .K3_C13_W3(32'hbb96f788), .K3_C13_W4(32'h3e0bf88f), .K3_C13_W5(32'hbdb60287), .K3_C13_W6(32'h3c55c71b), .K3_C13_W7(32'hbd2775f3), .K3_C13_W8(32'hbdf2ff43), 
+		.K3_C14_W0(32'h3def3588), .K3_C14_W1(32'h3dd117e3), .K3_C14_W2(32'hbdcfcd88), .K3_C14_W3(32'h3d8db4f0), .K3_C14_W4(32'hbddef635), .K3_C14_W5(32'h3da8682d), .K3_C14_W6(32'h3d4bdcba), .K3_C14_W7(32'hbdc13073), .K3_C14_W8(32'hbc034eca), 
+		.K3_C15_W0(32'h3ca89a3a), .K3_C15_W1(32'h3b78216c), .K3_C15_W2(32'h3c622f8f), .K3_C15_W3(32'hbd2168f7), .K3_C15_W4(32'h3e235490), .K3_C15_W5(32'h3d3bb314), .K3_C15_W6(32'h3db319d3), .K3_C15_W7(32'hbda786e7), .K3_C15_W8(32'hbddd2753), 
+		.K3_BIAS (32'h3d36a3e1),
+
+		.K4_C0_W0(32'hbd65044e), .K4_C0_W1(32'hbdd7591c), .K4_C0_W2(32'h3cdbe88e), .K4_C0_W3(32'hbd071248), .K4_C0_W4(32'h3dd6740a), .K4_C0_W5(32'h3c9cba33), .K4_C0_W6(32'h3dca8513), .K4_C0_W7(32'hbdcbfe5b), .K4_C0_W8(32'h3d8ee553), 
+		.K4_C1_W0(32'h3a07fd2a), .K4_C1_W1(32'hbddafc0c), .K4_C1_W2(32'h3ba82aef), .K4_C1_W3(32'h3c966af2), .K4_C1_W4(32'h3d970c8d), .K4_C1_W5(32'hbd970067), .K4_C1_W6(32'h3d1c9dfc), .K4_C1_W7(32'h3dfcbcd3), .K4_C1_W8(32'hbdb8781d), 
+		.K4_C2_W0(32'h3d93905b), .K4_C2_W1(32'hbad1b415), .K4_C2_W2(32'h3dd28640), .K4_C2_W3(32'h3d71a367), .K4_C2_W4(32'hbd24b0e0), .K4_C2_W5(32'h3d38cb03), .K4_C2_W6(32'hbe0d4748), .K4_C2_W7(32'hbd13af54), .K4_C2_W8(32'hbd2c1a76), 
+		.K4_C3_W0(32'h3ca9e55b), .K4_C3_W1(32'h3c3a753f), .K4_C3_W2(32'hbc036355), .K4_C3_W3(32'h3b485dec), .K4_C3_W4(32'hbd9792d3), .K4_C3_W5(32'h3d99ec8f), .K4_C3_W6(32'h3d825eee), .K4_C3_W7(32'h3dde57a1), .K4_C3_W8(32'h3da75144), 
+		.K4_C4_W0(32'h3d17a347), .K4_C4_W1(32'hbd5ab44f), .K4_C4_W2(32'hbd01adaa), .K4_C4_W3(32'hbc4b2653), .K4_C4_W4(32'hbd064c9a), .K4_C4_W5(32'hbdd1eddd), .K4_C4_W6(32'h3d1b80bc), .K4_C4_W7(32'h3d31c435), .K4_C4_W8(32'hbd6719fc), 
+		.K4_C5_W0(32'h3d1c1f50), .K4_C5_W1(32'hbcdb1a22), .K4_C5_W2(32'hbe0cf201), .K4_C5_W3(32'hbd0dc3ff), .K4_C5_W4(32'hb974b778), .K4_C5_W5(32'hbe0da5f9), .K4_C5_W6(32'hbdd6d98d), .K4_C5_W7(32'hbde03144), .K4_C5_W8(32'h3d8d948a), 
+		.K4_C6_W0(32'hbda6d14d), .K4_C6_W1(32'h3ddba854), .K4_C6_W2(32'h3c9c4442), .K4_C6_W3(32'hbba06972), .K4_C6_W4(32'h3d21e8f1), .K4_C6_W5(32'hbe140354), .K4_C6_W6(32'hbd7ded7c), .K4_C6_W7(32'h3d0da517), .K4_C6_W8(32'hbd6884b1), 
+		.K4_C7_W0(32'hbd4471c7), .K4_C7_W1(32'hbd31bfd2), .K4_C7_W2(32'hba4fd8c3), .K4_C7_W3(32'h3ca5041e), .K4_C7_W4(32'h3d40ff9c), .K4_C7_W5(32'h3e0acfe0), .K4_C7_W6(32'h3e0807fd), .K4_C7_W7(32'hbbc5289d), .K4_C7_W8(32'hbd003657), 
+		.K4_C8_W0(32'h3cd02a85), .K4_C8_W1(32'h3ca9a3d6), .K4_C8_W2(32'h3d5f8791), .K4_C8_W3(32'hbda7f989), .K4_C8_W4(32'hbd21aa50), .K4_C8_W5(32'hbc203ee0), .K4_C8_W6(32'hbd174237), .K4_C8_W7(32'hbdc06263), .K4_C8_W8(32'hbe02ad80), 
+		.K4_C9_W0(32'h3c947545), .K4_C9_W1(32'h3dff7304), .K4_C9_W2(32'h3d94c0fe), .K4_C9_W3(32'hbda98262), .K4_C9_W4(32'h3d05fcde), .K4_C9_W5(32'hbd9e54e2), .K4_C9_W6(32'hbe0b3b62), .K4_C9_W7(32'hbcf1935f), .K4_C9_W8(32'h3d6412c4), 
+		.K4_C10_W0(32'hbd57155a), .K4_C10_W1(32'hbd9595c5), .K4_C10_W2(32'h3c972076), .K4_C10_W3(32'hbd6ab222), .K4_C10_W4(32'h3d3c2390), .K4_C10_W5(32'hbdb2bc6f), .K4_C10_W6(32'h3e09f89a), .K4_C10_W7(32'hbcf5dea8), .K4_C10_W8(32'h3e0afc38), 
+		.K4_C11_W0(32'hbd78f2d1), .K4_C11_W1(32'h3d902cfc), .K4_C11_W2(32'h3e09d24a), .K4_C11_W3(32'hbe227e92), .K4_C11_W4(32'hbd41dd42), .K4_C11_W5(32'hbdc5b2fc), .K4_C11_W6(32'h3bb5e5d4), .K4_C11_W7(32'hbda32679), .K4_C11_W8(32'h3dabb403), 
+		.K4_C12_W0(32'hbb726730), .K4_C12_W1(32'hbdd9869f), .K4_C12_W2(32'hbdf36ce4), .K4_C12_W3(32'hbd9b1cb7), .K4_C12_W4(32'hbc3ab63e), .K4_C12_W5(32'h3df0288c), .K4_C12_W6(32'hbdb3c9e2), .K4_C12_W7(32'hbda1868c), .K4_C12_W8(32'hbce2a626), 
+		.K4_C13_W0(32'h3ddc4b1f), .K4_C13_W1(32'hbd14ad84), .K4_C13_W2(32'h3de2bb07), .K4_C13_W3(32'hbd6d04d8), .K4_C13_W4(32'h3dae1ff7), .K4_C13_W5(32'hbc827509), .K4_C13_W6(32'h3d402668), .K4_C13_W7(32'hbe11bcde), .K4_C13_W8(32'hbe18df9f), 
+		.K4_C14_W0(32'h3dd761f8), .K4_C14_W1(32'hbd896ab6), .K4_C14_W2(32'h3b881fe2), .K4_C14_W3(32'h3d3b893e), .K4_C14_W4(32'h3de43155), .K4_C14_W5(32'h3e08faf0), .K4_C14_W6(32'hbe03ef94), .K4_C14_W7(32'h3c97414c), .K4_C14_W8(32'h3b1a8421), 
+		.K4_C15_W0(32'h3cf192df), .K4_C15_W1(32'hbd323a41), .K4_C15_W2(32'hbd305af6), .K4_C15_W3(32'h3de9cb8d), .K4_C15_W4(32'hbe11a2e6), .K4_C15_W5(32'hbd999379), .K4_C15_W6(32'hbdf8b695), .K4_C15_W7(32'hbd5c48cc), .K4_C15_W8(32'hbda00dd4), 
+		.K4_BIAS (32'hbc751b87),
+
+		.K5_C0_W0(32'hbcfa6d21), .K5_C0_W1(32'h3e02d392), .K5_C0_W2(32'h3d032722), .K5_C0_W3(32'h3dd554e5), .K5_C0_W4(32'hbd625db5), .K5_C0_W5(32'h3dd266d7), .K5_C0_W6(32'hbc8fa028), .K5_C0_W7(32'hbe0541a8), .K5_C0_W8(32'h3db5970a), 
+		.K5_C1_W0(32'hbdc379a6), .K5_C1_W1(32'h3daebff8), .K5_C1_W2(32'hbdd49cd5), .K5_C1_W3(32'h3de32d2a), .K5_C1_W4(32'h3db05013), .K5_C1_W5(32'hbdca4f88), .K5_C1_W6(32'h3d632c4f), .K5_C1_W7(32'h3af9be35), .K5_C1_W8(32'hbe103963), 
+		.K5_C2_W0(32'hbdb9e509), .K5_C2_W1(32'hbdb096f8), .K5_C2_W2(32'h3dd78f25), .K5_C2_W3(32'hbba5c25c), .K5_C2_W4(32'h3dcb148c), .K5_C2_W5(32'h3d2f15c3), .K5_C2_W6(32'h3dcd1adc), .K5_C2_W7(32'hbd30804e), .K5_C2_W8(32'h3d74c7b6), 
+		.K5_C3_W0(32'h3b49bc55), .K5_C3_W1(32'h3c111e1d), .K5_C3_W2(32'h3dd2a2d1), .K5_C3_W3(32'h3e09674b), .K5_C3_W4(32'hbca7efe3), .K5_C3_W5(32'h3d91f11b), .K5_C3_W6(32'h3bdef58b), .K5_C3_W7(32'hbd15959b), .K5_C3_W8(32'h3e0a0ec1), 
+		.K5_C4_W0(32'hbe0094dd), .K5_C4_W1(32'h3dc5cadb), .K5_C4_W2(32'hbdc649de), .K5_C4_W3(32'h3de1cb82), .K5_C4_W4(32'hbd7639a2), .K5_C4_W5(32'h3da8ee1d), .K5_C4_W6(32'hbdb05ce6), .K5_C4_W7(32'hbd682b24), .K5_C4_W8(32'h3dad6674), 
+		.K5_C5_W0(32'hbe179b86), .K5_C5_W1(32'hbd9a8aa7), .K5_C5_W2(32'h3dd47a33), .K5_C5_W3(32'hbd236003), .K5_C5_W4(32'h3cf89f3c), .K5_C5_W5(32'hbc60f1f4), .K5_C5_W6(32'hbd90fc01), .K5_C5_W7(32'h3dd5377a), .K5_C5_W8(32'hbe0d03ae), 
+		.K5_C6_W0(32'h3dc53e47), .K5_C6_W1(32'h3db59de0), .K5_C6_W2(32'hbc4c7de5), .K5_C6_W3(32'h3da495bd), .K5_C6_W4(32'h3b945b74), .K5_C6_W5(32'h3d98d722), .K5_C6_W6(32'hbdd258ee), .K5_C6_W7(32'hbdde2723), .K5_C6_W8(32'hbc46fb52), 
+		.K5_C7_W0(32'hbdf2a8e2), .K5_C7_W1(32'h3de857f4), .K5_C7_W2(32'h3e0f9467), .K5_C7_W3(32'h3d57b816), .K5_C7_W4(32'h3c3265ea), .K5_C7_W5(32'hbd7b4c76), .K5_C7_W6(32'hbc604638), .K5_C7_W7(32'h3d80aefa), .K5_C7_W8(32'hbdf0261a), 
+		.K5_C8_W0(32'hbdf213ef), .K5_C8_W1(32'h3d63e59a), .K5_C8_W2(32'h3d1aee8e), .K5_C8_W3(32'hbb45915d), .K5_C8_W4(32'hbddf392b), .K5_C8_W5(32'h3c9876b5), .K5_C8_W6(32'hbe1612d7), .K5_C8_W7(32'h3df32200), .K5_C8_W8(32'h3d418902), 
+		.K5_C9_W0(32'hbbc8b00d), .K5_C9_W1(32'h3d168542), .K5_C9_W2(32'h3c6cdc5b), .K5_C9_W3(32'h3dd84ad5), .K5_C9_W4(32'hbdd4b38a), .K5_C9_W5(32'h3adea3d5), .K5_C9_W6(32'h3dc0cd0b), .K5_C9_W7(32'h3de2178c), .K5_C9_W8(32'h3c360c9d), 
+		.K5_C10_W0(32'h3d7bf8e4), .K5_C10_W1(32'hbd60eaf7), .K5_C10_W2(32'h3ca8aedc), .K5_C10_W3(32'hbb999ccf), .K5_C10_W4(32'h3cd7c694), .K5_C10_W5(32'h3e05e98d), .K5_C10_W6(32'hbe0ec49c), .K5_C10_W7(32'h3cfe3998), .K5_C10_W8(32'h3dafdff0), 
+		.K5_C11_W0(32'h3cb3bd76), .K5_C11_W1(32'h3d2c8794), .K5_C11_W2(32'h3e0bc7a7), .K5_C11_W3(32'hbd57f287), .K5_C11_W4(32'hbe0d9b18), .K5_C11_W5(32'h3da8e77b), .K5_C11_W6(32'hbdefce62), .K5_C11_W7(32'hbd958ba4), .K5_C11_W8(32'hbcc0dad9), 
+		.K5_C12_W0(32'hbd5b17fd), .K5_C12_W1(32'hbd85940f), .K5_C12_W2(32'h3dec8904), .K5_C12_W3(32'hbdfb53aa), .K5_C12_W4(32'hbdf5923f), .K5_C12_W5(32'h3c8d1528), .K5_C12_W6(32'hbdcfef79), .K5_C12_W7(32'hbdb961a4), .K5_C12_W8(32'hbdd859ac), 
+		.K5_C13_W0(32'hbde9d775), .K5_C13_W1(32'hbdfb8001), .K5_C13_W2(32'h3d9e8df0), .K5_C13_W3(32'h3e0f2b2b), .K5_C13_W4(32'h3ba9be28), .K5_C13_W5(32'hbe18f715), .K5_C13_W6(32'h3b333046), .K5_C13_W7(32'h3c44d1af), .K5_C13_W8(32'hbdc0c4c1), 
+		.K5_C14_W0(32'h3d45ac52), .K5_C14_W1(32'hbc309509), .K5_C14_W2(32'h3d8adc2a), .K5_C14_W3(32'h3d271132), .K5_C14_W4(32'hbdac4eb2), .K5_C14_W5(32'h3c85bee3), .K5_C14_W6(32'hbd840bd0), .K5_C14_W7(32'hbdc03119), .K5_C14_W8(32'hbd890e78), 
+		.K5_C15_W0(32'h3dfc8f01), .K5_C15_W1(32'hbddcd224), .K5_C15_W2(32'hbdd5eac8), .K5_C15_W3(32'hbdc7eb18), .K5_C15_W4(32'hbcada96b), .K5_C15_W5(32'h3cf081da), .K5_C15_W6(32'hbca0e3ff), .K5_C15_W7(32'h3db2dc96), .K5_C15_W8(32'hbde226ca), 
+		.K5_BIAS (32'h3cc6f264),
+
+		.K6_C0_W0(32'hbe13d712), .K6_C0_W1(32'h3df3696d), .K6_C0_W2(32'h3d7b57db), .K6_C0_W3(32'hbdf2c423), .K6_C0_W4(32'hbd924feb), .K6_C0_W5(32'hbe04fd0e), .K6_C0_W6(32'h3d9c2c7f), .K6_C0_W7(32'h3d4fdcc2), .K6_C0_W8(32'h3d9ec85c), 
+		.K6_C1_W0(32'h3e014e43), .K6_C1_W1(32'hbd863c34), .K6_C1_W2(32'h3d6b24f9), .K6_C1_W3(32'h3da1fa72), .K6_C1_W4(32'hbcd3e600), .K6_C1_W5(32'hbdcad040), .K6_C1_W6(32'hbdd5ab70), .K6_C1_W7(32'h3d898486), .K6_C1_W8(32'hbdad0ef1), 
+		.K6_C2_W0(32'h3dd889b0), .K6_C2_W1(32'h3dfcc181), .K6_C2_W2(32'h3df1af25), .K6_C2_W3(32'h3d0be4f4), .K6_C2_W4(32'h3e18afa6), .K6_C2_W5(32'hbdb882de), .K6_C2_W6(32'h3d501d39), .K6_C2_W7(32'hbd862d94), .K6_C2_W8(32'h3dc81923), 
+		.K6_C3_W0(32'hbdaedf8e), .K6_C3_W1(32'hbde08190), .K6_C3_W2(32'h3dbcc931), .K6_C3_W3(32'hbd8c71df), .K6_C3_W4(32'h3d95e88f), .K6_C3_W5(32'hbdeccad7), .K6_C3_W6(32'hbdb6696a), .K6_C3_W7(32'h3d0fbdb7), .K6_C3_W8(32'h3e3cca68), 
+		.K6_C4_W0(32'hbe00bfb8), .K6_C4_W1(32'hbd052c6d), .K6_C4_W2(32'hbdd74cc6), .K6_C4_W3(32'hbde1755e), .K6_C4_W4(32'h3df84a61), .K6_C4_W5(32'hbe350d8c), .K6_C4_W6(32'h3c6902d1), .K6_C4_W7(32'hbcb0aa65), .K6_C4_W8(32'h3cd254a5), 
+		.K6_C5_W0(32'h3d63b8dd), .K6_C5_W1(32'h3d85fb93), .K6_C5_W2(32'hbd46dcce), .K6_C5_W3(32'hbc91422e), .K6_C5_W4(32'h3e0dae62), .K6_C5_W5(32'hbe0e01ce), .K6_C5_W6(32'hbe05d99f), .K6_C5_W7(32'h3d82e4bd), .K6_C5_W8(32'hbd811439), 
+		.K6_C6_W0(32'hbdecd46b), .K6_C6_W1(32'h3cb59b38), .K6_C6_W2(32'hbd354a30), .K6_C6_W3(32'h3dde9f17), .K6_C6_W4(32'h3daddf95), .K6_C6_W5(32'h3dcd9489), .K6_C6_W6(32'hbdef4609), .K6_C6_W7(32'hbdf4d744), .K6_C6_W8(32'h3daa4e67), 
+		.K6_C7_W0(32'hbdffff2a), .K6_C7_W1(32'h3d6f20c6), .K6_C7_W2(32'hbca99f27), .K6_C7_W3(32'h3d26a6c3), .K6_C7_W4(32'h3c8d7304), .K6_C7_W5(32'hbe06f61b), .K6_C7_W6(32'hbe053e8c), .K6_C7_W7(32'h3e047278), .K6_C7_W8(32'hbdd65b9b), 
+		.K6_C8_W0(32'hbdbe268d), .K6_C8_W1(32'h3d8b399c), .K6_C8_W2(32'hbcc91885), .K6_C8_W3(32'hbd7f760a), .K6_C8_W4(32'hbd3625fb), .K6_C8_W5(32'h3c34b7ea), .K6_C8_W6(32'h3df00ebb), .K6_C8_W7(32'h3e1278e1), .K6_C8_W8(32'hbddb401b), 
+		.K6_C9_W0(32'h3c8fc7fc), .K6_C9_W1(32'h3d1bf2f6), .K6_C9_W2(32'h3d571bba), .K6_C9_W3(32'hbe007737), .K6_C9_W4(32'h3d9866bd), .K6_C9_W5(32'h3c8ec0f2), .K6_C9_W6(32'hbd79a1fc), .K6_C9_W7(32'hbd98b28c), .K6_C9_W8(32'h3e28d822), 
+		.K6_C10_W0(32'hbda1bf29), .K6_C10_W1(32'hbbf5ec96), .K6_C10_W2(32'h3d6aa0bb), .K6_C10_W3(32'h3dfe1c66), .K6_C10_W4(32'hbd6cf194), .K6_C10_W5(32'h3c35b03d), .K6_C10_W6(32'hbc065914), .K6_C10_W7(32'h3e092de8), .K6_C10_W8(32'hbd8cd579), 
+		.K6_C11_W0(32'hbe057530), .K6_C11_W1(32'h3dc300be), .K6_C11_W2(32'hbe0d0820), .K6_C11_W3(32'hbe0fc564), .K6_C11_W4(32'h3d8cdd7a), .K6_C11_W5(32'hbd33edab), .K6_C11_W6(32'hbe11ba00), .K6_C11_W7(32'hbd64cc6c), .K6_C11_W8(32'h3d5a6d90), 
+		.K6_C12_W0(32'hbd55151c), .K6_C12_W1(32'h3d80f371), .K6_C12_W2(32'hba583f20), .K6_C12_W3(32'h3df04e5e), .K6_C12_W4(32'h3d1b2c8f), .K6_C12_W5(32'hbe287e7d), .K6_C12_W6(32'h3dcaced6), .K6_C12_W7(32'h3d320e16), .K6_C12_W8(32'hbe00baa2), 
+		.K6_C13_W0(32'hbce4fe9c), .K6_C13_W1(32'h3d956081), .K6_C13_W2(32'hbe15fcee), .K6_C13_W3(32'h3d9bf4d0), .K6_C13_W4(32'h3dd62e49), .K6_C13_W5(32'h3def385c), .K6_C13_W6(32'hbd07f651), .K6_C13_W7(32'h3e030aef), .K6_C13_W8(32'h3dfa7cfa), 
+		.K6_C14_W0(32'h3de86bcc), .K6_C14_W1(32'h3d1ae392), .K6_C14_W2(32'h3e1d7f3a), .K6_C14_W3(32'h3def388b), .K6_C14_W4(32'hbc5ec404), .K6_C14_W5(32'h3d3bc98d), .K6_C14_W6(32'hbda77107), .K6_C14_W7(32'h3ca63dcd), .K6_C14_W8(32'h3cf76e78), 
+		.K6_C15_W0(32'h3ddb4335), .K6_C15_W1(32'h3c166039), .K6_C15_W2(32'h3c963b2e), .K6_C15_W3(32'hbde5178c), .K6_C15_W4(32'h3d00517d), .K6_C15_W5(32'h3e099ff4), .K6_C15_W6(32'h3dd77672), .K6_C15_W7(32'h3d8d7b06), .K6_C15_W8(32'h3e0ed72e), 
+		.K6_BIAS (32'h3d39562c),
+
+		.K7_C0_W0(32'hbd443491), .K7_C0_W1(32'hbd6ecfa3), .K7_C0_W2(32'h3d59ba7c), .K7_C0_W3(32'hbe0838b2), .K7_C0_W4(32'h3cf17a1c), .K7_C0_W5(32'hbdcc3925), .K7_C0_W6(32'hbd9990c9), .K7_C0_W7(32'h3ad529a4), .K7_C0_W8(32'h3d8a0dae), 
+		.K7_C1_W0(32'h3dfd8b0b), .K7_C1_W1(32'hbd224215), .K7_C1_W2(32'hbdf2d9ff), .K7_C1_W3(32'hbe121efb), .K7_C1_W4(32'h3c3598a5), .K7_C1_W5(32'h3d80ca53), .K7_C1_W6(32'h3d8fe16a), .K7_C1_W7(32'h3da90333), .K7_C1_W8(32'hbb29b880), 
+		.K7_C2_W0(32'h3c09b606), .K7_C2_W1(32'hbd69854b), .K7_C2_W2(32'h3c936341), .K7_C2_W3(32'hbdcd5c2b), .K7_C2_W4(32'h3d1db105), .K7_C2_W5(32'h3daec550), .K7_C2_W6(32'hbc8352cf), .K7_C2_W7(32'hbde56f4d), .K7_C2_W8(32'hbe124bff), 
+		.K7_C3_W0(32'hbd7d5eec), .K7_C3_W1(32'h3e382ab6), .K7_C3_W2(32'hbd84fb7d), .K7_C3_W3(32'hbc885d76), .K7_C3_W4(32'hbd6ed40f), .K7_C3_W5(32'hbe02bc50), .K7_C3_W6(32'h3deb6a71), .K7_C3_W7(32'h3cfa8ff2), .K7_C3_W8(32'h3d4c1d00), 
+		.K7_C4_W0(32'h3e0039c6), .K7_C4_W1(32'hbdf95c6d), .K7_C4_W2(32'hbd28369d), .K7_C4_W3(32'h3deba2d4), .K7_C4_W4(32'hbac919f7), .K7_C4_W5(32'hbce968fb), .K7_C4_W6(32'hbe0c742f), .K7_C4_W7(32'h3d3f7cd8), .K7_C4_W8(32'hbc80419a), 
+		.K7_C5_W0(32'hbe16db45), .K7_C5_W1(32'hbcb9f961), .K7_C5_W2(32'hbdaab34f), .K7_C5_W3(32'hbd94ff86), .K7_C5_W4(32'h3db8ca06), .K7_C5_W5(32'h3d890b9d), .K7_C5_W6(32'h3daacd17), .K7_C5_W7(32'h3d574117), .K7_C5_W8(32'h3dd1489e), 
+		.K7_C6_W0(32'hbd9937ef), .K7_C6_W1(32'h3dccdf8e), .K7_C6_W2(32'h3de1bb81), .K7_C6_W3(32'hbe1263ff), .K7_C6_W4(32'h3dfa6343), .K7_C6_W5(32'h3cb4d39b), .K7_C6_W6(32'hbca5c372), .K7_C6_W7(32'hbe020728), .K7_C6_W8(32'h3d8cc4b9), 
+		.K7_C7_W0(32'h3d73d863), .K7_C7_W1(32'hbdc47856), .K7_C7_W2(32'h3e059ca2), .K7_C7_W3(32'hbd212248), .K7_C7_W4(32'h3cd43864), .K7_C7_W5(32'hbdeaceef), .K7_C7_W6(32'hbd372e88), .K7_C7_W7(32'h3da6f91c), .K7_C7_W8(32'hbd21bbc6), 
+		.K7_C8_W0(32'h3d872038), .K7_C8_W1(32'h3de9d39f), .K7_C8_W2(32'h3e212e88), .K7_C8_W3(32'h3db52cc4), .K7_C8_W4(32'hbd2a5d46), .K7_C8_W5(32'hbd919d45), .K7_C8_W6(32'h3d3314c2), .K7_C8_W7(32'hbdf9e3a7), .K7_C8_W8(32'h3d72602b), 
+		.K7_C9_W0(32'h3d8b34f5), .K7_C9_W1(32'hbcca2627), .K7_C9_W2(32'hbd974b51), .K7_C9_W3(32'h3dea0e4b), .K7_C9_W4(32'h3dc7a843), .K7_C9_W5(32'hbb3b3496), .K7_C9_W6(32'hbc2dacf7), .K7_C9_W7(32'h3d4a3c0c), .K7_C9_W8(32'h3d7d8d3c), 
+		.K7_C10_W0(32'h3c16b88a), .K7_C10_W1(32'hbd86a90e), .K7_C10_W2(32'hbe397006), .K7_C10_W3(32'hbe09a14b), .K7_C10_W4(32'h3cd5c45d), .K7_C10_W5(32'h3d87e595), .K7_C10_W6(32'hbe0747e8), .K7_C10_W7(32'h3d9b44ba), .K7_C10_W8(32'hbdb6f6ea), 
+		.K7_C11_W0(32'hbe010f9c), .K7_C11_W1(32'hbcb01267), .K7_C11_W2(32'hbba28ff9), .K7_C11_W3(32'hbcfbf743), .K7_C11_W4(32'h3b168f7c), .K7_C11_W5(32'hbd41831f), .K7_C11_W6(32'hbd9a9440), .K7_C11_W7(32'hbe142778), .K7_C11_W8(32'hbdcb7ed3), 
+		.K7_C12_W0(32'hbdfbaaa8), .K7_C12_W1(32'hbc65a7ac), .K7_C12_W2(32'h3e13a637), .K7_C12_W3(32'h3c3c27df), .K7_C12_W4(32'h3e032168), .K7_C12_W5(32'h3c94ddf7), .K7_C12_W6(32'hbe0999c1), .K7_C12_W7(32'hbd24a4b9), .K7_C12_W8(32'hbd8f71b1), 
+		.K7_C13_W0(32'h3d0b47f3), .K7_C13_W1(32'hbd47a221), .K7_C13_W2(32'hbd540493), .K7_C13_W3(32'hbdc475b8), .K7_C13_W4(32'h393c9e7c), .K7_C13_W5(32'hbdd515e6), .K7_C13_W6(32'h3cd5c88e), .K7_C13_W7(32'h3de62efd), .K7_C13_W8(32'h3d049dc9), 
+		.K7_C14_W0(32'hbc8b6627), .K7_C14_W1(32'hbcf9bcff), .K7_C14_W2(32'hbdeebfa9), .K7_C14_W3(32'h3d3e681d), .K7_C14_W4(32'h3d2a9e29), .K7_C14_W5(32'h3e192fdc), .K7_C14_W6(32'hbd9db8d6), .K7_C14_W7(32'hbd256419), .K7_C14_W8(32'hbd79df27), 
+		.K7_C15_W0(32'hbca27da4), .K7_C15_W1(32'hbc31a431), .K7_C15_W2(32'hbdd78a2d), .K7_C15_W3(32'hbdeacb08), .K7_C15_W4(32'hbd4bd101), .K7_C15_W5(32'h3bc9271f), .K7_C15_W6(32'hbe15f7b6), .K7_C15_W7(32'h3e0305c1), .K7_C15_W8(32'h3c352bc2), 
+		.K7_BIAS (32'hbc2c4159),
+
+		.K8_C0_W0(32'h3cdb4b27), .K8_C0_W1(32'hbd89ccdc), .K8_C0_W2(32'hbdd250f4), .K8_C0_W3(32'h3c0189fe), .K8_C0_W4(32'hbaf75cb7), .K8_C0_W5(32'hbdfcf8b4), .K8_C0_W6(32'hbdac0d7a), .K8_C0_W7(32'h3dd4003d), .K8_C0_W8(32'hbd79b734), 
+		.K8_C1_W0(32'h3e0e8c64), .K8_C1_W1(32'h3e1e418f), .K8_C1_W2(32'hbe052b61), .K8_C1_W3(32'hbdac0d76), .K8_C1_W4(32'hbdcba059), .K8_C1_W5(32'hbc170b58), .K8_C1_W6(32'hbdd52d1e), .K8_C1_W7(32'h3d119ef6), .K8_C1_W8(32'h3cc887a4), 
+		.K8_C2_W0(32'hbd4fcb35), .K8_C2_W1(32'hbdd23f12), .K8_C2_W2(32'h3d99a7fb), .K8_C2_W3(32'hbd86060c), .K8_C2_W4(32'hbcd018f9), .K8_C2_W5(32'hbe1f5e73), .K8_C2_W6(32'h3dde6935), .K8_C2_W7(32'h3e1d8cc9), .K8_C2_W8(32'h3dc8aacd), 
+		.K8_C3_W0(32'h3e01ce0e), .K8_C3_W1(32'h3aa23619), .K8_C3_W2(32'hbd79c76e), .K8_C3_W3(32'hbda8ad8d), .K8_C3_W4(32'hbe385bd5), .K8_C3_W5(32'hbd54111a), .K8_C3_W6(32'hbd121264), .K8_C3_W7(32'hbe0d6285), .K8_C3_W8(32'h3d946005), 
+		.K8_C4_W0(32'h3d2353ef), .K8_C4_W1(32'h3d38311c), .K8_C4_W2(32'hbd8ca119), .K8_C4_W3(32'hbdc44a51), .K8_C4_W4(32'hbdb9bf93), .K8_C4_W5(32'h3d65073e), .K8_C4_W6(32'hbd28b402), .K8_C4_W7(32'hbc39e877), .K8_C4_W8(32'h3de88edf), 
+		.K8_C5_W0(32'hbdbf2986), .K8_C5_W1(32'h3d084ad3), .K8_C5_W2(32'h3ccb20a1), .K8_C5_W3(32'hbda16882), .K8_C5_W4(32'h3d96618d), .K8_C5_W5(32'h3d9db623), .K8_C5_W6(32'hbc7095c6), .K8_C5_W7(32'hbca03759), .K8_C5_W8(32'h3d21ebde), 
+		.K8_C6_W0(32'h3cac015f), .K8_C6_W1(32'hbb843fa1), .K8_C6_W2(32'hbe12d14b), .K8_C6_W3(32'h3e0a4158), .K8_C6_W4(32'h3d9ba351), .K8_C6_W5(32'hbdeffdb2), .K8_C6_W6(32'hbdc6776e), .K8_C6_W7(32'hbc6591cd), .K8_C6_W8(32'hbdc8b860), 
+		.K8_C7_W0(32'h3dc6ca46), .K8_C7_W1(32'h3c0d1c16), .K8_C7_W2(32'hbc99b114), .K8_C7_W3(32'hbd50827c), .K8_C7_W4(32'h3da7b756), .K8_C7_W5(32'h3dd2539a), .K8_C7_W6(32'h3dc76ed9), .K8_C7_W7(32'hbd170fc9), .K8_C7_W8(32'h3cb4637f), 
+		.K8_C8_W0(32'h3d6f6cb7), .K8_C8_W1(32'h3d4aac59), .K8_C8_W2(32'hbbd545c8), .K8_C8_W3(32'h3d858307), .K8_C8_W4(32'h3d10d171), .K8_C8_W5(32'hbdc551b2), .K8_C8_W6(32'h3e148e90), .K8_C8_W7(32'hbe140e48), .K8_C8_W8(32'hbacb3b11), 
+		.K8_C9_W0(32'h3c81d5ee), .K8_C9_W1(32'h3c468992), .K8_C9_W2(32'hbd4a1d2e), .K8_C9_W3(32'hbccc77dd), .K8_C9_W4(32'h3d0ab547), .K8_C9_W5(32'h3d9b6782), .K8_C9_W6(32'h3dfce350), .K8_C9_W7(32'h3d5c7b6b), .K8_C9_W8(32'hbc6cd0e0), 
+		.K8_C10_W0(32'hbd2d30e5), .K8_C10_W1(32'h3da0dcf9), .K8_C10_W2(32'h3d754da9), .K8_C10_W3(32'h3e031372), .K8_C10_W4(32'h3d57517c), .K8_C10_W5(32'hbd063020), .K8_C10_W6(32'hbdf7a731), .K8_C10_W7(32'h3d869acf), .K8_C10_W8(32'hbd82535d), 
+		.K8_C11_W0(32'h3da2be46), .K8_C11_W1(32'h3dca0c59), .K8_C11_W2(32'h3e19f7ab), .K8_C11_W3(32'h3e00561b), .K8_C11_W4(32'h3ddbe9d9), .K8_C11_W5(32'h3cd58b31), .K8_C11_W6(32'h3cf7c421), .K8_C11_W7(32'h3cfa86b6), .K8_C11_W8(32'hbe10af14), 
+		.K8_C12_W0(32'hbcc7c268), .K8_C12_W1(32'hbba2b13a), .K8_C12_W2(32'hbd8b52a1), .K8_C12_W3(32'hbd4aab1b), .K8_C12_W4(32'hbd636897), .K8_C12_W5(32'hbc817c68), .K8_C12_W6(32'hbcd5217a), .K8_C12_W7(32'hbdc5a2d0), .K8_C12_W8(32'hbb28af7f), 
+		.K8_C13_W0(32'h3e076dc8), .K8_C13_W1(32'h3dc0e6fc), .K8_C13_W2(32'hbd915b4b), .K8_C13_W3(32'h3d36b4ad), .K8_C13_W4(32'h3c1a4c44), .K8_C13_W5(32'hbd937c5e), .K8_C13_W6(32'h3dd295b9), .K8_C13_W7(32'hbe14284f), .K8_C13_W8(32'h3d1d5aeb), 
+		.K8_C14_W0(32'h3d8b5b2a), .K8_C14_W1(32'h3c8b3f51), .K8_C14_W2(32'hbdbc38d5), .K8_C14_W3(32'hbcf86428), .K8_C14_W4(32'hbd542ec5), .K8_C14_W5(32'hbdb18736), .K8_C14_W6(32'hbd848269), .K8_C14_W7(32'h3dbcb5fd), .K8_C14_W8(32'hbd64f978), 
+		.K8_C15_W0(32'hbbaf7e02), .K8_C15_W1(32'h3cbb26e0), .K8_C15_W2(32'h3e0a0b3b), .K8_C15_W3(32'hbd52302a), .K8_C15_W4(32'h3ce56635), .K8_C15_W5(32'h3d4fda6c), .K8_C15_W6(32'hbde94335), .K8_C15_W7(32'h3e1cf91c), .K8_C15_W8(32'h3dae38ca), 
+		.K8_BIAS (32'h3d376845),
+
+		.K9_C0_W0(32'h3e4e1d3d), .K9_C0_W1(32'h3ca1a3c9), .K9_C0_W2(32'h3df6f52b), .K9_C0_W3(32'h3c9a69f7), .K9_C0_W4(32'hbdd5807e), .K9_C0_W5(32'hbc2a5fad), .K9_C0_W6(32'hbe1791a1), .K9_C0_W7(32'h3d41f8e2), .K9_C0_W8(32'hbe13bbb3), 
+		.K9_C1_W0(32'hbda04000), .K9_C1_W1(32'h3b8c4669), .K9_C1_W2(32'h3e317180), .K9_C1_W3(32'h3d5b6388), .K9_C1_W4(32'hbc60b5a4), .K9_C1_W5(32'h3d44799e), .K9_C1_W6(32'h3a05c0ce), .K9_C1_W7(32'h3e069d1c), .K9_C1_W8(32'hbc61af7b), 
+		.K9_C2_W0(32'hbe04e79c), .K9_C2_W1(32'h3d8ea033), .K9_C2_W2(32'h3d6ad4fd), .K9_C2_W3(32'h3d2ba152), .K9_C2_W4(32'hbd2b224b), .K9_C2_W5(32'h3e2bebbc), .K9_C2_W6(32'hbbc4f544), .K9_C2_W7(32'h3cf3ccdd), .K9_C2_W8(32'hbe0aeb7b), 
+		.K9_C3_W0(32'hbd8af756), .K9_C3_W1(32'hbdfe4062), .K9_C3_W2(32'h3df1cf60), .K9_C3_W3(32'h3cd14f29), .K9_C3_W4(32'hbc99d926), .K9_C3_W5(32'h3da2049e), .K9_C3_W6(32'h37d316e8), .K9_C3_W7(32'h3c9ee637), .K9_C3_W8(32'h3d9f6270), 
+		.K9_C4_W0(32'hbd595712), .K9_C4_W1(32'h3d4858e5), .K9_C4_W2(32'h3d2c56bd), .K9_C4_W3(32'hbdc36764), .K9_C4_W4(32'h3cdbb3e6), .K9_C4_W5(32'h3df37703), .K9_C4_W6(32'h3df2c371), .K9_C4_W7(32'hbe0347a4), .K9_C4_W8(32'h3d85ba44), 
+		.K9_C5_W0(32'hbdf794e4), .K9_C5_W1(32'h3d6f7e4f), .K9_C5_W2(32'h3db27c25), .K9_C5_W3(32'h3dff30d9), .K9_C5_W4(32'hbd40ab1e), .K9_C5_W5(32'h3cbd27d2), .K9_C5_W6(32'hbd5abcfa), .K9_C5_W7(32'h3ac4fc8f), .K9_C5_W8(32'hbd6f8141), 
+		.K9_C6_W0(32'hbc7e5c47), .K9_C6_W1(32'h3ba03fd6), .K9_C6_W2(32'hbdd081e8), .K9_C6_W3(32'hbb996152), .K9_C6_W4(32'hbe37f2eb), .K9_C6_W5(32'hbdb96e3e), .K9_C6_W6(32'hbc35989a), .K9_C6_W7(32'h3dd6b272), .K9_C6_W8(32'h3ae011ca), 
+		.K9_C7_W0(32'h3daa775f), .K9_C7_W1(32'h3d7ebfb0), .K9_C7_W2(32'hbd8f7965), .K9_C7_W3(32'hbd954dbc), .K9_C7_W4(32'h3da99048), .K9_C7_W5(32'hbd8bc927), .K9_C7_W6(32'hbe12ff43), .K9_C7_W7(32'hbd8ae3ca), .K9_C7_W8(32'h3b253efe), 
+		.K9_C8_W0(32'hbd04c3fe), .K9_C8_W1(32'hbddea546), .K9_C8_W2(32'hbde4efd8), .K9_C8_W3(32'h3c4cc89b), .K9_C8_W4(32'h3aa25fe8), .K9_C8_W5(32'h3de477b9), .K9_C8_W6(32'hbe0d4fb2), .K9_C8_W7(32'h3e170c42), .K9_C8_W8(32'h3c87055e), 
+		.K9_C9_W0(32'hbd6e0365), .K9_C9_W1(32'h3da16acc), .K9_C9_W2(32'hbdbdcc0f), .K9_C9_W3(32'hbe20584b), .K9_C9_W4(32'h3da72376), .K9_C9_W5(32'hbdc37c18), .K9_C9_W6(32'hbe12d562), .K9_C9_W7(32'hbdb63e0b), .K9_C9_W8(32'h3d9c155b), 
+		.K9_C10_W0(32'hbc4e9d7b), .K9_C10_W1(32'h3dc83d6f), .K9_C10_W2(32'hbd50fa18), .K9_C10_W3(32'hbe1cfe24), .K9_C10_W4(32'hbd5738d6), .K9_C10_W5(32'hbe1a96a9), .K9_C10_W6(32'h3dd56425), .K9_C10_W7(32'hbdc1b80f), .K9_C10_W8(32'hbe21eabf), 
+		.K9_C11_W0(32'h3e12769d), .K9_C11_W1(32'hbdd58683), .K9_C11_W2(32'h3c479e83), .K9_C11_W3(32'h3c0acfd0), .K9_C11_W4(32'h3dd8d06d), .K9_C11_W5(32'h3d8273b4), .K9_C11_W6(32'hbad9d65d), .K9_C11_W7(32'h3df31e09), .K9_C11_W8(32'h3d8beb51), 
+		.K9_C12_W0(32'hbd8b124a), .K9_C12_W1(32'hbd554a72), .K9_C12_W2(32'hbd8d4a87), .K9_C12_W3(32'h3dd87bb4), .K9_C12_W4(32'hbe08d7a7), .K9_C12_W5(32'h3dec0cb8), .K9_C12_W6(32'h3e12158e), .K9_C12_W7(32'hbd65c6ef), .K9_C12_W8(32'h3d95e737), 
+		.K9_C13_W0(32'h3dc41144), .K9_C13_W1(32'h3e1d69a9), .K9_C13_W2(32'h3c9a82b6), .K9_C13_W3(32'hbc045c31), .K9_C13_W4(32'h3dd2937f), .K9_C13_W5(32'hbcaab24a), .K9_C13_W6(32'hbdda6c15), .K9_C13_W7(32'h3cba63ec), .K9_C13_W8(32'hbdd396b4), 
+		.K9_C14_W0(32'hbdc2748b), .K9_C14_W1(32'hbda5ca4a), .K9_C14_W2(32'hbd1a4ae6), .K9_C14_W3(32'hbde56cac), .K9_C14_W4(32'hbe105e7e), .K9_C14_W5(32'hbd1df056), .K9_C14_W6(32'hbdc17b5c), .K9_C14_W7(32'h3d851037), .K9_C14_W8(32'h3debaec8), 
+		.K9_C15_W0(32'hbd323e3e), .K9_C15_W1(32'h3a132004), .K9_C15_W2(32'h3b7fcc16), .K9_C15_W3(32'hbd5970f0), .K9_C15_W4(32'h3d0277e1), .K9_C15_W5(32'h3c2697a2), .K9_C15_W6(32'h3df715f0), .K9_C15_W7(32'hbd3172ba), .K9_C15_W8(32'h3d99a6ca), 
+		.K9_BIAS (32'h3c19d729),
+
+		.K10_C0_W0(32'hbc12dd06), .K10_C0_W1(32'hbd13de82), .K10_C0_W2(32'h3e054ac9), .K10_C0_W3(32'h3c41eaf6), .K10_C0_W4(32'h3dd3eac3), .K10_C0_W5(32'hbbc0933e), .K10_C0_W6(32'h3d6398b0), .K10_C0_W7(32'h3dd0caf3), .K10_C0_W8(32'hbd692b0a), 
+		.K10_C1_W0(32'h3d63104f), .K10_C1_W1(32'h3cab2d90), .K10_C1_W2(32'h3cde1624), .K10_C1_W3(32'hbe017de0), .K10_C1_W4(32'hbdcb0f2d), .K10_C1_W5(32'h3d9c86b0), .K10_C1_W6(32'h3cc342c9), .K10_C1_W7(32'h3caa0b99), .K10_C1_W8(32'hbe060c5c), 
+		.K10_C2_W0(32'hbddf83ec), .K10_C2_W1(32'hbddb8423), .K10_C2_W2(32'h3d9bf4ff), .K10_C2_W3(32'hbdfecdad), .K10_C2_W4(32'h3d7fa758), .K10_C2_W5(32'hbdc9a200), .K10_C2_W6(32'hbd3a8da2), .K10_C2_W7(32'hbda39d91), .K10_C2_W8(32'h3d133116), 
+		.K10_C3_W0(32'h3d1f7884), .K10_C3_W1(32'h3d0a012d), .K10_C3_W2(32'h3cbacef1), .K10_C3_W3(32'hbc85d106), .K10_C3_W4(32'h3c6b177b), .K10_C3_W5(32'hbdb51dcb), .K10_C3_W6(32'h3de4f4b7), .K10_C3_W7(32'h3e3a07ce), .K10_C3_W8(32'h3cbd2ca0), 
+		.K10_C4_W0(32'h3e18be1a), .K10_C4_W1(32'hbc9e3870), .K10_C4_W2(32'hbd1fb6a3), .K10_C4_W3(32'h3d11002b), .K10_C4_W4(32'h3dc7fbf4), .K10_C4_W5(32'hbd830db3), .K10_C4_W6(32'h3d8f078f), .K10_C4_W7(32'hbcd9fd8b), .K10_C4_W8(32'h3ddcd9ca), 
+		.K10_C5_W0(32'hbd8a6d0b), .K10_C5_W1(32'hbdf48f00), .K10_C5_W2(32'hbddae098), .K10_C5_W3(32'hbdd60bd2), .K10_C5_W4(32'h3d8cfed7), .K10_C5_W5(32'h3da7f382), .K10_C5_W6(32'h3d6f11f2), .K10_C5_W7(32'h3dd7630f), .K10_C5_W8(32'hbdd8b345), 
+		.K10_C6_W0(32'hbc50da26), .K10_C6_W1(32'h3dc3b972), .K10_C6_W2(32'h3e0c24e5), .K10_C6_W3(32'hbe1bab98), .K10_C6_W4(32'h3ce201ba), .K10_C6_W5(32'hbd2d7959), .K10_C6_W6(32'h3cdd994e), .K10_C6_W7(32'h3df12430), .K10_C6_W8(32'hbd658776), 
+		.K10_C7_W0(32'hbdab8ddf), .K10_C7_W1(32'h3e071aa5), .K10_C7_W2(32'h3df0ca52), .K10_C7_W3(32'h3c1c41ad), .K10_C7_W4(32'h3d0b780b), .K10_C7_W5(32'hbd06cccd), .K10_C7_W6(32'hbdc2387d), .K10_C7_W7(32'hbdf65ea1), .K10_C7_W8(32'h3ddc70dd), 
+		.K10_C8_W0(32'hbe197216), .K10_C8_W1(32'h3d978e5c), .K10_C8_W2(32'hbbaad361), .K10_C8_W3(32'h3d98ae37), .K10_C8_W4(32'h3d561ad5), .K10_C8_W5(32'hbd8fb5af), .K10_C8_W6(32'hbd12ae02), .K10_C8_W7(32'h3de27662), .K10_C8_W8(32'hbdabad8d), 
+		.K10_C9_W0(32'h3dda1dc8), .K10_C9_W1(32'hbd1e0578), .K10_C9_W2(32'h3d6b41b6), .K10_C9_W3(32'h3d702788), .K10_C9_W4(32'hbd08eefc), .K10_C9_W5(32'h3d97d777), .K10_C9_W6(32'h3db5de11), .K10_C9_W7(32'hbb6c1ed9), .K10_C9_W8(32'hbcb1dc08), 
+		.K10_C10_W0(32'h3ccd2a1b), .K10_C10_W1(32'h3cce5225), .K10_C10_W2(32'h3ceec78a), .K10_C10_W3(32'hbd8e63a8), .K10_C10_W4(32'hbd3bedaa), .K10_C10_W5(32'h3caaf805), .K10_C10_W6(32'h3e13db90), .K10_C10_W7(32'h3dcaaf26), .K10_C10_W8(32'h3d591e66), 
+		.K10_C11_W0(32'hbd2a7a1f), .K10_C11_W1(32'hbcc6b659), .K10_C11_W2(32'h3dedbbd1), .K10_C11_W3(32'hbd8ce640), .K10_C11_W4(32'h3d48a141), .K10_C11_W5(32'h3c01aa4b), .K10_C11_W6(32'h3bd45995), .K10_C11_W7(32'h3dd0b094), .K10_C11_W8(32'h3d4ab10b), 
+		.K10_C12_W0(32'h3dc5c3fc), .K10_C12_W1(32'h3d18691b), .K10_C12_W2(32'h3e298f00), .K10_C12_W3(32'hbc9f32a5), .K10_C12_W4(32'h3ddf9dd6), .K10_C12_W5(32'hbd867e41), .K10_C12_W6(32'h3dd0e0b0), .K10_C12_W7(32'h3d4a4cff), .K10_C12_W8(32'hbe17e2d3), 
+		.K10_C13_W0(32'hbdb5c5cc), .K10_C13_W1(32'h3c06bac2), .K10_C13_W2(32'h3e0b037f), .K10_C13_W3(32'hbded2012), .K10_C13_W4(32'h3d065e9f), .K10_C13_W5(32'h3ce7088f), .K10_C13_W6(32'h3e12ec54), .K10_C13_W7(32'h3bfd79c3), .K10_C13_W8(32'hbd8e3921), 
+		.K10_C14_W0(32'h3de59161), .K10_C14_W1(32'hbda1b259), .K10_C14_W2(32'hbdc2b82d), .K10_C14_W3(32'h3daf2f05), .K10_C14_W4(32'hbd25002d), .K10_C14_W5(32'hbdf8e5d2), .K10_C14_W6(32'hbdd96506), .K10_C14_W7(32'hbdaad063), .K10_C14_W8(32'hbd4c9b3d), 
+		.K10_C15_W0(32'h3dd9e215), .K10_C15_W1(32'hbe1230e1), .K10_C15_W2(32'h3dc760a7), .K10_C15_W3(32'h3d705fca), .K10_C15_W4(32'hbd867d38), .K10_C15_W5(32'h3d38021b), .K10_C15_W6(32'hbdb37c87), .K10_C15_W7(32'h3d1b069f), .K10_C15_W8(32'h3e02c4eb), 
+		.K10_BIAS (32'h3d0838b4),
+
+		.K11_C0_W0(32'h3e20137a), .K11_C0_W1(32'hbd2097f6), .K11_C0_W2(32'h3e1119cf), .K11_C0_W3(32'h3dacceb3), .K11_C0_W4(32'h3dddabf3), .K11_C0_W5(32'hbdfead0c), .K11_C0_W6(32'hbb352dbd), .K11_C0_W7(32'hbe0625fb), .K11_C0_W8(32'hbdba3482), 
+		.K11_C1_W0(32'h3dfe4e66), .K11_C1_W1(32'h3dcce4ef), .K11_C1_W2(32'hbd9f50a5), .K11_C1_W3(32'h3d9888a2), .K11_C1_W4(32'h3d5183eb), .K11_C1_W5(32'hbe118fee), .K11_C1_W6(32'h3d792ddb), .K11_C1_W7(32'h3dafa396), .K11_C1_W8(32'hbdecfeeb), 
+		.K11_C2_W0(32'h3d9a4ef2), .K11_C2_W1(32'hbc1a6ea4), .K11_C2_W2(32'h3d3f44eb), .K11_C2_W3(32'h3d8704b0), .K11_C2_W4(32'h3e2ae35b), .K11_C2_W5(32'hbd51fb44), .K11_C2_W6(32'hbb93a6d9), .K11_C2_W7(32'hbdaaa828), .K11_C2_W8(32'h3cba1d92), 
+		.K11_C3_W0(32'hbe5a6791), .K11_C3_W1(32'h3cdc2029), .K11_C3_W2(32'h3d40e183), .K11_C3_W3(32'h3dd8758d), .K11_C3_W4(32'h3d11ab9c), .K11_C3_W5(32'h3c58d2cc), .K11_C3_W6(32'h3d26ccaa), .K11_C3_W7(32'h3c060d3e), .K11_C3_W8(32'hbdd44108), 
+		.K11_C4_W0(32'h3d6743f6), .K11_C4_W1(32'hbdf4617d), .K11_C4_W2(32'h3e0eafcf), .K11_C4_W3(32'hbe0fe7e0), .K11_C4_W4(32'hbc337c1f), .K11_C4_W5(32'h3dfb0e59), .K11_C4_W6(32'hbc0209d2), .K11_C4_W7(32'h3dca9bd6), .K11_C4_W8(32'hbe115fd3), 
+		.K11_C5_W0(32'h3dc98c00), .K11_C5_W1(32'h3df7de04), .K11_C5_W2(32'hbd92a60e), .K11_C5_W3(32'h3d683b1e), .K11_C5_W4(32'hbe048d25), .K11_C5_W5(32'hbd41aa26), .K11_C5_W6(32'h3dd03c5b), .K11_C5_W7(32'hbd15c7b3), .K11_C5_W8(32'h3d4bee9f), 
+		.K11_C6_W0(32'hbdcaca40), .K11_C6_W1(32'hbde46719), .K11_C6_W2(32'hbdf75315), .K11_C6_W3(32'hbd3bf90a), .K11_C6_W4(32'h3c806795), .K11_C6_W5(32'h3d52bc07), .K11_C6_W6(32'h3b585c2d), .K11_C6_W7(32'h3c3097f0), .K11_C6_W8(32'hbcd44fa9), 
+		.K11_C7_W0(32'h3e0a2b90), .K11_C7_W1(32'hbd44cc4c), .K11_C7_W2(32'h3dbe0ff0), .K11_C7_W3(32'hbd3f824c), .K11_C7_W4(32'h3dd95f0b), .K11_C7_W5(32'hbe23dd11), .K11_C7_W6(32'h3d2e5630), .K11_C7_W7(32'h3d98588f), .K11_C7_W8(32'h3d93bb24), 
+		.K11_C8_W0(32'hbc850b1c), .K11_C8_W1(32'hbc51d190), .K11_C8_W2(32'h3dc4f6f0), .K11_C8_W3(32'hbdd9ee33), .K11_C8_W4(32'hbd8d64f7), .K11_C8_W5(32'hbcdda41d), .K11_C8_W6(32'h3e072f97), .K11_C8_W7(32'h3be31cd3), .K11_C8_W8(32'hbd4b2a88), 
+		.K11_C9_W0(32'hbe29a609), .K11_C9_W1(32'h3d977031), .K11_C9_W2(32'hbd1de501), .K11_C9_W3(32'h3dd5c59a), .K11_C9_W4(32'hbe31a898), .K11_C9_W5(32'h3de7b1ec), .K11_C9_W6(32'hbe044441), .K11_C9_W7(32'h3bda5dec), .K11_C9_W8(32'hbdce9f6f), 
+		.K11_C10_W0(32'h3d71550d), .K11_C10_W1(32'hbde4f5d6), .K11_C10_W2(32'h3dd3080f), .K11_C10_W3(32'hbe19e3ae), .K11_C10_W4(32'h3df5cb01), .K11_C10_W5(32'h3cc5fa77), .K11_C10_W6(32'hbd19eda8), .K11_C10_W7(32'hbd9f2ad5), .K11_C10_W8(32'hbd25e9f1), 
+		.K11_C11_W0(32'h3d351bae), .K11_C11_W1(32'hbb075670), .K11_C11_W2(32'hbdc41186), .K11_C11_W3(32'h3dcdc47f), .K11_C11_W4(32'h3dbbb668), .K11_C11_W5(32'h3dd3a817), .K11_C11_W6(32'hbe101a5d), .K11_C11_W7(32'h3d95a88c), .K11_C11_W8(32'h3db5ec4b), 
+		.K11_C12_W0(32'h3e051c65), .K11_C12_W1(32'h3c6c5c2d), .K11_C12_W2(32'h3bdb5def), .K11_C12_W3(32'h3c038d2b), .K11_C12_W4(32'hbd42073d), .K11_C12_W5(32'h3df174ee), .K11_C12_W6(32'h3d8e6719), .K11_C12_W7(32'hbdf36779), .K11_C12_W8(32'hbd731641), 
+		.K11_C13_W0(32'h3e0dc0c5), .K11_C13_W1(32'hbcbdc96e), .K11_C13_W2(32'hbd97b9b7), .K11_C13_W3(32'h3dfebbdc), .K11_C13_W4(32'h3dc54160), .K11_C13_W5(32'hbe168ca0), .K11_C13_W6(32'h3dd6ff66), .K11_C13_W7(32'hbdf3be5c), .K11_C13_W8(32'h3c3f045b), 
+		.K11_C14_W0(32'h3d5ee391), .K11_C14_W1(32'hbdd304e6), .K11_C14_W2(32'h3e1dc23c), .K11_C14_W3(32'hbc801483), .K11_C14_W4(32'h3da0486d), .K11_C14_W5(32'hbd66e355), .K11_C14_W6(32'hbd9b4b02), .K11_C14_W7(32'hbe1b9bee), .K11_C14_W8(32'hbd3f91db), 
+		.K11_C15_W0(32'h3c6bbc5c), .K11_C15_W1(32'h3dd47f9e), .K11_C15_W2(32'hbc299b93), .K11_C15_W3(32'h3dc83196), .K11_C15_W4(32'h3df81c32), .K11_C15_W5(32'h3dcffd22), .K11_C15_W6(32'h3de52b77), .K11_C15_W7(32'hbe23569d), .K11_C15_W8(32'hbd053831), 
+		.K11_BIAS (32'hbd183ac3),
+
+		.K12_C0_W0(32'hbd830048), .K12_C0_W1(32'h3d9e6448), .K12_C0_W2(32'hbd707394), .K12_C0_W3(32'h3dffed13), .K12_C0_W4(32'h3dbaf343), .K12_C0_W5(32'hbe181f80), .K12_C0_W6(32'hbcfe5aba), .K12_C0_W7(32'h3d29b9ff), .K12_C0_W8(32'h3d7bf817), 
+		.K12_C1_W0(32'h3cb1b0e8), .K12_C1_W1(32'hbdd0dd78), .K12_C1_W2(32'h3d61a0e3), .K12_C1_W3(32'h3dbd8290), .K12_C1_W4(32'hbc7f98a7), .K12_C1_W5(32'hbdd0eb9c), .K12_C1_W6(32'hbcb36fd5), .K12_C1_W7(32'hbe357867), .K12_C1_W8(32'h3e0beccb), 
+		.K12_C2_W0(32'hbd38bdfb), .K12_C2_W1(32'hbd89ed90), .K12_C2_W2(32'hbc356af3), .K12_C2_W3(32'h3e083159), .K12_C2_W4(32'hbddd671e), .K12_C2_W5(32'h3c722926), .K12_C2_W6(32'hbc8a0556), .K12_C2_W7(32'h3dded6f2), .K12_C2_W8(32'hbcb0dc55), 
+		.K12_C3_W0(32'hbe43b512), .K12_C3_W1(32'h3c1fa9b0), .K12_C3_W2(32'h3a8b6dd9), .K12_C3_W3(32'hbd0ae321), .K12_C3_W4(32'h3cf173e2), .K12_C3_W5(32'h3c95941d), .K12_C3_W6(32'h3da847ff), .K12_C3_W7(32'h3cb4b757), .K12_C3_W8(32'h3e35feb1), 
+		.K12_C4_W0(32'hbd4cfb4b), .K12_C4_W1(32'h3db11cd5), .K12_C4_W2(32'h3d8b1fe3), .K12_C4_W3(32'hbd5d2b55), .K12_C4_W4(32'h3e1edaf2), .K12_C4_W5(32'hbce0b60a), .K12_C4_W6(32'hbdd7a6b4), .K12_C4_W7(32'hbe002b69), .K12_C4_W8(32'hbc011b3d), 
+		.K12_C5_W0(32'h3da54ef5), .K12_C5_W1(32'h3bd373e3), .K12_C5_W2(32'h3c0552fd), .K12_C5_W3(32'hbd717e80), .K12_C5_W4(32'hbdcb6d96), .K12_C5_W5(32'hbcb984b6), .K12_C5_W6(32'hbdb15a31), .K12_C5_W7(32'hbab5e6e4), .K12_C5_W8(32'h3dd2260b), 
+		.K12_C6_W0(32'h3d848f41), .K12_C6_W1(32'h3d23749c), .K12_C6_W2(32'h3d227a9e), .K12_C6_W3(32'h3dbac544), .K12_C6_W4(32'hbd8da329), .K12_C6_W5(32'hbe0db266), .K12_C6_W6(32'h3d8c9535), .K12_C6_W7(32'h3df54eee), .K12_C6_W8(32'hbdddb1dc), 
+		.K12_C7_W0(32'hbc755895), .K12_C7_W1(32'hbd4723c0), .K12_C7_W2(32'hbe089fe3), .K12_C7_W3(32'hbd996837), .K12_C7_W4(32'hbdb62c3b), .K12_C7_W5(32'h3d36f37e), .K12_C7_W6(32'hbb81b6b2), .K12_C7_W7(32'h3ca05bf3), .K12_C7_W8(32'hbdf0aa09), 
+		.K12_C8_W0(32'hbd634295), .K12_C8_W1(32'hbd90d9dc), .K12_C8_W2(32'h3da2dac7), .K12_C8_W3(32'hbda16df4), .K12_C8_W4(32'h3d82dc61), .K12_C8_W5(32'hbe047fbb), .K12_C8_W6(32'h3c10bea5), .K12_C8_W7(32'h3df0ca32), .K12_C8_W8(32'h3d7bbfe6), 
+		.K12_C9_W0(32'h3dfb88a8), .K12_C9_W1(32'h3c8d1218), .K12_C9_W2(32'h3dbef97d), .K12_C9_W3(32'hbcf3d7ca), .K12_C9_W4(32'hbd9fe488), .K12_C9_W5(32'hbd34673d), .K12_C9_W6(32'h3d8fbcee), .K12_C9_W7(32'h3e07ac40), .K12_C9_W8(32'hbe03e6bc), 
+		.K12_C10_W0(32'h3d98ef2f), .K12_C10_W1(32'h3d354504), .K12_C10_W2(32'hbdeb113a), .K12_C10_W3(32'h3df36d0e), .K12_C10_W4(32'hbde1299e), .K12_C10_W5(32'hbe103183), .K12_C10_W6(32'h3d4f5c97), .K12_C10_W7(32'hbd693951), .K12_C10_W8(32'h3d00e7a9), 
+		.K12_C11_W0(32'h3dbb0fcf), .K12_C11_W1(32'h3b65dda5), .K12_C11_W2(32'h3da45925), .K12_C11_W3(32'h3e03f516), .K12_C11_W4(32'h3d0747ef), .K12_C11_W5(32'h3dcbf3a3), .K12_C11_W6(32'hbc972ff0), .K12_C11_W7(32'h3d14af09), .K12_C11_W8(32'hbd04746f), 
+		.K12_C12_W0(32'h3d05afb3), .K12_C12_W1(32'hbd3b887e), .K12_C12_W2(32'hbddeaecd), .K12_C12_W3(32'h3d888452), .K12_C12_W4(32'h3cf07c53), .K12_C12_W5(32'h3e0c6050), .K12_C12_W6(32'hbcb4be47), .K12_C12_W7(32'hbe017d96), .K12_C12_W8(32'h3dee12fe), 
+		.K12_C13_W0(32'h3db399cd), .K12_C13_W1(32'h3c801211), .K12_C13_W2(32'hbd3b79f5), .K12_C13_W3(32'hbdb9735c), .K12_C13_W4(32'h3dede3f3), .K12_C13_W5(32'h3d43438c), .K12_C13_W6(32'hbe006dc9), .K12_C13_W7(32'h3def2a86), .K12_C13_W8(32'hbd2d7885), 
+		.K12_C14_W0(32'h3d026033), .K12_C14_W1(32'h3ddd2be5), .K12_C14_W2(32'h3d704d8e), .K12_C14_W3(32'hbdb1c103), .K12_C14_W4(32'hbdd72f83), .K12_C14_W5(32'hbdfe56c0), .K12_C14_W6(32'h3c70beec), .K12_C14_W7(32'h3dc36fef), .K12_C14_W8(32'h3e22221a), 
+		.K12_C15_W0(32'hbb005d50), .K12_C15_W1(32'h3d687831), .K12_C15_W2(32'h3db9a800), .K12_C15_W3(32'h3d94c8c6), .K12_C15_W4(32'h3caafdd9), .K12_C15_W5(32'hbc306bb7), .K12_C15_W6(32'hbcb1548d), .K12_C15_W7(32'h3d20f684), .K12_C15_W8(32'hbe0addfd), 
+		.K12_BIAS (32'hbcd29bd3),
+
+		.K13_C0_W0(32'hbe0aa911), .K13_C0_W1(32'hbce63761), .K13_C0_W2(32'h3d2fe906), .K13_C0_W3(32'hbcc7391d), .K13_C0_W4(32'h3d5a1597), .K13_C0_W5(32'h3dcecbfa), .K13_C0_W6(32'h3a3bfb8a), .K13_C0_W7(32'h3ddc2dae), .K13_C0_W8(32'hbdf13aea), 
+		.K13_C1_W0(32'hbdecf2b4), .K13_C1_W1(32'h3a34702c), .K13_C1_W2(32'h3d1225f3), .K13_C1_W3(32'h3d1ee322), .K13_C1_W4(32'h3d3ed153), .K13_C1_W5(32'hbd7a917e), .K13_C1_W6(32'hbda2c7c1), .K13_C1_W7(32'hbc17273b), .K13_C1_W8(32'hbdaa2dc1), 
+		.K13_C2_W0(32'h3dad7122), .K13_C2_W1(32'hbd9fbe3c), .K13_C2_W2(32'h3e26435c), .K13_C2_W3(32'hbe21e4b9), .K13_C2_W4(32'hbd959934), .K13_C2_W5(32'h3db35794), .K13_C2_W6(32'h3b129437), .K13_C2_W7(32'h3dde5099), .K13_C2_W8(32'hbe0b14ca), 
+		.K13_C3_W0(32'h3bda893f), .K13_C3_W1(32'hbd8f5090), .K13_C3_W2(32'hba05fe9e), .K13_C3_W3(32'hbdc9b547), .K13_C3_W4(32'h3d33fbda), .K13_C3_W5(32'h3b06d71d), .K13_C3_W6(32'h3e06ac53), .K13_C3_W7(32'hba254c11), .K13_C3_W8(32'h3e3cd886), 
+		.K13_C4_W0(32'hbdfac28d), .K13_C4_W1(32'h3d8d2464), .K13_C4_W2(32'h3e0f2409), .K13_C4_W3(32'hbc839154), .K13_C4_W4(32'h3dfd988e), .K13_C4_W5(32'hbdfaa72e), .K13_C4_W6(32'h3c0afce6), .K13_C4_W7(32'hbdde9e4b), .K13_C4_W8(32'h3cde6400), 
+		.K13_C5_W0(32'hbdfd5298), .K13_C5_W1(32'hbdf34a3e), .K13_C5_W2(32'hbd7cf4bf), .K13_C5_W3(32'h3df3d77c), .K13_C5_W4(32'hbcec81eb), .K13_C5_W5(32'hbddfd7bc), .K13_C5_W6(32'hba2ceb5e), .K13_C5_W7(32'h3e20653c), .K13_C5_W8(32'h3e1f44fc), 
+		.K13_C6_W0(32'hbe11ed01), .K13_C6_W1(32'hbdbc2c8b), .K13_C6_W2(32'h3d32806e), .K13_C6_W3(32'hbe0e3fbb), .K13_C6_W4(32'h3d944046), .K13_C6_W5(32'hbba3d68d), .K13_C6_W6(32'h3e13f275), .K13_C6_W7(32'hbddc5054), .K13_C6_W8(32'h3de49ab0), 
+		.K13_C7_W0(32'hbdd02fa4), .K13_C7_W1(32'h3c57effd), .K13_C7_W2(32'h3d808cf9), .K13_C7_W3(32'hbcc26e58), .K13_C7_W4(32'hbd9f3616), .K13_C7_W5(32'h3dfb19f7), .K13_C7_W6(32'h3bd52782), .K13_C7_W7(32'h3d93c7b7), .K13_C7_W8(32'h3ddee08e), 
+		.K13_C8_W0(32'hbcb68d40), .K13_C8_W1(32'h3bf94b71), .K13_C8_W2(32'h3e0b0bb2), .K13_C8_W3(32'h3e43299d), .K13_C8_W4(32'h3dff1f90), .K13_C8_W5(32'h3ca961d6), .K13_C8_W6(32'h3d793303), .K13_C8_W7(32'hbd2b0a72), .K13_C8_W8(32'h3dddde9f), 
+		.K13_C9_W0(32'hbe1074d7), .K13_C9_W1(32'h3e13299f), .K13_C9_W2(32'h3d5ec8e0), .K13_C9_W3(32'hbdf71027), .K13_C9_W4(32'hbdeb1dd9), .K13_C9_W5(32'hbd045f2b), .K13_C9_W6(32'hbe0aa87c), .K13_C9_W7(32'hbda7a649), .K13_C9_W8(32'h3e0955ed), 
+		.K13_C10_W0(32'h3d92d087), .K13_C10_W1(32'hbdf2f47e), .K13_C10_W2(32'h3c6ce277), .K13_C10_W3(32'hbacf2966), .K13_C10_W4(32'hbd8577ef), .K13_C10_W5(32'h3be44228), .K13_C10_W6(32'h3d97079c), .K13_C10_W7(32'hbc2c333f), .K13_C10_W8(32'hbd814d25), 
+		.K13_C11_W0(32'h3df5e968), .K13_C11_W1(32'hbe0cd7e2), .K13_C11_W2(32'hbe087b72), .K13_C11_W3(32'hbd70d89e), .K13_C11_W4(32'h3ca06e4c), .K13_C11_W5(32'hbd33c449), .K13_C11_W6(32'hbd0709b0), .K13_C11_W7(32'hbe0967c8), .K13_C11_W8(32'h3da0705d), 
+		.K13_C12_W0(32'hbd85916e), .K13_C12_W1(32'hbdafafb2), .K13_C12_W2(32'hbdd1f056), .K13_C12_W3(32'h3db6da7f), .K13_C12_W4(32'h3c202fa0), .K13_C12_W5(32'h3d33c0c0), .K13_C12_W6(32'h3caef8cc), .K13_C12_W7(32'h3de8653b), .K13_C12_W8(32'hbdb5d9ac), 
+		.K13_C13_W0(32'h3d2be63e), .K13_C13_W1(32'hbd3bc7bb), .K13_C13_W2(32'hbc92d805), .K13_C13_W3(32'h3d796302), .K13_C13_W4(32'h3d8a4c32), .K13_C13_W5(32'h3c0792a3), .K13_C13_W6(32'hbd1fb1fb), .K13_C13_W7(32'h3e10e222), .K13_C13_W8(32'h3cc80d08), 
+		.K13_C14_W0(32'hbd05c38e), .K13_C14_W1(32'h3dae013d), .K13_C14_W2(32'hbd33daf4), .K13_C14_W3(32'hbd100048), .K13_C14_W4(32'hbde223d6), .K13_C14_W5(32'hbd39369a), .K13_C14_W6(32'hbdc52dca), .K13_C14_W7(32'h3e04dae2), .K13_C14_W8(32'hbd048969), 
+		.K13_C15_W0(32'h3d99b585), .K13_C15_W1(32'hbc54087b), .K13_C15_W2(32'hbdb992e8), .K13_C15_W3(32'hbd08be5a), .K13_C15_W4(32'h3db29b44), .K13_C15_W5(32'h3cbe13ae), .K13_C15_W6(32'hbd609016), .K13_C15_W7(32'h3d047769), .K13_C15_W8(32'hbd5ade29), 
+		.K13_BIAS (32'h3c2b4aed),
+
+		.K14_C0_W0(32'h3d541826), .K14_C0_W1(32'hbdf52b53), .K14_C0_W2(32'hbe03b26e), .K14_C0_W3(32'h3e0febcb), .K14_C0_W4(32'hbde3dd65), .K14_C0_W5(32'hbd237dd2), .K14_C0_W6(32'hbde56cfb), .K14_C0_W7(32'h3c7ccbcd), .K14_C0_W8(32'hbd5b4c75), 
+		.K14_C1_W0(32'h3e0bbea2), .K14_C1_W1(32'hbda14fa1), .K14_C1_W2(32'h3dcc52b7), .K14_C1_W3(32'hbd8995bc), .K14_C1_W4(32'hbd535409), .K14_C1_W5(32'h3d8eb8b0), .K14_C1_W6(32'h3cc173c5), .K14_C1_W7(32'h3dcf73f4), .K14_C1_W8(32'hbdfb7ebc), 
+		.K14_C2_W0(32'hbd05c4cd), .K14_C2_W1(32'h3d081b4d), .K14_C2_W2(32'h3dc35379), .K14_C2_W3(32'h3d931b64), .K14_C2_W4(32'hbc2a67d7), .K14_C2_W5(32'hbd0b453c), .K14_C2_W6(32'hbd9063c2), .K14_C2_W7(32'h3d1109c5), .K14_C2_W8(32'h3df654f8), 
+		.K14_C3_W0(32'h3db7915d), .K14_C3_W1(32'h3e220db1), .K14_C3_W2(32'h3cc0f12a), .K14_C3_W3(32'hbdc030ec), .K14_C3_W4(32'h3e18bf10), .K14_C3_W5(32'hbda5579f), .K14_C3_W6(32'h3dbea40b), .K14_C3_W7(32'h3e029c25), .K14_C3_W8(32'hbdf3fabd), 
+		.K14_C4_W0(32'hbd03b874), .K14_C4_W1(32'h3db8c357), .K14_C4_W2(32'h3d64a8fd), .K14_C4_W3(32'hbd948386), .K14_C4_W4(32'h3d465182), .K14_C4_W5(32'h3d29b0c6), .K14_C4_W6(32'hbd8992ac), .K14_C4_W7(32'hbc49575d), .K14_C4_W8(32'hbd937a6f), 
+		.K14_C5_W0(32'hbd830d61), .K14_C5_W1(32'hbd7b8f3c), .K14_C5_W2(32'hbcfd77a5), .K14_C5_W3(32'h3d3f5930), .K14_C5_W4(32'hbce7a5fe), .K14_C5_W5(32'h3d6a30f1), .K14_C5_W6(32'h3c03de62), .K14_C5_W7(32'h3da714a7), .K14_C5_W8(32'hbd9e05c8), 
+		.K14_C6_W0(32'hbc213de8), .K14_C6_W1(32'hbde8c083), .K14_C6_W2(32'hbc5d6e2c), .K14_C6_W3(32'h3ce21049), .K14_C6_W4(32'h3d1eae66), .K14_C6_W5(32'h3e1c108d), .K14_C6_W6(32'hbe1606fd), .K14_C6_W7(32'h3cdc7945), .K14_C6_W8(32'hbdb31bfd), 
+		.K14_C7_W0(32'hbcc346a2), .K14_C7_W1(32'h3dcd27a4), .K14_C7_W2(32'hbe151cc4), .K14_C7_W3(32'h3dba9522), .K14_C7_W4(32'h3e1a1fab), .K14_C7_W5(32'h3e0e7925), .K14_C7_W6(32'h3c488c49), .K14_C7_W7(32'hbc797b79), .K14_C7_W8(32'h3b4d2fda), 
+		.K14_C8_W0(32'hbb518549), .K14_C8_W1(32'h3e1b55bd), .K14_C8_W2(32'hbdce2e72), .K14_C8_W3(32'h3de7e6e9), .K14_C8_W4(32'h3dc0f351), .K14_C8_W5(32'h3e190959), .K14_C8_W6(32'hbd333af5), .K14_C8_W7(32'hbdfe500c), .K14_C8_W8(32'h3d1e7226), 
+		.K14_C9_W0(32'h3dba4314), .K14_C9_W1(32'h3de2383b), .K14_C9_W2(32'h3d563825), .K14_C9_W3(32'hbc96fdcd), .K14_C9_W4(32'h3d374e76), .K14_C9_W5(32'h3d037986), .K14_C9_W6(32'hbe10b33e), .K14_C9_W7(32'hbdb4cfb6), .K14_C9_W8(32'hbd4f6b67), 
+		.K14_C10_W0(32'h3dd639f3), .K14_C10_W1(32'hbdf188fa), .K14_C10_W2(32'h3d32ac6d), .K14_C10_W3(32'h3d8380b1), .K14_C10_W4(32'hbdd7375a), .K14_C10_W5(32'h3d97d34c), .K14_C10_W6(32'h3d3bd126), .K14_C10_W7(32'h3da468f2), .K14_C10_W8(32'hbd3c2039), 
+		.K14_C11_W0(32'hbdae02b0), .K14_C11_W1(32'h3c94dfe2), .K14_C11_W2(32'h3d53f531), .K14_C11_W3(32'hbe0fe66b), .K14_C11_W4(32'h3e043f5a), .K14_C11_W5(32'h3e113742), .K14_C11_W6(32'hbd32a17f), .K14_C11_W7(32'h3d11202d), .K14_C11_W8(32'h3e00f9eb), 
+		.K14_C12_W0(32'h3df54f63), .K14_C12_W1(32'h3d28e021), .K14_C12_W2(32'h3e11d4b7), .K14_C12_W3(32'hbd972353), .K14_C12_W4(32'h3d549be6), .K14_C12_W5(32'h3e30eb36), .K14_C12_W6(32'h3d061bb3), .K14_C12_W7(32'hbd93cd38), .K14_C12_W8(32'hbd731c6f), 
+		.K14_C13_W0(32'hbdcfdb42), .K14_C13_W1(32'hbdcb8826), .K14_C13_W2(32'h3d7e6bae), .K14_C13_W3(32'hbd5f722c), .K14_C13_W4(32'h3da84ea2), .K14_C13_W5(32'hbdbaab23), .K14_C13_W6(32'h3d3bf156), .K14_C13_W7(32'hbc03a448), .K14_C13_W8(32'hbe251f39), 
+		.K14_C14_W0(32'h3d3ee7e8), .K14_C14_W1(32'h3dbc106d), .K14_C14_W2(32'h3d27a5fe), .K14_C14_W3(32'h3d8fcc14), .K14_C14_W4(32'hbe35b480), .K14_C14_W5(32'h3dd6b62c), .K14_C14_W6(32'h3e1e9aa7), .K14_C14_W7(32'hbdce980b), .K14_C14_W8(32'hbb4d244e), 
+		.K14_C15_W0(32'h3d10862b), .K14_C15_W1(32'h3daefb38), .K14_C15_W2(32'h3d0ab04d), .K14_C15_W3(32'h3d43f3b4), .K14_C15_W4(32'hbd196690), .K14_C15_W5(32'hbdb34bb2), .K14_C15_W6(32'h3d62e5d8), .K14_C15_W7(32'h3e03fd11), .K14_C15_W8(32'hbd17c811), 
+		.K14_BIAS (32'hbc72a770),
+
+		.K15_C0_W0(32'h3e2129e0), .K15_C0_W1(32'h3d559132), .K15_C0_W2(32'h3d4fd499), .K15_C0_W3(32'hbe152692), .K15_C0_W4(32'hba629c68), .K15_C0_W5(32'hbd953732), .K15_C0_W6(32'h3d5c5885), .K15_C0_W7(32'h3cb94d64), .K15_C0_W8(32'hbd15f27d), 
+		.K15_C1_W0(32'hbe0e1fbc), .K15_C1_W1(32'h3dac50e2), .K15_C1_W2(32'h3d3ea335), .K15_C1_W3(32'h3e1139c3), .K15_C1_W4(32'hbdaeb779), .K15_C1_W5(32'h3e0e8aa1), .K15_C1_W6(32'h3cd20b37), .K15_C1_W7(32'hbdaa78cb), .K15_C1_W8(32'h3d661823), 
+		.K15_C2_W0(32'hbd8c03ab), .K15_C2_W1(32'hbd1d553e), .K15_C2_W2(32'hbd3753ab), .K15_C2_W3(32'h3df23315), .K15_C2_W4(32'h3e217e06), .K15_C2_W5(32'h3d391f13), .K15_C2_W6(32'hbdc41ad4), .K15_C2_W7(32'h3bc0cee8), .K15_C2_W8(32'hbc946ade), 
+		.K15_C3_W0(32'h3dae9717), .K15_C3_W1(32'h3e220d67), .K15_C3_W2(32'hbd086922), .K15_C3_W3(32'h3d012c09), .K15_C3_W4(32'h3d963926), .K15_C3_W5(32'h3e06397f), .K15_C3_W6(32'hbd9b9f3c), .K15_C3_W7(32'h3dd52491), .K15_C3_W8(32'hbd477c33), 
+		.K15_C4_W0(32'hbe0f65dc), .K15_C4_W1(32'h3d243c70), .K15_C4_W2(32'h3dc675cc), .K15_C4_W3(32'hbda6e09a), .K15_C4_W4(32'hbde196ac), .K15_C4_W5(32'hbdfd2f8b), .K15_C4_W6(32'hbdb8104a), .K15_C4_W7(32'hbd50e506), .K15_C4_W8(32'h3d7241a7), 
+		.K15_C5_W0(32'hbd277223), .K15_C5_W1(32'h3e1f6d66), .K15_C5_W2(32'h3d3d88a5), .K15_C5_W3(32'hbd08c313), .K15_C5_W4(32'hbddaf269), .K15_C5_W5(32'hbdf35b28), .K15_C5_W6(32'hbe04d1f2), .K15_C5_W7(32'hbda7c77f), .K15_C5_W8(32'hbd2a1cb0), 
+		.K15_C6_W0(32'h3c7b15d7), .K15_C6_W1(32'h3e22a6fd), .K15_C6_W2(32'h3e02690b), .K15_C6_W3(32'hbd035cd4), .K15_C6_W4(32'hbaaf2265), .K15_C6_W5(32'hbe025285), .K15_C6_W6(32'h3da6505c), .K15_C6_W7(32'hbe19e7ca), .K15_C6_W8(32'hbddfef0d), 
+		.K15_C7_W0(32'h3dc4e2f5), .K15_C7_W1(32'hbdd05b74), .K15_C7_W2(32'h3e0be5d7), .K15_C7_W3(32'h3e0a0f7f), .K15_C7_W4(32'hbcef8164), .K15_C7_W5(32'h3cf3ddb0), .K15_C7_W6(32'h3d51e9f0), .K15_C7_W7(32'hbde37995), .K15_C7_W8(32'hbdbebced), 
+		.K15_C8_W0(32'h3cdf8629), .K15_C8_W1(32'h3848f30c), .K15_C8_W2(32'hbd9f1ed2), .K15_C8_W3(32'hbd9cc14b), .K15_C8_W4(32'hbd8ed51e), .K15_C8_W5(32'h3de73306), .K15_C8_W6(32'h3d503f9a), .K15_C8_W7(32'hbd0daa7b), .K15_C8_W8(32'h3dc20d44), 
+		.K15_C9_W0(32'h3dad5bb0), .K15_C9_W1(32'hbd126dba), .K15_C9_W2(32'hbd59e6d2), .K15_C9_W3(32'hbe2712e9), .K15_C9_W4(32'hbe065bcf), .K15_C9_W5(32'hbd2f6f06), .K15_C9_W6(32'hbe366065), .K15_C9_W7(32'hbdb883a5), .K15_C9_W8(32'h3d3272a0), 
+		.K15_C10_W0(32'hbd58fc58), .K15_C10_W1(32'hbcb87e2c), .K15_C10_W2(32'h3e0c0d54), .K15_C10_W3(32'h3dcaf77a), .K15_C10_W4(32'h3cce297c), .K15_C10_W5(32'hbc8c2ec6), .K15_C10_W6(32'hbdb4ccbe), .K15_C10_W7(32'hbc86fdc4), .K15_C10_W8(32'h3c811c11), 
+		.K15_C11_W0(32'hbd6cb1b4), .K15_C11_W1(32'hbdc96f21), .K15_C11_W2(32'hbd6fe880), .K15_C11_W3(32'h3d9591bc), .K15_C11_W4(32'h3e119cb7), .K15_C11_W5(32'hbdf49842), .K15_C11_W6(32'hbd8bfb6c), .K15_C11_W7(32'hbd865dfd), .K15_C11_W8(32'h3db6820f), 
+		.K15_C12_W0(32'hbd831148), .K15_C12_W1(32'hbd49377e), .K15_C12_W2(32'hbdcf5b9b), .K15_C12_W3(32'hbe0f3ccf), .K15_C12_W4(32'hbd756a30), .K15_C12_W5(32'h3d4ae11c), .K15_C12_W6(32'hbe091d7f), .K15_C12_W7(32'h3cb7667d), .K15_C12_W8(32'h3d1c9137), 
+		.K15_C13_W0(32'h3dab08c5), .K15_C13_W1(32'hbd15aac4), .K15_C13_W2(32'h3dd365e8), .K15_C13_W3(32'h3d2cfa1f), .K15_C13_W4(32'hbc9ac8c9), .K15_C13_W5(32'h3e1051dd), .K15_C13_W6(32'hbd12c588), .K15_C13_W7(32'h3e0285f0), .K15_C13_W8(32'hbd6fc7ad), 
+		.K15_C14_W0(32'hbdff04e7), .K15_C14_W1(32'h3e34b794), .K15_C14_W2(32'hbd753ef3), .K15_C14_W3(32'h3d619378), .K15_C14_W4(32'hbcfb1282), .K15_C14_W5(32'hbd9ae998), .K15_C14_W6(32'hbd975a4d), .K15_C14_W7(32'hbdddc71e), .K15_C14_W8(32'h3df16315), 
+		.K15_C15_W0(32'hbc65b9f3), .K15_C15_W1(32'hbd447a4c), .K15_C15_W2(32'hbdc87d48), .K15_C15_W3(32'hbe29339e), .K15_C15_W4(32'h3d67ea7c), .K15_C15_W5(32'h3e11e141), .K15_C15_W6(32'h3ca0f834), .K15_C15_W7(32'h3d3e4970), .K15_C15_W8(32'h3e1d0372), 
+		.K15_BIAS (32'h3cd4a86b)
+		)
+		block5_conv2(
+		.clk(clk),
+		.resetn(resetn),
+		.data_valid_in(conv_valid_out_5_1),
+		.data_in_0(relu_out_5_1[0]),
+		.data_in_1(relu_out_5_1[1]),
+		.data_in_2(relu_out_5_1[2]),
+		.data_in_3(relu_out_5_1[3]),
+		.data_in_4(relu_out_5_1[4]),
+		.data_in_5(relu_out_5_1[5]),
+		.data_in_6(relu_out_5_1[6]),
+		.data_in_7(relu_out_5_1[7]),
+		.data_in_8(relu_out_5_1[8]),
+		.data_in_9(relu_out_5_1[9]),
+		.data_in_10(relu_out_5_1[10]),
+		.data_in_11(relu_out_5_1[11]),
+		.data_in_12(relu_out_5_1[12]),
+		.data_in_13(relu_out_5_1[13]),
+		.data_in_14(relu_out_5_1[14]),
+		.data_in_15(relu_out_5_1[15]),
+		.data_out_conv_0(conv_out_5_2[0]),
+		.data_out_conv_1(conv_out_5_2[1]),
+		.data_out_conv_2(conv_out_5_2[2]),
+		.data_out_conv_3(conv_out_5_2[3]),
+		.data_out_conv_4(conv_out_5_2[4]),
+		.data_out_conv_5(conv_out_5_2[5]),
+		.data_out_conv_6(conv_out_5_2[6]),
+		.data_out_conv_7(conv_out_5_2[7]),
+		.data_out_conv_8(conv_out_5_2[8]),
+		.data_out_conv_9(conv_out_5_2[9]),
+		.data_out_conv_10(conv_out_5_2[10]),
+		.data_out_conv_11(conv_out_5_2[11]),
+		.data_out_conv_12(conv_out_5_2[12]),
+		.data_out_conv_13(conv_out_5_2[13]),
+		.data_out_conv_14(conv_out_5_2[14]),
+		.data_out_conv_15(conv_out_5_2[15]),
+		.valid_out_pixel(conv_valid_out_5_2),
+		.done(done_conv_5_2)
+		);
+
+
+
+
+
+	generate
+    for (i = 0; i < CHANNEL_OUT; i=i+1) 
+    begin : relu_5_2 // needs CHANNEL_OUT relu
+
+        activate #(
+            .DATA_WIDTH(32)
+        )
+        relu (
+            .in(conv_out_5_2[i]),			// Edit here
+            .out(relu_out_5_2[i])
+        );
+    end
+    endgenerate
+
+
+
+
+	conv3d_16_kernel_16_channel_size_3 #(
+		.DATA_WIDTH(32),.IMG_WIDTH(WIDTH>>1),.IMG_HEIGHT(HEIGHT>>1),	// Edit here
+		.K0_C0_W0(32'hbdffb130), .K0_C0_W1(32'hbdc4e6dd), .K0_C0_W2(32'h3d18d00f), .K0_C0_W3(32'hbdb589a5), .K0_C0_W4(32'h3c81e479), .K0_C0_W5(32'hbb759485), .K0_C0_W6(32'h3e375086), .K0_C0_W7(32'hbdeeefa7), .K0_C0_W8(32'h3da0db80), 
+		.K0_C1_W0(32'hbd674b25), .K0_C1_W1(32'h3e1f6580), .K0_C1_W2(32'hbd7fb906), .K0_C1_W3(32'h3dc854b6), .K0_C1_W4(32'hbd9ba290), .K0_C1_W5(32'h3b34d208), .K0_C1_W6(32'h3e2e700a), .K0_C1_W7(32'h3d8d2e7f), .K0_C1_W8(32'hbda1da3a), 
+		.K0_C2_W0(32'h3dff5004), .K0_C2_W1(32'h3dab4561), .K0_C2_W2(32'hbd99c8a7), .K0_C2_W3(32'hbbadd011), .K0_C2_W4(32'h3e00dd9b), .K0_C2_W5(32'hbc8fb1cf), .K0_C2_W6(32'h3ca5c7f1), .K0_C2_W7(32'h3d622b6e), .K0_C2_W8(32'h3ddd44b8), 
+		.K0_C3_W0(32'h3e0ce261), .K0_C3_W1(32'h3dfe398f), .K0_C3_W2(32'hbc98c687), .K0_C3_W3(32'hbd9572fb), .K0_C3_W4(32'h3e07d89c), .K0_C3_W5(32'hbc12af69), .K0_C3_W6(32'hbdb6098d), .K0_C3_W7(32'h3cc57faa), .K0_C3_W8(32'h3d658df5), 
+		.K0_C4_W0(32'h3d810ca4), .K0_C4_W1(32'hbdd474c2), .K0_C4_W2(32'hbd25ae06), .K0_C4_W3(32'hbd309a66), .K0_C4_W4(32'h3e10fb55), .K0_C4_W5(32'hbdaf30e4), .K0_C4_W6(32'hbe0e88c3), .K0_C4_W7(32'h3d0cfafd), .K0_C4_W8(32'hbd707856), 
+		.K0_C5_W0(32'h3d49f048), .K0_C5_W1(32'h3d26f4e2), .K0_C5_W2(32'hbccebef1), .K0_C5_W3(32'h3c4f8b3a), .K0_C5_W4(32'hbd5a951f), .K0_C5_W5(32'hbe22a5ab), .K0_C5_W6(32'hbd89295a), .K0_C5_W7(32'hbd984823), .K0_C5_W8(32'h3d046611), 
+		.K0_C6_W0(32'hbdab2319), .K0_C6_W1(32'hbdbfabdf), .K0_C6_W2(32'h3d2c206e), .K0_C6_W3(32'hbdf16d32), .K0_C6_W4(32'h3c5d2313), .K0_C6_W5(32'h3e0cd9a8), .K0_C6_W6(32'h3da2fc20), .K0_C6_W7(32'hbd57ee0c), .K0_C6_W8(32'h3d2c9204), 
+		.K0_C7_W0(32'hbda63a9e), .K0_C7_W1(32'h3da0e943), .K0_C7_W2(32'h3e225123), .K0_C7_W3(32'h3d0a45b5), .K0_C7_W4(32'h3c3d2d3e), .K0_C7_W5(32'h3da77c68), .K0_C7_W6(32'h3d691d2b), .K0_C7_W7(32'h3d33c121), .K0_C7_W8(32'hbd134f2a), 
+		.K0_C8_W0(32'h3d28fe09), .K0_C8_W1(32'hbdcff8af), .K0_C8_W2(32'hbdc8d627), .K0_C8_W3(32'h3d85f427), .K0_C8_W4(32'h3e1fd418), .K0_C8_W5(32'h3e1391c6), .K0_C8_W6(32'hbc39a05f), .K0_C8_W7(32'h3e0549e5), .K0_C8_W8(32'h3b38c473), 
+		.K0_C9_W0(32'hbcf018a8), .K0_C9_W1(32'h3dd41cc8), .K0_C9_W2(32'h3dbdfd91), .K0_C9_W3(32'hbc23293e), .K0_C9_W4(32'h3d120c0d), .K0_C9_W5(32'h3dbf1557), .K0_C9_W6(32'h3bbfdbcb), .K0_C9_W7(32'h3de05fcc), .K0_C9_W8(32'h3d77e897), 
+		.K0_C10_W0(32'h3d02b583), .K0_C10_W1(32'h3d99539b), .K0_C10_W2(32'h3daecf6a), .K0_C10_W3(32'h3dde34de), .K0_C10_W4(32'hbd9fcfd5), .K0_C10_W5(32'h3be17f41), .K0_C10_W6(32'h3db02712), .K0_C10_W7(32'hbd38e456), .K0_C10_W8(32'h3d90a05d), 
+		.K0_C11_W0(32'h3dce63b0), .K0_C11_W1(32'hbceaa7a6), .K0_C11_W2(32'h3d2a733b), .K0_C11_W3(32'h3be63271), .K0_C11_W4(32'h3bfcb901), .K0_C11_W5(32'h3d17ae52), .K0_C11_W6(32'h3d5e2737), .K0_C11_W7(32'hbdbba8e3), .K0_C11_W8(32'hbdea86f8), 
+		.K0_C12_W0(32'h3e0acc8f), .K0_C12_W1(32'hbdfa5e1d), .K0_C12_W2(32'hbcf66793), .K0_C12_W3(32'h3e2812c5), .K0_C12_W4(32'h3db80697), .K0_C12_W5(32'hbdf3be15), .K0_C12_W6(32'h3a7e6a78), .K0_C12_W7(32'hbe102de5), .K0_C12_W8(32'h3e1b930f), 
+		.K0_C13_W0(32'hbdc850a7), .K0_C13_W1(32'h3cd65ac5), .K0_C13_W2(32'hbdec9806), .K0_C13_W3(32'h3b789c0b), .K0_C13_W4(32'hbd18720d), .K0_C13_W5(32'hbcd8ef65), .K0_C13_W6(32'hbdae77c2), .K0_C13_W7(32'hbdafeba9), .K0_C13_W8(32'h3d030560), 
+		.K0_C14_W0(32'h3e0ab371), .K0_C14_W1(32'hbde4c7a0), .K0_C14_W2(32'hbda4e136), .K0_C14_W3(32'h3de61d22), .K0_C14_W4(32'hbc823ba1), .K0_C14_W5(32'hbcbfec4e), .K0_C14_W6(32'hbcecccae), .K0_C14_W7(32'hbdda3699), .K0_C14_W8(32'hbd8dddc8), 
+		.K0_C15_W0(32'h3de70e6b), .K0_C15_W1(32'hbd59dcec), .K0_C15_W2(32'hbe2217da), .K0_C15_W3(32'h3d0012d5), .K0_C15_W4(32'h3d4c1cc5), .K0_C15_W5(32'hbdd7c848), .K0_C15_W6(32'h3e09a613), .K0_C15_W7(32'h3d2ce774), .K0_C15_W8(32'hbd87396b), 
+		.K0_BIAS (32'h3cd76316),
+
+		.K1_C0_W0(32'h3dd9cb42), .K1_C0_W1(32'hbd921f03), .K1_C0_W2(32'hbd0a6bc2), .K1_C0_W3(32'h3dc816fc), .K1_C0_W4(32'h3d1fc53c), .K1_C0_W5(32'h3e14f6de), .K1_C0_W6(32'h3d15265c), .K1_C0_W7(32'hbe10117d), .K1_C0_W8(32'hbe1e6c6f), 
+		.K1_C1_W0(32'h3d7919ae), .K1_C1_W1(32'h3c1c5101), .K1_C1_W2(32'hbda4ec56), .K1_C1_W3(32'h3df53d65), .K1_C1_W4(32'hbde64442), .K1_C1_W5(32'hbdd592a4), .K1_C1_W6(32'h3dc63f00), .K1_C1_W7(32'h3b0d8fcf), .K1_C1_W8(32'h3e034fa8), 
+		.K1_C2_W0(32'hbd82bee4), .K1_C2_W1(32'h3da64811), .K1_C2_W2(32'hbd889e5a), .K1_C2_W3(32'hbdb4a5c3), .K1_C2_W4(32'hbdca1a0c), .K1_C2_W5(32'hbd09c5bc), .K1_C2_W6(32'hbd3f3130), .K1_C2_W7(32'h3db15867), .K1_C2_W8(32'h3d936716), 
+		.K1_C3_W0(32'hbe14a3d4), .K1_C3_W1(32'h3bd239ef), .K1_C3_W2(32'h3c5285df), .K1_C3_W3(32'hbe3ad537), .K1_C3_W4(32'h3e20c21e), .K1_C3_W5(32'h3d5ec239), .K1_C3_W6(32'hbcecd52b), .K1_C3_W7(32'hbde2fb7f), .K1_C3_W8(32'hbe0bc6d5), 
+		.K1_C4_W0(32'h3de941dc), .K1_C4_W1(32'h3c688eab), .K1_C4_W2(32'hbe05f5c2), .K1_C4_W3(32'hbe061104), .K1_C4_W4(32'h3d30909b), .K1_C4_W5(32'h3dfedfcd), .K1_C4_W6(32'h3d2794c4), .K1_C4_W7(32'h3de0a8b1), .K1_C4_W8(32'h3e036b2f), 
+		.K1_C5_W0(32'hbd2fcc2a), .K1_C5_W1(32'hbcf49dd2), .K1_C5_W2(32'h3d2be374), .K1_C5_W3(32'h3d14ed86), .K1_C5_W4(32'hbc125e9a), .K1_C5_W5(32'hbe07b00b), .K1_C5_W6(32'hbdf08d77), .K1_C5_W7(32'h3c565ccd), .K1_C5_W8(32'hbd861295), 
+		.K1_C6_W0(32'hbd6743e7), .K1_C6_W1(32'h3d8a84b0), .K1_C6_W2(32'h3dc80f7e), .K1_C6_W3(32'hbd94f650), .K1_C6_W4(32'h3d1f272a), .K1_C6_W5(32'h3cfd7cb7), .K1_C6_W6(32'h3dca8535), .K1_C6_W7(32'hbe00f952), .K1_C6_W8(32'hbae40ecc), 
+		.K1_C7_W0(32'h3d49aeab), .K1_C7_W1(32'hbc10a4df), .K1_C7_W2(32'hbe0cae35), .K1_C7_W3(32'h3e0a7b46), .K1_C7_W4(32'hbcf23992), .K1_C7_W5(32'h3cd4d0da), .K1_C7_W6(32'h3ca31b90), .K1_C7_W7(32'hbddc1eaa), .K1_C7_W8(32'hbdc12ae4), 
+		.K1_C8_W0(32'hbc5478eb), .K1_C8_W1(32'hbcd00147), .K1_C8_W2(32'h3d9e162c), .K1_C8_W3(32'hbd24862b), .K1_C8_W4(32'hbdb138dd), .K1_C8_W5(32'h3c242d34), .K1_C8_W6(32'hbcc3b06d), .K1_C8_W7(32'h3e067751), .K1_C8_W8(32'hbcbdf66f), 
+		.K1_C9_W0(32'hbd65bbe7), .K1_C9_W1(32'h3cad88a6), .K1_C9_W2(32'hbcd9dd98), .K1_C9_W3(32'hbdba87c7), .K1_C9_W4(32'h3c337827), .K1_C9_W5(32'h3dc3b097), .K1_C9_W6(32'hbdf5cd12), .K1_C9_W7(32'hbd551ec5), .K1_C9_W8(32'h3c9a803b), 
+		.K1_C10_W0(32'h3d9ad063), .K1_C10_W1(32'hbd4075c2), .K1_C10_W2(32'hbd6e5b81), .K1_C10_W3(32'hbe01cbfe), .K1_C10_W4(32'hbdb2d630), .K1_C10_W5(32'h3dc6413c), .K1_C10_W6(32'hbe2a3b2f), .K1_C10_W7(32'h3c38306e), .K1_C10_W8(32'hbc924786), 
+		.K1_C11_W0(32'hbde01a9e), .K1_C11_W1(32'hbdb64d72), .K1_C11_W2(32'hbd04e14b), .K1_C11_W3(32'hbe1fe546), .K1_C11_W4(32'h3b5e615a), .K1_C11_W5(32'hbc9d3265), .K1_C11_W6(32'hbd3c86e9), .K1_C11_W7(32'hbd3b89c1), .K1_C11_W8(32'h3c4bdb43), 
+		.K1_C12_W0(32'hbba91a46), .K1_C12_W1(32'h3e198f27), .K1_C12_W2(32'h3e0900c3), .K1_C12_W3(32'hbe1d56e9), .K1_C12_W4(32'h3e0dd292), .K1_C12_W5(32'h3dfc3f03), .K1_C12_W6(32'hbdfaa8a5), .K1_C12_W7(32'h3e065682), .K1_C12_W8(32'h3d6d92b1), 
+		.K1_C13_W0(32'hbac1146a), .K1_C13_W1(32'h3dafbfce), .K1_C13_W2(32'h3ced710c), .K1_C13_W3(32'hbdb37b5d), .K1_C13_W4(32'hbbfc4bbe), .K1_C13_W5(32'hbde4477e), .K1_C13_W6(32'hbd718ed4), .K1_C13_W7(32'hbe33f769), .K1_C13_W8(32'hbdb30db5), 
+		.K1_C14_W0(32'hbdf1cff1), .K1_C14_W1(32'hbe08bba8), .K1_C14_W2(32'h3e236a38), .K1_C14_W3(32'h3db3d761), .K1_C14_W4(32'hbe1034b8), .K1_C14_W5(32'h3dbe6d59), .K1_C14_W6(32'h3d8c1092), .K1_C14_W7(32'hbddc2e12), .K1_C14_W8(32'h3d51c6f1), 
+		.K1_C15_W0(32'hbe1c9f5f), .K1_C15_W1(32'hbda5bcdc), .K1_C15_W2(32'h3da575f8), .K1_C15_W3(32'h3dd5a91c), .K1_C15_W4(32'h3b3d31d9), .K1_C15_W5(32'h3d8feb2e), .K1_C15_W6(32'hbdc7f67e), .K1_C15_W7(32'h3d745c03), .K1_C15_W8(32'hbb9dbeb6), 
+		.K1_BIAS (32'hbcbbffa3),
+
+		.K2_C0_W0(32'hbcaee327), .K2_C0_W1(32'hbdc12cdd), .K2_C0_W2(32'h3d8754ab), .K2_C0_W3(32'hbc4d0f27), .K2_C0_W4(32'hbdbf2537), .K2_C0_W5(32'hbcb00a8e), .K2_C0_W6(32'h3e00b4ae), .K2_C0_W7(32'hbd49605f), .K2_C0_W8(32'hbdea60fb), 
+		.K2_C1_W0(32'hbdaef87d), .K2_C1_W1(32'h3d877b8b), .K2_C1_W2(32'h3e0d5f4b), .K2_C1_W3(32'h3d9de200), .K2_C1_W4(32'hbdd65a3f), .K2_C1_W5(32'hbe0b55c5), .K2_C1_W6(32'h3d1ac6d5), .K2_C1_W7(32'h3d039955), .K2_C1_W8(32'hbda4fd47), 
+		.K2_C2_W0(32'hbd81745f), .K2_C2_W1(32'hbd8833b1), .K2_C2_W2(32'h3d8dfbdb), .K2_C2_W3(32'h3da71170), .K2_C2_W4(32'h3ccb65be), .K2_C2_W5(32'h3e1df817), .K2_C2_W6(32'hbd982b99), .K2_C2_W7(32'h3d7d4601), .K2_C2_W8(32'hbd17debc), 
+		.K2_C3_W0(32'hbde466d7), .K2_C3_W1(32'hbdade8a2), .K2_C3_W2(32'hbd0b8737), .K2_C3_W3(32'hbe097560), .K2_C3_W4(32'hbe18fd99), .K2_C3_W5(32'hbe0b548e), .K2_C3_W6(32'h3e257940), .K2_C3_W7(32'hbe04f634), .K2_C3_W8(32'h3dc585c1), 
+		.K2_C4_W0(32'hbdc1a5a2), .K2_C4_W1(32'h3cc29fbe), .K2_C4_W2(32'h3ceb1e38), .K2_C4_W3(32'hbd9afd56), .K2_C4_W4(32'hbd4964ad), .K2_C4_W5(32'h3c804708), .K2_C4_W6(32'hbe2341fb), .K2_C4_W7(32'hbc8a6c84), .K2_C4_W8(32'h3c8ec2b7), 
+		.K2_C5_W0(32'hbe11b7fc), .K2_C5_W1(32'h3d803c19), .K2_C5_W2(32'hbdc6c06a), .K2_C5_W3(32'h3dc0c789), .K2_C5_W4(32'hbdb96cc5), .K2_C5_W5(32'hbe293415), .K2_C5_W6(32'hbd05a43f), .K2_C5_W7(32'hbdb15e16), .K2_C5_W8(32'h3ddbc319), 
+		.K2_C6_W0(32'hbd85f80c), .K2_C6_W1(32'hbd80e27e), .K2_C6_W2(32'hbc518ff2), .K2_C6_W3(32'h3dac77b0), .K2_C6_W4(32'h3e0f91ad), .K2_C6_W5(32'h3df1de0d), .K2_C6_W6(32'hbe11d73d), .K2_C6_W7(32'hbcd10c43), .K2_C6_W8(32'h3e00de98), 
+		.K2_C7_W0(32'h3d65cbee), .K2_C7_W1(32'h3b8a668a), .K2_C7_W2(32'h3de22a8d), .K2_C7_W3(32'hbca517af), .K2_C7_W4(32'hbd8ffd66), .K2_C7_W5(32'hbda28677), .K2_C7_W6(32'hbd552e47), .K2_C7_W7(32'h3ce52e03), .K2_C7_W8(32'h3e00ec93), 
+		.K2_C8_W0(32'h3e01c8db), .K2_C8_W1(32'h3c80eb26), .K2_C8_W2(32'h3dc184ee), .K2_C8_W3(32'h3dd4a796), .K2_C8_W4(32'h3ddf0696), .K2_C8_W5(32'h3b7fe540), .K2_C8_W6(32'hbd5ead5f), .K2_C8_W7(32'hbdaf14a3), .K2_C8_W8(32'h3e166578), 
+		.K2_C9_W0(32'hbd8d7a3b), .K2_C9_W1(32'hbd96aee8), .K2_C9_W2(32'hbdf3d906), .K2_C9_W3(32'h3d5761e5), .K2_C9_W4(32'h3e0d0e74), .K2_C9_W5(32'hbd654a7e), .K2_C9_W6(32'hbd8534b6), .K2_C9_W7(32'hbd907af2), .K2_C9_W8(32'h3e067708), 
+		.K2_C10_W0(32'hbdd7f28d), .K2_C10_W1(32'h3d1b454e), .K2_C10_W2(32'h3dd52d8a), .K2_C10_W3(32'hbd4e0e83), .K2_C10_W4(32'h3d5ca14f), .K2_C10_W5(32'h3cdf8d48), .K2_C10_W6(32'hbd46416c), .K2_C10_W7(32'hbddaa00f), .K2_C10_W8(32'hbc0ab748), 
+		.K2_C11_W0(32'hbdbbd068), .K2_C11_W1(32'h3e069b6a), .K2_C11_W2(32'hbd4f2ccf), .K2_C11_W3(32'h3c1973e8), .K2_C11_W4(32'h3ddec1ef), .K2_C11_W5(32'h3def4ebf), .K2_C11_W6(32'hbd810c84), .K2_C11_W7(32'hbde1808e), .K2_C11_W8(32'h3ba0ab74), 
+		.K2_C12_W0(32'hbd8f3bf7), .K2_C12_W1(32'hbd6a2349), .K2_C12_W2(32'h3c5ba0a8), .K2_C12_W3(32'h3db9b257), .K2_C12_W4(32'h3dcf247d), .K2_C12_W5(32'h3cf8db57), .K2_C12_W6(32'h3db7f6a7), .K2_C12_W7(32'hbda80379), .K2_C12_W8(32'hbd88012d), 
+		.K2_C13_W0(32'h3ddc5c40), .K2_C13_W1(32'h3d3a549c), .K2_C13_W2(32'hbc296ad0), .K2_C13_W3(32'h3dd8b84b), .K2_C13_W4(32'hbd99b087), .K2_C13_W5(32'hbda54f0a), .K2_C13_W6(32'hbcc9d5e8), .K2_C13_W7(32'hbe43c186), .K2_C13_W8(32'h3d9938bc), 
+		.K2_C14_W0(32'hbd9899f9), .K2_C14_W1(32'hbde7af96), .K2_C14_W2(32'h3dab974f), .K2_C14_W3(32'h3d524155), .K2_C14_W4(32'hbd5d0252), .K2_C14_W5(32'hbd16c880), .K2_C14_W6(32'hbd9ff6ac), .K2_C14_W7(32'hbe1a094b), .K2_C14_W8(32'h3d5cb36c), 
+		.K2_C15_W0(32'h3db624ed), .K2_C15_W1(32'h3e0ca4b2), .K2_C15_W2(32'h3dd962f9), .K2_C15_W3(32'hbca358a4), .K2_C15_W4(32'h3d987d23), .K2_C15_W5(32'hbdc88adf), .K2_C15_W6(32'hbdcf41b7), .K2_C15_W7(32'h3c05218c), .K2_C15_W8(32'h3d38496d), 
+		.K2_BIAS (32'h3d781cc8),
+
+		.K3_C0_W0(32'hbd602933), .K3_C0_W1(32'hbda63f2b), .K3_C0_W2(32'h3dd42a36), .K3_C0_W3(32'hbd0eeaab), .K3_C0_W4(32'hbd95038d), .K3_C0_W5(32'hbba6a887), .K3_C0_W6(32'hbbd4091b), .K3_C0_W7(32'h3d351a7e), .K3_C0_W8(32'h3d1d4aca), 
+		.K3_C1_W0(32'hbd173fbe), .K3_C1_W1(32'hbdfb1af8), .K3_C1_W2(32'h3e06fee7), .K3_C1_W3(32'h3c980f94), .K3_C1_W4(32'hbdd7c9ce), .K3_C1_W5(32'h3d59a96b), .K3_C1_W6(32'hbde90ed0), .K3_C1_W7(32'hbd996a86), .K3_C1_W8(32'h3caf6494), 
+		.K3_C2_W0(32'hbe011cbc), .K3_C2_W1(32'h3c8fc458), .K3_C2_W2(32'h3da1e8fa), .K3_C2_W3(32'h3d3f68e1), .K3_C2_W4(32'hbb5f40a2), .K3_C2_W5(32'h3e2dc1ed), .K3_C2_W6(32'hbde89c8d), .K3_C2_W7(32'hbc2fe80e), .K3_C2_W8(32'h3dccbd43), 
+		.K3_C3_W0(32'hbc9ae114), .K3_C3_W1(32'h3c1b304c), .K3_C3_W2(32'hbd8bab80), .K3_C3_W3(32'hbd28d9ee), .K3_C3_W4(32'hbd4d0230), .K3_C3_W5(32'h3caca601), .K3_C3_W6(32'h3ce3975d), .K3_C3_W7(32'h3df051c0), .K3_C3_W8(32'hbd09af6f), 
+		.K3_C4_W0(32'h3c7d3600), .K3_C4_W1(32'h3de35f0f), .K3_C4_W2(32'h3db961d4), .K3_C4_W3(32'hbd1a4325), .K3_C4_W4(32'hbd8323bb), .K3_C4_W5(32'h3dbeddcd), .K3_C4_W6(32'h3dbfd379), .K3_C4_W7(32'h3dba8b03), .K3_C4_W8(32'h3d82f753), 
+		.K3_C5_W0(32'hbd94efb6), .K3_C5_W1(32'hbd7f8b9d), .K3_C5_W2(32'hbc5d1fc0), .K3_C5_W3(32'hbda2706b), .K3_C5_W4(32'h3c574e77), .K3_C5_W5(32'h3c963240), .K3_C5_W6(32'h3d9cdb8a), .K3_C5_W7(32'h3e1a9208), .K3_C5_W8(32'hbd63edde), 
+		.K3_C6_W0(32'h3c6afe0f), .K3_C6_W1(32'hbe0ae2a4), .K3_C6_W2(32'h3e0cb693), .K3_C6_W3(32'hbde97909), .K3_C6_W4(32'hbdd78b3d), .K3_C6_W5(32'hbdfe1862), .K3_C6_W6(32'hbc16b344), .K3_C6_W7(32'hbcbccb95), .K3_C6_W8(32'hbddd24d4), 
+		.K3_C7_W0(32'h3dd04c3c), .K3_C7_W1(32'hbdf96be0), .K3_C7_W2(32'h3e447eae), .K3_C7_W3(32'hbdae3b8a), .K3_C7_W4(32'hbd42118a), .K3_C7_W5(32'h3df96689), .K3_C7_W6(32'hbddd3842), .K3_C7_W7(32'h3df7d65b), .K3_C7_W8(32'h3e04e09c), 
+		.K3_C8_W0(32'hbd2d2fb4), .K3_C8_W1(32'h3d4b9b17), .K3_C8_W2(32'h3b7045ec), .K3_C8_W3(32'h3d8c7907), .K3_C8_W4(32'hbcc56b34), .K3_C8_W5(32'h3dbc61b4), .K3_C8_W6(32'hbe181be5), .K3_C8_W7(32'hbd8b9ad4), .K3_C8_W8(32'h3d625755), 
+		.K3_C9_W0(32'h3e027444), .K3_C9_W1(32'hbdc20f01), .K3_C9_W2(32'h3dc65a1b), .K3_C9_W3(32'hbdb1d1bc), .K3_C9_W4(32'h3caafb99), .K3_C9_W5(32'h3d8b7615), .K3_C9_W6(32'hbddfd449), .K3_C9_W7(32'hbdcf418b), .K3_C9_W8(32'h3de6b8ca), 
+		.K3_C10_W0(32'h3d55cf36), .K3_C10_W1(32'h3dd3f0d8), .K3_C10_W2(32'hbcec0bcd), .K3_C10_W3(32'hbdd28773), .K3_C10_W4(32'h3d8fdd2c), .K3_C10_W5(32'hbe04af1f), .K3_C10_W6(32'hbd3fe053), .K3_C10_W7(32'h3e0584d6), .K3_C10_W8(32'h3dbefb44), 
+		.K3_C11_W0(32'hbdf78944), .K3_C11_W1(32'h3df3f083), .K3_C11_W2(32'h3d26623e), .K3_C11_W3(32'hbe0284fd), .K3_C11_W4(32'h3ced7a0e), .K3_C11_W5(32'h3df85b74), .K3_C11_W6(32'h3df6c7e0), .K3_C11_W7(32'hbe087327), .K3_C11_W8(32'hbd2264b6), 
+		.K3_C12_W0(32'hbdb81f9b), .K3_C12_W1(32'hbc81cb94), .K3_C12_W2(32'hbc38c3f0), .K3_C12_W3(32'h3de939cc), .K3_C12_W4(32'hbe033872), .K3_C12_W5(32'h3dbaf9a3), .K3_C12_W6(32'h3d1bbd62), .K3_C12_W7(32'h3e16e385), .K3_C12_W8(32'hbdbfd57a), 
+		.K3_C13_W0(32'h3d6d1444), .K3_C13_W1(32'h3d98d1f3), .K3_C13_W2(32'h3d8e70e9), .K3_C13_W3(32'h3be0bc5e), .K3_C13_W4(32'hbdf82a76), .K3_C13_W5(32'h3d4ac780), .K3_C13_W6(32'hbe2212e9), .K3_C13_W7(32'hbd4bb6b8), .K3_C13_W8(32'hbd5a2d4d), 
+		.K3_C14_W0(32'hbd7735d4), .K3_C14_W1(32'h3dd14517), .K3_C14_W2(32'hbdd78947), .K3_C14_W3(32'hbd3b8844), .K3_C14_W4(32'h3e17a34d), .K3_C14_W5(32'hbdbb6763), .K3_C14_W6(32'hbe04a3be), .K3_C14_W7(32'h3d19b598), .K3_C14_W8(32'h3c9d6deb), 
+		.K3_C15_W0(32'hbc5e731d), .K3_C15_W1(32'h3e07fc31), .K3_C15_W2(32'h3e028262), .K3_C15_W3(32'hbdf8c89c), .K3_C15_W4(32'hbd972355), .K3_C15_W5(32'h3dabfc4f), .K3_C15_W6(32'h3dbf8770), .K3_C15_W7(32'h3e01f9f9), .K3_C15_W8(32'h3dc049ed), 
+		.K3_BIAS (32'h3ced8e1c),
+
+		.K4_C0_W0(32'hbd08fec9), .K4_C0_W1(32'hbd818cac), .K4_C0_W2(32'hbe06b2fe), .K4_C0_W3(32'hbe023b59), .K4_C0_W4(32'hbd1f5900), .K4_C0_W5(32'h3da934f8), .K4_C0_W6(32'h3decc78f), .K4_C0_W7(32'hbd9d5f10), .K4_C0_W8(32'hbd7c3cf9), 
+		.K4_C1_W0(32'hbdd9bd67), .K4_C1_W1(32'h3ddb9a8f), .K4_C1_W2(32'h3c819951), .K4_C1_W3(32'hbe01a534), .K4_C1_W4(32'h3d276025), .K4_C1_W5(32'h3df1dbc0), .K4_C1_W6(32'h3a37ece4), .K4_C1_W7(32'hbde316b4), .K4_C1_W8(32'h3c673b03), 
+		.K4_C2_W0(32'h3cc65408), .K4_C2_W1(32'h3d995d07), .K4_C2_W2(32'h3e0055ca), .K4_C2_W3(32'h3da214b0), .K4_C2_W4(32'h3d8bbc58), .K4_C2_W5(32'hbe0ebc59), .K4_C2_W6(32'h3ddd5b5a), .K4_C2_W7(32'hbd77f49a), .K4_C2_W8(32'hbdb2b66d), 
+		.K4_C3_W0(32'hbdb19e8c), .K4_C3_W1(32'h3ccfc23a), .K4_C3_W2(32'h3c40bb9e), .K4_C3_W3(32'hbe081b78), .K4_C3_W4(32'h3da326ca), .K4_C3_W5(32'hbdf02225), .K4_C3_W6(32'h3d727c3b), .K4_C3_W7(32'h3d888642), .K4_C3_W8(32'h3d9ab7ab), 
+		.K4_C4_W0(32'h3d903c17), .K4_C4_W1(32'h3d130b3c), .K4_C4_W2(32'h3d837776), .K4_C4_W3(32'hbdaa187b), .K4_C4_W4(32'hbd35ef12), .K4_C4_W5(32'hbe08f988), .K4_C4_W6(32'hbd817afa), .K4_C4_W7(32'h3d0f9a80), .K4_C4_W8(32'hbc8cb2f0), 
+		.K4_C5_W0(32'h3cb002e0), .K4_C5_W1(32'hbdf57201), .K4_C5_W2(32'hbd956734), .K4_C5_W3(32'h3de96135), .K4_C5_W4(32'h3db78b3c), .K4_C5_W5(32'h3dad88b2), .K4_C5_W6(32'hbc6bb229), .K4_C5_W7(32'h3d549538), .K4_C5_W8(32'hbe0965dd), 
+		.K4_C6_W0(32'h3cdf8d25), .K4_C6_W1(32'hbdc33a4a), .K4_C6_W2(32'h3d8d800a), .K4_C6_W3(32'hbde755c0), .K4_C6_W4(32'h3d27ef50), .K4_C6_W5(32'hbe011b2d), .K4_C6_W6(32'hbc2a5f3b), .K4_C6_W7(32'hbdca8246), .K4_C6_W8(32'h3d1c569f), 
+		.K4_C7_W0(32'hbceef2e5), .K4_C7_W1(32'h3cb6b790), .K4_C7_W2(32'h3c00a890), .K4_C7_W3(32'hbdbfd5e9), .K4_C7_W4(32'hbda7ecb2), .K4_C7_W5(32'h3ddda29d), .K4_C7_W6(32'hbd54e009), .K4_C7_W7(32'h3d2d1555), .K4_C7_W8(32'hbd002c62), 
+		.K4_C8_W0(32'h3d13c73c), .K4_C8_W1(32'hbdcbc1a2), .K4_C8_W2(32'h3da2964a), .K4_C8_W3(32'h3dc0ff52), .K4_C8_W4(32'hbe0e821f), .K4_C8_W5(32'h3d6f7361), .K4_C8_W6(32'hbcc328bb), .K4_C8_W7(32'hbc5d8768), .K4_C8_W8(32'hbd924c3a), 
+		.K4_C9_W0(32'hbdf0f22b), .K4_C9_W1(32'hbdfa46f9), .K4_C9_W2(32'hbc2d1823), .K4_C9_W3(32'h3d52ac52), .K4_C9_W4(32'hbd942a99), .K4_C9_W5(32'hbdb1189d), .K4_C9_W6(32'hbdd3d403), .K4_C9_W7(32'hbcbc6b57), .K4_C9_W8(32'h3e0047cc), 
+		.K4_C10_W0(32'hbe0ca88b), .K4_C10_W1(32'h3d3a3540), .K4_C10_W2(32'hbe27ef0a), .K4_C10_W3(32'h3dc7ba8d), .K4_C10_W4(32'h3d34c651), .K4_C10_W5(32'h3dc24683), .K4_C10_W6(32'h3d985aa1), .K4_C10_W7(32'hbd749797), .K4_C10_W8(32'h3d432579), 
+		.K4_C11_W0(32'h3d723732), .K4_C11_W1(32'hbd5ff7e1), .K4_C11_W2(32'hbc2e414d), .K4_C11_W3(32'hbd8d8987), .K4_C11_W4(32'hbdf22427), .K4_C11_W5(32'h3cedab71), .K4_C11_W6(32'h3d1ea18c), .K4_C11_W7(32'h3e0d01d1), .K4_C11_W8(32'hbdd16349), 
+		.K4_C12_W0(32'h3d24b794), .K4_C12_W1(32'h3dd4aea1), .K4_C12_W2(32'hbe1289ce), .K4_C12_W3(32'h3d4730aa), .K4_C12_W4(32'hbde6fefb), .K4_C12_W5(32'hbe0415d9), .K4_C12_W6(32'hbd2cec37), .K4_C12_W7(32'hbd8988b1), .K4_C12_W8(32'hbd8657cb), 
+		.K4_C13_W0(32'h3d0dbf06), .K4_C13_W1(32'h3db1a76e), .K4_C13_W2(32'h3cc1cfaa), .K4_C13_W3(32'h3c3717ac), .K4_C13_W4(32'h3de604ce), .K4_C13_W5(32'h3c8f8e81), .K4_C13_W6(32'hbdd7b1cc), .K4_C13_W7(32'h3b66a31c), .K4_C13_W8(32'hbd101484), 
+		.K4_C14_W0(32'h3d8a9f41), .K4_C14_W1(32'hbdb6f646), .K4_C14_W2(32'hbe219222), .K4_C14_W3(32'h3bb49ff8), .K4_C14_W4(32'hbd76d03c), .K4_C14_W5(32'hbdb0afde), .K4_C14_W6(32'hbe1ca8a5), .K4_C14_W7(32'h3df9b628), .K4_C14_W8(32'h3c09705b), 
+		.K4_C15_W0(32'hbe128dfd), .K4_C15_W1(32'hbe0490c3), .K4_C15_W2(32'h3ce67eb8), .K4_C15_W3(32'h3e17a077), .K4_C15_W4(32'hbde36ce1), .K4_C15_W5(32'hbe0b7172), .K4_C15_W6(32'h3de9b82b), .K4_C15_W7(32'h3db17968), .K4_C15_W8(32'hbe07bed0), 
+		.K4_BIAS (32'hbc5c9177),
+
+		.K5_C0_W0(32'hbd411692), .K5_C0_W1(32'h3d5b84ce), .K5_C0_W2(32'h3db83c05), .K5_C0_W3(32'h3dcd5201), .K5_C0_W4(32'h3df8d436), .K5_C0_W5(32'hbbd06dd8), .K5_C0_W6(32'h3dded6c0), .K5_C0_W7(32'hbd3f0199), .K5_C0_W8(32'h3e028671), 
+		.K5_C1_W0(32'h3dc32e15), .K5_C1_W1(32'hbdbfe05d), .K5_C1_W2(32'h3ce98fee), .K5_C1_W3(32'hbdc798a7), .K5_C1_W4(32'hbe043a09), .K5_C1_W5(32'h3dc916ef), .K5_C1_W6(32'h3d95e8a3), .K5_C1_W7(32'hbcf8676c), .K5_C1_W8(32'hbdda61f6), 
+		.K5_C2_W0(32'h3df02c04), .K5_C2_W1(32'hbdefa446), .K5_C2_W2(32'h3d2601a4), .K5_C2_W3(32'hbd628dff), .K5_C2_W4(32'h3dbe0aa4), .K5_C2_W5(32'h3d94f42d), .K5_C2_W6(32'hbdf501de), .K5_C2_W7(32'h3c8442b9), .K5_C2_W8(32'hbdaebd8a), 
+		.K5_C3_W0(32'hbe32c05e), .K5_C3_W1(32'h3d9fef3a), .K5_C3_W2(32'hbbeff74c), .K5_C3_W3(32'hbdbb53cb), .K5_C3_W4(32'hba93c5c0), .K5_C3_W5(32'h3ce1bdcb), .K5_C3_W6(32'hbb6c1391), .K5_C3_W7(32'h3e13c7fb), .K5_C3_W8(32'h3c8405de), 
+		.K5_C4_W0(32'hbddf2ba8), .K5_C4_W1(32'h3c5cfa60), .K5_C4_W2(32'hbdae78b3), .K5_C4_W3(32'hbddbbf64), .K5_C4_W4(32'h3d980699), .K5_C4_W5(32'hbda8a2c6), .K5_C4_W6(32'h3da5c8d5), .K5_C4_W7(32'hbcb1ac7b), .K5_C4_W8(32'hbdc46974), 
+		.K5_C5_W0(32'hbcd7dc5f), .K5_C5_W1(32'h3df85fb2), .K5_C5_W2(32'h3d917956), .K5_C5_W3(32'h3deea36d), .K5_C5_W4(32'hbd4e2009), .K5_C5_W5(32'hbdbebbc0), .K5_C5_W6(32'hbddc9d3e), .K5_C5_W7(32'hbe07158d), .K5_C5_W8(32'hbe3aea1f), 
+		.K5_C6_W0(32'hbe21a150), .K5_C6_W1(32'hbd25406d), .K5_C6_W2(32'hbd9fbc57), .K5_C6_W3(32'h3de1c088), .K5_C6_W4(32'hbd5feb23), .K5_C6_W5(32'hbd141eba), .K5_C6_W6(32'h3e002441), .K5_C6_W7(32'hbd1dfbc5), .K5_C6_W8(32'hbe0143ac), 
+		.K5_C7_W0(32'hbe0281f6), .K5_C7_W1(32'hbc6b9b84), .K5_C7_W2(32'hbc303a0d), .K5_C7_W3(32'h3df44249), .K5_C7_W4(32'h3db437c5), .K5_C7_W5(32'hbe0a12f1), .K5_C7_W6(32'hbdb48b02), .K5_C7_W7(32'h3d71c67e), .K5_C7_W8(32'h3d53b8cb), 
+		.K5_C8_W0(32'h3d017b60), .K5_C8_W1(32'hbe1bd4d1), .K5_C8_W2(32'hbd08c937), .K5_C8_W3(32'hbdf5a3c7), .K5_C8_W4(32'h3cbd4590), .K5_C8_W5(32'h3dce69c1), .K5_C8_W6(32'h3c65e967), .K5_C8_W7(32'hbd943e41), .K5_C8_W8(32'h3d3363bf), 
+		.K5_C9_W0(32'h3d868ce7), .K5_C9_W1(32'hbe2c643f), .K5_C9_W2(32'h3cb540bd), .K5_C9_W3(32'hbe021899), .K5_C9_W4(32'h3d8cb921), .K5_C9_W5(32'h3c91f9ca), .K5_C9_W6(32'h3dad34dd), .K5_C9_W7(32'h3d8f5766), .K5_C9_W8(32'hbca4ec84), 
+		.K5_C10_W0(32'h3de6a9f6), .K5_C10_W1(32'hbcb7b0c4), .K5_C10_W2(32'h3c84d09d), .K5_C10_W3(32'hbd520149), .K5_C10_W4(32'hbdd38faa), .K5_C10_W5(32'h3ca67a91), .K5_C10_W6(32'hbdcc6a61), .K5_C10_W7(32'h3e0b5ec4), .K5_C10_W8(32'hbc6f87c6), 
+		.K5_C11_W0(32'h3dd69351), .K5_C11_W1(32'hbdb14813), .K5_C11_W2(32'hbe2f7513), .K5_C11_W3(32'hbe048eb5), .K5_C11_W4(32'h39b16110), .K5_C11_W5(32'hbdefd96e), .K5_C11_W6(32'hbc851c6f), .K5_C11_W7(32'h3e1c6451), .K5_C11_W8(32'h3d43e498), 
+		.K5_C12_W0(32'h3dae865d), .K5_C12_W1(32'hbdde59e4), .K5_C12_W2(32'hbe10f3cd), .K5_C12_W3(32'hbdffb0be), .K5_C12_W4(32'h3df88cc3), .K5_C12_W5(32'h3dd5480f), .K5_C12_W6(32'hbd5908dc), .K5_C12_W7(32'h3ce72c06), .K5_C12_W8(32'hbdc6476d), 
+		.K5_C13_W0(32'h3ccd88ca), .K5_C13_W1(32'hbdbd95ef), .K5_C13_W2(32'hbe0507c2), .K5_C13_W3(32'h3e1d7739), .K5_C13_W4(32'h3b95b92d), .K5_C13_W5(32'h3d1cb609), .K5_C13_W6(32'hbd23bcd8), .K5_C13_W7(32'h3d6682c6), .K5_C13_W8(32'h3d052115), 
+		.K5_C14_W0(32'hbdcdbeb1), .K5_C14_W1(32'h3bc87ed6), .K5_C14_W2(32'h3d8db640), .K5_C14_W3(32'h3c64271c), .K5_C14_W4(32'hbce345e2), .K5_C14_W5(32'hbc7472ba), .K5_C14_W6(32'h3d6ba462), .K5_C14_W7(32'hbdb1793d), .K5_C14_W8(32'hbc96be9a), 
+		.K5_C15_W0(32'hbe0d359d), .K5_C15_W1(32'hbe0bb2d3), .K5_C15_W2(32'h3d6318f8), .K5_C15_W3(32'h3e236daa), .K5_C15_W4(32'hbe0523da), .K5_C15_W5(32'h3d1350d7), .K5_C15_W6(32'h3c96ffc6), .K5_C15_W7(32'h3df3a1a5), .K5_C15_W8(32'hbd1c53a6), 
+		.K5_BIAS (32'hbca291e1),
+
+		.K6_C0_W0(32'hbc8a7ee6), .K6_C0_W1(32'h3e139dd9), .K6_C0_W2(32'hbb716459), .K6_C0_W3(32'hbc85a37f), .K6_C0_W4(32'h3da4fa82), .K6_C0_W5(32'hbe028b9a), .K6_C0_W6(32'h3e18163f), .K6_C0_W7(32'hbdd5a1a7), .K6_C0_W8(32'h3dd80d75), 
+		.K6_C1_W0(32'h3d944981), .K6_C1_W1(32'h3e0cf531), .K6_C1_W2(32'h3df6f9c5), .K6_C1_W3(32'h3da4905e), .K6_C1_W4(32'hbda9da9a), .K6_C1_W5(32'h3c359bd1), .K6_C1_W6(32'h3ceebc5c), .K6_C1_W7(32'hbdb9d43b), .K6_C1_W8(32'hbe24746d), 
+		.K6_C2_W0(32'h3d33e25b), .K6_C2_W1(32'hbd275f94), .K6_C2_W2(32'h3d29649a), .K6_C2_W3(32'h3dc4a91d), .K6_C2_W4(32'h3d9f8bb4), .K6_C2_W5(32'hbdcba9c3), .K6_C2_W6(32'h3d4c68ee), .K6_C2_W7(32'h3df06a21), .K6_C2_W8(32'hbd81bd64), 
+		.K6_C3_W0(32'h3e085a21), .K6_C3_W1(32'h3d929bb6), .K6_C3_W2(32'hbcec50e3), .K6_C3_W3(32'h3cbceaea), .K6_C3_W4(32'h3dc51f38), .K6_C3_W5(32'hbcc75766), .K6_C3_W6(32'h3d1dea16), .K6_C3_W7(32'hbcab32af), .K6_C3_W8(32'h3dcfdfca), 
+		.K6_C4_W0(32'hbd243aaf), .K6_C4_W1(32'h3e0d9e7a), .K6_C4_W2(32'h3d60b120), .K6_C4_W3(32'hbdab4ca4), .K6_C4_W4(32'hbbc103cd), .K6_C4_W5(32'hb996dd50), .K6_C4_W6(32'hbd8bbe14), .K6_C4_W7(32'hbe5c570f), .K6_C4_W8(32'h3db1b6fe), 
+		.K6_C5_W0(32'h3d08b304), .K6_C5_W1(32'hbe1a9c2e), .K6_C5_W2(32'h3d82ff32), .K6_C5_W3(32'h3cd14619), .K6_C5_W4(32'hbddd3b3e), .K6_C5_W5(32'h3d8a9851), .K6_C5_W6(32'h3d633278), .K6_C5_W7(32'h3e08f8a2), .K6_C5_W8(32'hbdfb7392), 
+		.K6_C6_W0(32'h3dd64631), .K6_C6_W1(32'h3dda9d38), .K6_C6_W2(32'h3dbe1a20), .K6_C6_W3(32'h3da681ce), .K6_C6_W4(32'hbdcff948), .K6_C6_W5(32'h3d9cf086), .K6_C6_W6(32'hbdccc0cc), .K6_C6_W7(32'hbdb2ccf1), .K6_C6_W8(32'h3dbf1312), 
+		.K6_C7_W0(32'hbd4ecd57), .K6_C7_W1(32'hbd1f773c), .K6_C7_W2(32'h3e076d94), .K6_C7_W3(32'hbd58bf6e), .K6_C7_W4(32'hbcf77aba), .K6_C7_W5(32'hbdfceb29), .K6_C7_W6(32'h3e0843ba), .K6_C7_W7(32'hbd4f9318), .K6_C7_W8(32'hbe01bef9), 
+		.K6_C8_W0(32'hbd2825d9), .K6_C8_W1(32'hbc424a88), .K6_C8_W2(32'hbe2e0adb), .K6_C8_W3(32'h3c056c1a), .K6_C8_W4(32'h3e0e0416), .K6_C8_W5(32'hbb84547a), .K6_C8_W6(32'hbd962cd7), .K6_C8_W7(32'hbddbd421), .K6_C8_W8(32'h3d0b33bf), 
+		.K6_C9_W0(32'h3e13dd30), .K6_C9_W1(32'h3c314618), .K6_C9_W2(32'h3e0207af), .K6_C9_W3(32'hbdf9dd53), .K6_C9_W4(32'hbe022f36), .K6_C9_W5(32'h3e24bf50), .K6_C9_W6(32'h3d9b7c10), .K6_C9_W7(32'hbc364497), .K6_C9_W8(32'h3dff085d), 
+		.K6_C10_W0(32'h3dc000b8), .K6_C10_W1(32'h3df9b7b4), .K6_C10_W2(32'h3da0cccf), .K6_C10_W3(32'h3df2799e), .K6_C10_W4(32'h3d043d86), .K6_C10_W5(32'hbd1a1796), .K6_C10_W6(32'h3e0fdea0), .K6_C10_W7(32'hbde762d7), .K6_C10_W8(32'hbdf4053b), 
+		.K6_C11_W0(32'hbd47854e), .K6_C11_W1(32'h3db6c627), .K6_C11_W2(32'h3db9a48f), .K6_C11_W3(32'hbda27c24), .K6_C11_W4(32'h3e10ab05), .K6_C11_W5(32'h3d4adc1a), .K6_C11_W6(32'h3db11fbf), .K6_C11_W7(32'h3cf8d91f), .K6_C11_W8(32'h3d28789d), 
+		.K6_C12_W0(32'h3dc22ba2), .K6_C12_W1(32'hbd8d8d6e), .K6_C12_W2(32'h3c8e06e0), .K6_C12_W3(32'h3d45394f), .K6_C12_W4(32'hbd778119), .K6_C12_W5(32'hbc8dbd12), .K6_C12_W6(32'hbd1464aa), .K6_C12_W7(32'hbe01f91e), .K6_C12_W8(32'h3d41b945), 
+		.K6_C13_W0(32'h3c5ca63d), .K6_C13_W1(32'h3daffa72), .K6_C13_W2(32'hbe09ee1c), .K6_C13_W3(32'h3d612c4c), .K6_C13_W4(32'hbe0f1b80), .K6_C13_W5(32'h3de81d26), .K6_C13_W6(32'hbc46c583), .K6_C13_W7(32'hbe3067ea), .K6_C13_W8(32'h3cb22d5b), 
+		.K6_C14_W0(32'hbdae452c), .K6_C14_W1(32'h3d737ac6), .K6_C14_W2(32'h3d41093b), .K6_C14_W3(32'h3e0887ab), .K6_C14_W4(32'hbde66e39), .K6_C14_W5(32'h3c87254f), .K6_C14_W6(32'hbdfd8d74), .K6_C14_W7(32'hbd5c8f80), .K6_C14_W8(32'h3d7072b9), 
+		.K6_C15_W0(32'hbdfc4d36), .K6_C15_W1(32'h3d51927f), .K6_C15_W2(32'hbdde00df), .K6_C15_W3(32'h3db3e193), .K6_C15_W4(32'hbd67a4d7), .K6_C15_W5(32'h3db8e799), .K6_C15_W6(32'hbce592e2), .K6_C15_W7(32'h3c018f41), .K6_C15_W8(32'h3e0c0ef5), 
+		.K6_BIAS (32'h3cd93ada),
+
+		.K7_C0_W0(32'h3d63dd6a), .K7_C0_W1(32'hbdf5199a), .K7_C0_W2(32'h3da666df), .K7_C0_W3(32'h3c9e3f84), .K7_C0_W4(32'hbba6b7b4), .K7_C0_W5(32'hbd0d7ad5), .K7_C0_W6(32'h3d6f2a18), .K7_C0_W7(32'h3c237cbc), .K7_C0_W8(32'hbdc52a60), 
+		.K7_C1_W0(32'hbd05e6e2), .K7_C1_W1(32'hbe4472b3), .K7_C1_W2(32'h3d822a7f), .K7_C1_W3(32'hbbc83354), .K7_C1_W4(32'h3e0af8dc), .K7_C1_W5(32'h3d1fc73a), .K7_C1_W6(32'hbda9ee3b), .K7_C1_W7(32'hbdbcb7f5), .K7_C1_W8(32'h3d039762), 
+		.K7_C2_W0(32'hbdd8eb85), .K7_C2_W1(32'hbe19d5ae), .K7_C2_W2(32'h3e15dda8), .K7_C2_W3(32'h3de439dc), .K7_C2_W4(32'h3dcedfa1), .K7_C2_W5(32'hbd77f731), .K7_C2_W6(32'hbd96fcc5), .K7_C2_W7(32'hbd46bbd0), .K7_C2_W8(32'h3c9a09ce), 
+		.K7_C3_W0(32'h3c943fe6), .K7_C3_W1(32'hbd972b7e), .K7_C3_W2(32'hbd4467a3), .K7_C3_W3(32'h3e1d5d33), .K7_C3_W4(32'hbcce002a), .K7_C3_W5(32'hbcf17816), .K7_C3_W6(32'hbdbc3108), .K7_C3_W7(32'h3d8302cd), .K7_C3_W8(32'h3dbecc15), 
+		.K7_C4_W0(32'h3d7c1259), .K7_C4_W1(32'hbd80dfe3), .K7_C4_W2(32'hbdead28e), .K7_C4_W3(32'h3d208bbc), .K7_C4_W4(32'h3df7f3e6), .K7_C4_W5(32'h3cdcafc2), .K7_C4_W6(32'hbd88c7ef), .K7_C4_W7(32'hbd8da15f), .K7_C4_W8(32'hbdedb885), 
+		.K7_C5_W0(32'hbd9e9560), .K7_C5_W1(32'h3e13fef2), .K7_C5_W2(32'hbcd62a0a), .K7_C5_W3(32'hbd6497b6), .K7_C5_W4(32'h3d5b2d5c), .K7_C5_W5(32'h3d38c29b), .K7_C5_W6(32'hbd799c66), .K7_C5_W7(32'hbdbe49d2), .K7_C5_W8(32'hbcd69cbf), 
+		.K7_C6_W0(32'hbcc61260), .K7_C6_W1(32'hbdcce6d6), .K7_C6_W2(32'hbd11ce7e), .K7_C6_W3(32'h3dce07f1), .K7_C6_W4(32'hbdd479f3), .K7_C6_W5(32'h3d066562), .K7_C6_W6(32'hbe10d610), .K7_C6_W7(32'h3de56dc8), .K7_C6_W8(32'hbd2b359a), 
+		.K7_C7_W0(32'hbd541102), .K7_C7_W1(32'h3d85efe9), .K7_C7_W2(32'hbc68d858), .K7_C7_W3(32'h3ce975c0), .K7_C7_W4(32'hbe134efb), .K7_C7_W5(32'h3cedad52), .K7_C7_W6(32'h3df469df), .K7_C7_W7(32'h3df8e400), .K7_C7_W8(32'h3ce86f93), 
+		.K7_C8_W0(32'h3d6f8b81), .K7_C8_W1(32'h3bf0f88e), .K7_C8_W2(32'h3cefbcdf), .K7_C8_W3(32'h3dc53d25), .K7_C8_W4(32'h3df6dc94), .K7_C8_W5(32'h3bc585a2), .K7_C8_W6(32'h3cdff99b), .K7_C8_W7(32'h3daab77d), .K7_C8_W8(32'hbdf1a42a), 
+		.K7_C9_W0(32'hbdfedc80), .K7_C9_W1(32'hbd62eaa7), .K7_C9_W2(32'hbd5665d0), .K7_C9_W3(32'h3d6d95e1), .K7_C9_W4(32'h3ccad8ef), .K7_C9_W5(32'h3dcb5f73), .K7_C9_W6(32'hbdc6b706), .K7_C9_W7(32'h3dd1e3d6), .K7_C9_W8(32'hbcba440e), 
+		.K7_C10_W0(32'h3d8d482a), .K7_C10_W1(32'hbd74e310), .K7_C10_W2(32'h3e09a5be), .K7_C10_W3(32'hbdeb49ef), .K7_C10_W4(32'hbdcb42a5), .K7_C10_W5(32'hbdfe1ce1), .K7_C10_W6(32'h3cf06914), .K7_C10_W7(32'h3d60b433), .K7_C10_W8(32'hbd8c09a8), 
+		.K7_C11_W0(32'h3cfc4ec9), .K7_C11_W1(32'h3e027914), .K7_C11_W2(32'hbd9f4bf9), .K7_C11_W3(32'h3e0ca548), .K7_C11_W4(32'h3e16762f), .K7_C11_W5(32'h3ce203ca), .K7_C11_W6(32'hbd9367e3), .K7_C11_W7(32'h3d6d9ce6), .K7_C11_W8(32'hbd712267), 
+		.K7_C12_W0(32'hbdffabd4), .K7_C12_W1(32'h3d8de23b), .K7_C12_W2(32'h3b448fdf), .K7_C12_W3(32'h3d91c015), .K7_C12_W4(32'hbd06cdc0), .K7_C12_W5(32'hbdc625e1), .K7_C12_W6(32'h3dcd2727), .K7_C12_W7(32'h3d9e8768), .K7_C12_W8(32'hbdb5808f), 
+		.K7_C13_W0(32'hbd7e86f1), .K7_C13_W1(32'h3d852e5f), .K7_C13_W2(32'hbdc17831), .K7_C13_W3(32'h3e0a47a2), .K7_C13_W4(32'hbdad8384), .K7_C13_W5(32'hbd3de43f), .K7_C13_W6(32'h3dfe5ac2), .K7_C13_W7(32'h3d8a0051), .K7_C13_W8(32'hbd43d913), 
+		.K7_C14_W0(32'hbdc2f7eb), .K7_C14_W1(32'h3d7cb080), .K7_C14_W2(32'hbdaf3aa3), .K7_C14_W3(32'hbdf3062e), .K7_C14_W4(32'hbd9f4eb3), .K7_C14_W5(32'h3b093914), .K7_C14_W6(32'h3df953e3), .K7_C14_W7(32'hbcc34b32), .K7_C14_W8(32'hbc7dff4e), 
+		.K7_C15_W0(32'h3e06901a), .K7_C15_W1(32'hbd907667), .K7_C15_W2(32'hbd79e3a6), .K7_C15_W3(32'hbcc6cf6e), .K7_C15_W4(32'h3d5e0d02), .K7_C15_W5(32'hbdadf68f), .K7_C15_W6(32'h3da1f8d6), .K7_C15_W7(32'h3d02741b), .K7_C15_W8(32'h3dd66ea9), 
+		.K7_BIAS (32'hbce2ae28),
+
+		.K8_C0_W0(32'hbdd52a07), .K8_C0_W1(32'hbdcc1d4f), .K8_C0_W2(32'hbe1b744e), .K8_C0_W3(32'hbd865641), .K8_C0_W4(32'hbcc6f9ce), .K8_C0_W5(32'h3cc2459f), .K8_C0_W6(32'hbc4542ca), .K8_C0_W7(32'hbe051d8a), .K8_C0_W8(32'hbe16f228), 
+		.K8_C1_W0(32'h3ddb967f), .K8_C1_W1(32'h3d2ef91f), .K8_C1_W2(32'h3d750851), .K8_C1_W3(32'hbb18540a), .K8_C1_W4(32'hbe06b30c), .K8_C1_W5(32'h3d98a9be), .K8_C1_W6(32'h3e1bdd49), .K8_C1_W7(32'hbdb7f0fa), .K8_C1_W8(32'h3d06fa38), 
+		.K8_C2_W0(32'h3e0aed00), .K8_C2_W1(32'hbdbf0983), .K8_C2_W2(32'hbb5cbf8c), .K8_C2_W3(32'h3d489de4), .K8_C2_W4(32'hbd9020d8), .K8_C2_W5(32'h3e0a7654), .K8_C2_W6(32'hbd5696f8), .K8_C2_W7(32'hbd57e3f2), .K8_C2_W8(32'h3df55ecd), 
+		.K8_C3_W0(32'hbdd0a9f0), .K8_C3_W1(32'hbe5ba5e1), .K8_C3_W2(32'hbe105ea9), .K8_C3_W3(32'hbe0a4542), .K8_C3_W4(32'hbdca3a5f), .K8_C3_W5(32'h3dde8db8), .K8_C3_W6(32'hbde522ec), .K8_C3_W7(32'h3d020c0a), .K8_C3_W8(32'hbcd13a81), 
+		.K8_C4_W0(32'h3dd61c7a), .K8_C4_W1(32'h3cb76780), .K8_C4_W2(32'hbd87556b), .K8_C4_W3(32'hbde7bd56), .K8_C4_W4(32'hbda9e24e), .K8_C4_W5(32'h3de526c8), .K8_C4_W6(32'h3db77b19), .K8_C4_W7(32'hbd9e5c45), .K8_C4_W8(32'h3db55f5e), 
+		.K8_C5_W0(32'h3d3ac538), .K8_C5_W1(32'hbcb13d1f), .K8_C5_W2(32'hbc9f05f7), .K8_C5_W3(32'hbd9b94d8), .K8_C5_W4(32'h3dc4bf38), .K8_C5_W5(32'hbdbf6261), .K8_C5_W6(32'hbe013c48), .K8_C5_W7(32'h3d1863bb), .K8_C5_W8(32'h3db30f9a), 
+		.K8_C6_W0(32'hbd2fb98a), .K8_C6_W1(32'hbdcaeb6e), .K8_C6_W2(32'h3b866d4f), .K8_C6_W3(32'hbd7a13f6), .K8_C6_W4(32'h3ddab2e1), .K8_C6_W5(32'h3db2a398), .K8_C6_W6(32'h3e00d0a2), .K8_C6_W7(32'hbc02d3d8), .K8_C6_W8(32'h3dd86d7a), 
+		.K8_C7_W0(32'h3d6ddfa0), .K8_C7_W1(32'hbda65fd8), .K8_C7_W2(32'h3e08844f), .K8_C7_W3(32'hbc54fbc0), .K8_C7_W4(32'h3cd19be3), .K8_C7_W5(32'hbda250f2), .K8_C7_W6(32'hbe097ca5), .K8_C7_W7(32'h3dc49c20), .K8_C7_W8(32'hbdd01df5), 
+		.K8_C8_W0(32'hbd84395c), .K8_C8_W1(32'h39356a42), .K8_C8_W2(32'h3d299760), .K8_C8_W3(32'h3db62d49), .K8_C8_W4(32'hbe245b6d), .K8_C8_W5(32'hbde27161), .K8_C8_W6(32'h3daf3d9d), .K8_C8_W7(32'hbd9aed32), .K8_C8_W8(32'h3dc002d8), 
+		.K8_C9_W0(32'h3da641ce), .K8_C9_W1(32'hbd3dbc12), .K8_C9_W2(32'hbbe5b7a8), .K8_C9_W3(32'hbd6b4514), .K8_C9_W4(32'h3d1b1a19), .K8_C9_W5(32'hbe0b930c), .K8_C9_W6(32'hbdec7e30), .K8_C9_W7(32'h3db9341a), .K8_C9_W8(32'h3da0ab6b), 
+		.K8_C10_W0(32'h3d6f416c), .K8_C10_W1(32'h3da99090), .K8_C10_W2(32'h3d2c76c4), .K8_C10_W3(32'h3cb0fb40), .K8_C10_W4(32'hbe08d673), .K8_C10_W5(32'h3e0f6c48), .K8_C10_W6(32'h3e02aa8e), .K8_C10_W7(32'h3dffa0cf), .K8_C10_W8(32'h3d4e28b2), 
+		.K8_C11_W0(32'hbe129611), .K8_C11_W1(32'h3c35d2be), .K8_C11_W2(32'h3d301ab2), .K8_C11_W3(32'h3dba44b7), .K8_C11_W4(32'hb7e0e7df), .K8_C11_W5(32'hbd8b5774), .K8_C11_W6(32'h3d86a836), .K8_C11_W7(32'hbc10f407), .K8_C11_W8(32'hbbdc1157), 
+		.K8_C12_W0(32'h3ddd7ed5), .K8_C12_W1(32'hbd5d5a24), .K8_C12_W2(32'h3d752fa8), .K8_C12_W3(32'h3e1d9762), .K8_C12_W4(32'hbd6604d0), .K8_C12_W5(32'hbd3fa3e8), .K8_C12_W6(32'hbc040991), .K8_C12_W7(32'hbce175fa), .K8_C12_W8(32'h3e2fc026), 
+		.K8_C13_W0(32'hbad883f2), .K8_C13_W1(32'hbdf13dae), .K8_C13_W2(32'hbded11e8), .K8_C13_W3(32'h3cfabeb1), .K8_C13_W4(32'h3d165fff), .K8_C13_W5(32'h3c843562), .K8_C13_W6(32'hbce43d18), .K8_C13_W7(32'hbdfcaaf3), .K8_C13_W8(32'h3dfdc058), 
+		.K8_C14_W0(32'hbe0c748f), .K8_C14_W1(32'hbdcd63ee), .K8_C14_W2(32'hbe308a8a), .K8_C14_W3(32'h3d20b47e), .K8_C14_W4(32'hbc29d34c), .K8_C14_W5(32'hbdd72154), .K8_C14_W6(32'h3d03ae66), .K8_C14_W7(32'hbda81865), .K8_C14_W8(32'hbcbc44e5), 
+		.K8_C15_W0(32'hbdd511ee), .K8_C15_W1(32'h3d554f02), .K8_C15_W2(32'h3dd6ec3c), .K8_C15_W3(32'h3d96cdb4), .K8_C15_W4(32'hbe00ae3c), .K8_C15_W5(32'hbd1db2db), .K8_C15_W6(32'hbd124f53), .K8_C15_W7(32'hbdac9079), .K8_C15_W8(32'h3d282237), 
+		.K8_BIAS (32'h3d2a5e23),
+
+		.K9_C0_W0(32'hbd77ef8a), .K9_C0_W1(32'hbd056186), .K9_C0_W2(32'h3e1a7e5d), .K9_C0_W3(32'h3d7b3206), .K9_C0_W4(32'hbb16c229), .K9_C0_W5(32'h3d1cd9ee), .K9_C0_W6(32'h3bafbd2f), .K9_C0_W7(32'h3dc2abe5), .K9_C0_W8(32'h3dbeb643), 
+		.K9_C1_W0(32'h3e075388), .K9_C1_W1(32'hbde35296), .K9_C1_W2(32'h3d70961f), .K9_C1_W3(32'hbdc923d0), .K9_C1_W4(32'h3dd6018f), .K9_C1_W5(32'h3dd598e3), .K9_C1_W6(32'hbe070044), .K9_C1_W7(32'hbcc9894b), .K9_C1_W8(32'hbdb90987), 
+		.K9_C2_W0(32'hbd407094), .K9_C2_W1(32'hbdcd8fd1), .K9_C2_W2(32'h3c96d5d2), .K9_C2_W3(32'h3e13438c), .K9_C2_W4(32'h3b7c3ebc), .K9_C2_W5(32'h3e3f5ef6), .K9_C2_W6(32'h3d6040e3), .K9_C2_W7(32'hbdbca31b), .K9_C2_W8(32'hbd75f81b), 
+		.K9_C3_W0(32'h3ddb4923), .K9_C3_W1(32'h3e001b2f), .K9_C3_W2(32'h3cad9c96), .K9_C3_W3(32'hbde8ff40), .K9_C3_W4(32'hbdb4a615), .K9_C3_W5(32'hbd9830ac), .K9_C3_W6(32'hbdc007eb), .K9_C3_W7(32'h3db98670), .K9_C3_W8(32'hbc38b1c9), 
+		.K9_C4_W0(32'hbd7bc98c), .K9_C4_W1(32'h3e1cc6a4), .K9_C4_W2(32'hbe0b7b5b), .K9_C4_W3(32'hbd801ca8), .K9_C4_W4(32'hbda94e7c), .K9_C4_W5(32'h3d0cbef4), .K9_C4_W6(32'h3d8e740a), .K9_C4_W7(32'h3d226c3f), .K9_C4_W8(32'hbce6e14b), 
+		.K9_C5_W0(32'h3cce5388), .K9_C5_W1(32'hbae08bea), .K9_C5_W2(32'hbceb852f), .K9_C5_W3(32'h3db96778), .K9_C5_W4(32'h3df0f9cf), .K9_C5_W5(32'h3de0f96d), .K9_C5_W6(32'hbddaf933), .K9_C5_W7(32'hbcab0d58), .K9_C5_W8(32'hbdc34a76), 
+		.K9_C6_W0(32'h3c831390), .K9_C6_W1(32'h3b90f589), .K9_C6_W2(32'h3d1267e1), .K9_C6_W3(32'h3d5e3400), .K9_C6_W4(32'hbe163253), .K9_C6_W5(32'h3e0b3a9d), .K9_C6_W6(32'hbe06698e), .K9_C6_W7(32'h3becca8b), .K9_C6_W8(32'h3dc83656), 
+		.K9_C7_W0(32'h3b84b56c), .K9_C7_W1(32'h3dd43b0e), .K9_C7_W2(32'hbc77a0fe), .K9_C7_W3(32'hbd03c9ec), .K9_C7_W4(32'hbd5dd79b), .K9_C7_W5(32'hbd8c0499), .K9_C7_W6(32'h3db532d6), .K9_C7_W7(32'h3e0aa50f), .K9_C7_W8(32'hbad6fc04), 
+		.K9_C8_W0(32'hbd998c30), .K9_C8_W1(32'hbdf918db), .K9_C8_W2(32'h3ccf6da7), .K9_C8_W3(32'h3dc951a7), .K9_C8_W4(32'hbdcb701f), .K9_C8_W5(32'h3de7ef8d), .K9_C8_W6(32'hbdaa79a5), .K9_C8_W7(32'h3e00fd85), .K9_C8_W8(32'hbd83697b), 
+		.K9_C9_W0(32'hbd6c169d), .K9_C9_W1(32'hbdbbe3dc), .K9_C9_W2(32'hbdc3ebe5), .K9_C9_W3(32'h3d95acc7), .K9_C9_W4(32'h3d8caaf5), .K9_C9_W5(32'h3dcef804), .K9_C9_W6(32'hbdef43b5), .K9_C9_W7(32'h3d7f8333), .K9_C9_W8(32'hbe14386c), 
+		.K9_C10_W0(32'hbdd42421), .K9_C10_W1(32'h3d3fe655), .K9_C10_W2(32'hbb186b26), .K9_C10_W3(32'hbda882ab), .K9_C10_W4(32'hbcc0e30e), .K9_C10_W5(32'hbd31c4c9), .K9_C10_W6(32'hbddc6f2e), .K9_C10_W7(32'h3d73ccd5), .K9_C10_W8(32'h3db331b1), 
+		.K9_C11_W0(32'hbd99a6a8), .K9_C11_W1(32'h3d9af375), .K9_C11_W2(32'h3bac7bfd), .K9_C11_W3(32'hbd8073ac), .K9_C11_W4(32'hbd2be9c7), .K9_C11_W5(32'hbdbc9581), .K9_C11_W6(32'h3deb1cfc), .K9_C11_W7(32'hbdb2c849), .K9_C11_W8(32'h3d1d540c), 
+		.K9_C12_W0(32'h3d8064b5), .K9_C12_W1(32'h3cd60ced), .K9_C12_W2(32'hbd5b4a1c), .K9_C12_W3(32'h3ca16f1f), .K9_C12_W4(32'hbd931aca), .K9_C12_W5(32'h3d4ea7b2), .K9_C12_W6(32'h3d716fb0), .K9_C12_W7(32'h3c1483ca), .K9_C12_W8(32'h3d88cd80), 
+		.K9_C13_W0(32'hbd8d53c3), .K9_C13_W1(32'h3cd4c65d), .K9_C13_W2(32'hbd1d3498), .K9_C13_W3(32'hbd93b618), .K9_C13_W4(32'h3d664805), .K9_C13_W5(32'h3e0578c1), .K9_C13_W6(32'hbe17cfb3), .K9_C13_W7(32'hbdde42e8), .K9_C13_W8(32'hbd3c193e), 
+		.K9_C14_W0(32'hbc1b9cd3), .K9_C14_W1(32'hbd052949), .K9_C14_W2(32'hbdb7c746), .K9_C14_W3(32'h3c892312), .K9_C14_W4(32'hbc50b148), .K9_C14_W5(32'h3dff32ee), .K9_C14_W6(32'hbd6b8d54), .K9_C14_W7(32'h3e121f9a), .K9_C14_W8(32'hbd970da8), 
+		.K9_C15_W0(32'h3d4c778a), .K9_C15_W1(32'h3d7e2134), .K9_C15_W2(32'h3d35d031), .K9_C15_W3(32'h3d0f5222), .K9_C15_W4(32'h3d6a7928), .K9_C15_W5(32'h3d5b99dc), .K9_C15_W6(32'hbe027e77), .K9_C15_W7(32'h3e0f4ed6), .K9_C15_W8(32'h3de41e5d), 
+		.K9_BIAS (32'h3cd8c836),
+
+		.K10_C0_W0(32'h3e055c06), .K10_C0_W1(32'hbdbd9b87), .K10_C0_W2(32'hbca7b10f), .K10_C0_W3(32'hbdde65fc), .K10_C0_W4(32'h3c9fe382), .K10_C0_W5(32'hbe1bccb1), .K10_C0_W6(32'h3d5514d7), .K10_C0_W7(32'hbdd4bccd), .K10_C0_W8(32'h3de28543), 
+		.K10_C1_W0(32'h3d57e3d6), .K10_C1_W1(32'h3ceaed2e), .K10_C1_W2(32'h3d383cee), .K10_C1_W3(32'hbd2d10b1), .K10_C1_W4(32'h3d13dc78), .K10_C1_W5(32'hbd6e70d9), .K10_C1_W6(32'h3a963662), .K10_C1_W7(32'h3de291f1), .K10_C1_W8(32'h3c5ad173), 
+		.K10_C2_W0(32'hbd704a64), .K10_C2_W1(32'hbd037452), .K10_C2_W2(32'h3dccbaad), .K10_C2_W3(32'hbd8edc5c), .K10_C2_W4(32'hbdc5dae2), .K10_C2_W5(32'hbd169a05), .K10_C2_W6(32'hbd44bb42), .K10_C2_W7(32'hbe25c092), .K10_C2_W8(32'h3d3498d1), 
+		.K10_C3_W0(32'hbde8152a), .K10_C3_W1(32'hbae3354d), .K10_C3_W2(32'h3d67efb4), .K10_C3_W3(32'h3da5275b), .K10_C3_W4(32'h3d1afb84), .K10_C3_W5(32'hbdfa65d8), .K10_C3_W6(32'hbd6a0c0f), .K10_C3_W7(32'hbdf948ac), .K10_C3_W8(32'hbe248ecc), 
+		.K10_C4_W0(32'hbdf94d21), .K10_C4_W1(32'h3dabbb59), .K10_C4_W2(32'hbdafcf16), .K10_C4_W3(32'h3ddeb80c), .K10_C4_W4(32'h3de590d9), .K10_C4_W5(32'h3c7c1e92), .K10_C4_W6(32'h3d1838ef), .K10_C4_W7(32'hbd896bdd), .K10_C4_W8(32'h3d5506be), 
+		.K10_C5_W0(32'hbdf9879f), .K10_C5_W1(32'hbd6d45b6), .K10_C5_W2(32'h3d108237), .K10_C5_W3(32'h3dfdba8f), .K10_C5_W4(32'hbdef28a5), .K10_C5_W5(32'hbbe05c82), .K10_C5_W6(32'h3d1fae49), .K10_C5_W7(32'h3db2d14a), .K10_C5_W8(32'hbcdbf6c2), 
+		.K10_C6_W0(32'hbe0ad919), .K10_C6_W1(32'h3de3f098), .K10_C6_W2(32'h3ca81b22), .K10_C6_W3(32'h3da8768b), .K10_C6_W4(32'h3b290eac), .K10_C6_W5(32'h3c1475f4), .K10_C6_W6(32'h3ce384f6), .K10_C6_W7(32'hbd8c683d), .K10_C6_W8(32'h3d71aa2b), 
+		.K10_C7_W0(32'h3db67f5d), .K10_C7_W1(32'hbc4adcd8), .K10_C7_W2(32'h3dd8a7ed), .K10_C7_W3(32'hbd81530c), .K10_C7_W4(32'h3d3cba8f), .K10_C7_W5(32'h3d5461a9), .K10_C7_W6(32'h3d9551ab), .K10_C7_W7(32'h3b9789ac), .K10_C7_W8(32'h3d52f1c2), 
+		.K10_C8_W0(32'h3e13a954), .K10_C8_W1(32'h3d836894), .K10_C8_W2(32'hbd4ae1be), .K10_C8_W3(32'hbd19393f), .K10_C8_W4(32'h3ce1b864), .K10_C8_W5(32'hbe047310), .K10_C8_W6(32'h3db012a4), .K10_C8_W7(32'h3dc5563b), .K10_C8_W8(32'hbd720daa), 
+		.K10_C9_W0(32'h3cc98b9e), .K10_C9_W1(32'hbe1f181c), .K10_C9_W2(32'hbda9e043), .K10_C9_W3(32'hbdddfba1), .K10_C9_W4(32'h3d28b465), .K10_C9_W5(32'h3d3922f2), .K10_C9_W6(32'hbdf5d94f), .K10_C9_W7(32'hbd049b30), .K10_C9_W8(32'hbd00ac20), 
+		.K10_C10_W0(32'h3de6c889), .K10_C10_W1(32'h3dab16af), .K10_C10_W2(32'hbdc827ea), .K10_C10_W3(32'hbe006aba), .K10_C10_W4(32'hbe160964), .K10_C10_W5(32'hbc470485), .K10_C10_W6(32'hbd8fc34b), .K10_C10_W7(32'h3ca6b991), .K10_C10_W8(32'h3dcc5e09), 
+		.K10_C11_W0(32'h3c5f7552), .K10_C11_W1(32'hbd4ead18), .K10_C11_W2(32'h3c73f483), .K10_C11_W3(32'hbd98bc25), .K10_C11_W4(32'h3e0e9272), .K10_C11_W5(32'h3e0bf711), .K10_C11_W6(32'h3c58c158), .K10_C11_W7(32'hbd48dd46), .K10_C11_W8(32'hbe00d3d3), 
+		.K10_C12_W0(32'hbdc2e081), .K10_C12_W1(32'hbd9200c9), .K10_C12_W2(32'h3e1b3a2f), .K10_C12_W3(32'hbdcee4da), .K10_C12_W4(32'h3cbf2492), .K10_C12_W5(32'h3d9c0f23), .K10_C12_W6(32'hbda40265), .K10_C12_W7(32'hbd9282fc), .K10_C12_W8(32'hbe086871), 
+		.K10_C13_W0(32'h3dc20e42), .K10_C13_W1(32'h3e06660f), .K10_C13_W2(32'hbe07687e), .K10_C13_W3(32'h3d06219e), .K10_C13_W4(32'h3d8a1d00), .K10_C13_W5(32'hbd8015e5), .K10_C13_W6(32'hbe15a784), .K10_C13_W7(32'h3d02c562), .K10_C13_W8(32'hbca754ed), 
+		.K10_C14_W0(32'h3e217303), .K10_C14_W1(32'h3d42b4cc), .K10_C14_W2(32'h3c908086), .K10_C14_W3(32'hbce13f44), .K10_C14_W4(32'h3dde68d8), .K10_C14_W5(32'h3ba2e631), .K10_C14_W6(32'hbdce633b), .K10_C14_W7(32'hbd5ce0b5), .K10_C14_W8(32'h3d91f17b), 
+		.K10_C15_W0(32'hbca06ff4), .K10_C15_W1(32'h3e27bb51), .K10_C15_W2(32'hbd72d350), .K10_C15_W3(32'hbca54e30), .K10_C15_W4(32'h3e094d95), .K10_C15_W5(32'h3d986dc8), .K10_C15_W6(32'hbe10c5ea), .K10_C15_W7(32'hbbd56c60), .K10_C15_W8(32'h3da1cdab), 
+		.K10_BIAS (32'h3c079887),
+
+		.K11_C0_W0(32'h3c75fe83), .K11_C0_W1(32'hbddd2638), .K11_C0_W2(32'h3decc4e3), .K11_C0_W3(32'h3d3c7699), .K11_C0_W4(32'hbe23fe20), .K11_C0_W5(32'h3d65048d), .K11_C0_W6(32'hbe0cd743), .K11_C0_W7(32'hbd880ac2), .K11_C0_W8(32'h3dd04046), 
+		.K11_C1_W0(32'h3d9fbb71), .K11_C1_W1(32'h3de6bace), .K11_C1_W2(32'h3d53312c), .K11_C1_W3(32'hbc42751b), .K11_C1_W4(32'hbe045407), .K11_C1_W5(32'hbc855f82), .K11_C1_W6(32'hbce856f4), .K11_C1_W7(32'h3e1b8ae8), .K11_C1_W8(32'hbd34f44e), 
+		.K11_C2_W0(32'h3e042892), .K11_C2_W1(32'h3c96d2f0), .K11_C2_W2(32'hbdfee3b8), .K11_C2_W3(32'hbdff5196), .K11_C2_W4(32'h3d960b76), .K11_C2_W5(32'h3df43cd2), .K11_C2_W6(32'hbda039e4), .K11_C2_W7(32'h3cd347b1), .K11_C2_W8(32'hbce6bd64), 
+		.K11_C3_W0(32'hbde7d667), .K11_C3_W1(32'hbdb923e0), .K11_C3_W2(32'h3d507db0), .K11_C3_W3(32'hbc8d0f4d), .K11_C3_W4(32'hbdc9478f), .K11_C3_W5(32'h3c417092), .K11_C3_W6(32'hbd924397), .K11_C3_W7(32'h3d572928), .K11_C3_W8(32'h3dfeec5f), 
+		.K11_C4_W0(32'hbe0008b7), .K11_C4_W1(32'h3e11bcf4), .K11_C4_W2(32'hbdd9c2ec), .K11_C4_W3(32'h3b2e8542), .K11_C4_W4(32'hbb65a786), .K11_C4_W5(32'h3dc65e74), .K11_C4_W6(32'h3d138198), .K11_C4_W7(32'h3d652318), .K11_C4_W8(32'hb88e0d8c), 
+		.K11_C5_W0(32'hbd65f59a), .K11_C5_W1(32'h3da58704), .K11_C5_W2(32'h3d47af94), .K11_C5_W3(32'h3deb0a42), .K11_C5_W4(32'h3e0b6cef), .K11_C5_W5(32'hbdd7f34c), .K11_C5_W6(32'h3d816476), .K11_C5_W7(32'h3e17360e), .K11_C5_W8(32'h3d285b86), 
+		.K11_C6_W0(32'h3c36aa8c), .K11_C6_W1(32'hbda40106), .K11_C6_W2(32'h3e204b0f), .K11_C6_W3(32'h3d99ce20), .K11_C6_W4(32'h3e0607a8), .K11_C6_W5(32'h3e24c0e7), .K11_C6_W6(32'hbcb91de8), .K11_C6_W7(32'hbe1af055), .K11_C6_W8(32'h3d4bfe65), 
+		.K11_C7_W0(32'hbdd55dbe), .K11_C7_W1(32'h3e11f576), .K11_C7_W2(32'h3da22c7a), .K11_C7_W3(32'h3d183ac6), .K11_C7_W4(32'hbdc9a4da), .K11_C7_W5(32'h3d8a68f4), .K11_C7_W6(32'h3d976b39), .K11_C7_W7(32'h3de135c3), .K11_C7_W8(32'hbd4c4f30), 
+		.K11_C8_W0(32'hbddfa988), .K11_C8_W1(32'h3d5b659f), .K11_C8_W2(32'h3d6724d2), .K11_C8_W3(32'hbb67b588), .K11_C8_W4(32'hbd1bc8c3), .K11_C8_W5(32'h3e00288f), .K11_C8_W6(32'h3cfb9aab), .K11_C8_W7(32'h3da10f04), .K11_C8_W8(32'h3d76a5c3), 
+		.K11_C9_W0(32'hbc82c78d), .K11_C9_W1(32'h3da75276), .K11_C9_W2(32'h3e1ead3e), .K11_C9_W3(32'hbdf7d9cb), .K11_C9_W4(32'hbe0d5949), .K11_C9_W5(32'h3d89ece8), .K11_C9_W6(32'hbd6b23e9), .K11_C9_W7(32'hbe192182), .K11_C9_W8(32'hbc869d24), 
+		.K11_C10_W0(32'hbd95ed62), .K11_C10_W1(32'hbe0e3504), .K11_C10_W2(32'h3df4b133), .K11_C10_W3(32'hbde399c9), .K11_C10_W4(32'h3d165502), .K11_C10_W5(32'hbd9be9ba), .K11_C10_W6(32'h3d86c844), .K11_C10_W7(32'hbd78f176), .K11_C10_W8(32'h3da211ae), 
+		.K11_C11_W0(32'hbe1a20d2), .K11_C11_W1(32'h3de21d2e), .K11_C11_W2(32'hbd786777), .K11_C11_W3(32'h3e001ac9), .K11_C11_W4(32'h3c9393e7), .K11_C11_W5(32'hbd941f5f), .K11_C11_W6(32'hbd51ef1d), .K11_C11_W7(32'h3c1b405c), .K11_C11_W8(32'hbd909cd4), 
+		.K11_C12_W0(32'hbde72837), .K11_C12_W1(32'h3e091281), .K11_C12_W2(32'h3cbca956), .K11_C12_W3(32'h3dadbd4b), .K11_C12_W4(32'h3d92b3e2), .K11_C12_W5(32'hbd8644c5), .K11_C12_W6(32'h3da5dafc), .K11_C12_W7(32'hbcfc1a24), .K11_C12_W8(32'hbb238011), 
+		.K11_C13_W0(32'hbc70e6b3), .K11_C13_W1(32'h3d8732c4), .K11_C13_W2(32'h3ddfc466), .K11_C13_W3(32'hbe1f8524), .K11_C13_W4(32'hbdf74f99), .K11_C13_W5(32'hbb9688db), .K11_C13_W6(32'hbd24f60c), .K11_C13_W7(32'hbd891f26), .K11_C13_W8(32'h3d1d6e17), 
+		.K11_C14_W0(32'hbd5066d3), .K11_C14_W1(32'h3dfd78ca), .K11_C14_W2(32'h3c9e2938), .K11_C14_W3(32'hbdb39808), .K11_C14_W4(32'h3c59bcd5), .K11_C14_W5(32'h3e030f19), .K11_C14_W6(32'hbd43bb30), .K11_C14_W7(32'hbdca4b1c), .K11_C14_W8(32'h3b6778eb), 
+		.K11_C15_W0(32'h3d838a37), .K11_C15_W1(32'hbd2d94d5), .K11_C15_W2(32'hbdf5eaee), .K11_C15_W3(32'hbc8c448f), .K11_C15_W4(32'hbe066c63), .K11_C15_W5(32'h3d2f9ade), .K11_C15_W6(32'hbcd04842), .K11_C15_W7(32'h3e3ac2df), .K11_C15_W8(32'h3e0f491e), 
+		.K11_BIAS (32'h3d1b73a2),
+
+		.K12_C0_W0(32'h3e120080), .K12_C0_W1(32'hbcc3f824), .K12_C0_W2(32'h3d23125b), .K12_C0_W3(32'h3d5f1835), .K12_C0_W4(32'hbd7c6c3a), .K12_C0_W5(32'hbca92b2f), .K12_C0_W6(32'hbde577d3), .K12_C0_W7(32'hbd216329), .K12_C0_W8(32'h3c03879c), 
+		.K12_C1_W0(32'hbe09ded9), .K12_C1_W1(32'h3d75e7b2), .K12_C1_W2(32'hbd77ba99), .K12_C1_W3(32'h3cf7606e), .K12_C1_W4(32'hbe295fda), .K12_C1_W5(32'h3da7349e), .K12_C1_W6(32'h3dacb2f0), .K12_C1_W7(32'h3dcf6482), .K12_C1_W8(32'hbda9bf10), 
+		.K12_C2_W0(32'hbb899fe0), .K12_C2_W1(32'hbdbf85c3), .K12_C2_W2(32'hbd32c23a), .K12_C2_W3(32'h3d99eddd), .K12_C2_W4(32'hbe04d3e8), .K12_C2_W5(32'hbd3bd7da), .K12_C2_W6(32'h3c8e1315), .K12_C2_W7(32'hbb4e0ef3), .K12_C2_W8(32'hbc6a5bb6), 
+		.K12_C3_W0(32'h3e074202), .K12_C3_W1(32'hbe008601), .K12_C3_W2(32'hbd1d4170), .K12_C3_W3(32'hbdec82b8), .K12_C3_W4(32'hbcaed0a6), .K12_C3_W5(32'hbdadb57f), .K12_C3_W6(32'hbe0f1491), .K12_C3_W7(32'h3e14bc33), .K12_C3_W8(32'h3e0c277e), 
+		.K12_C4_W0(32'h3ca2def0), .K12_C4_W1(32'h3dd37df8), .K12_C4_W2(32'hbd807b9c), .K12_C4_W3(32'hbdb3859d), .K12_C4_W4(32'h3d45d361), .K12_C4_W5(32'h3c84dfc0), .K12_C4_W6(32'h3dc09336), .K12_C4_W7(32'h3dca0924), .K12_C4_W8(32'h3e1415fd), 
+		.K12_C5_W0(32'h3d5b4c64), .K12_C5_W1(32'h3d0c2031), .K12_C5_W2(32'hbcfe86d7), .K12_C5_W3(32'hbb5e1440), .K12_C5_W4(32'hbe13e7ce), .K12_C5_W5(32'h3dee43a7), .K12_C5_W6(32'hb970f6d8), .K12_C5_W7(32'h3d9662a8), .K12_C5_W8(32'h3dc19854), 
+		.K12_C6_W0(32'h3dc25948), .K12_C6_W1(32'hbe09e32c), .K12_C6_W2(32'h3dfb333d), .K12_C6_W3(32'hbe2d0219), .K12_C6_W4(32'hbd9dccd2), .K12_C6_W5(32'hbe12be2b), .K12_C6_W6(32'hbd8e6122), .K12_C6_W7(32'h3df015fe), .K12_C6_W8(32'hbda84a20), 
+		.K12_C7_W0(32'h3cfd5aa8), .K12_C7_W1(32'hbdceb4b9), .K12_C7_W2(32'hbd0b6a5f), .K12_C7_W3(32'hbe29d7b9), .K12_C7_W4(32'h3d6735bb), .K12_C7_W5(32'h3da43a0d), .K12_C7_W6(32'h3daa68e5), .K12_C7_W7(32'hbcf78643), .K12_C7_W8(32'hbd6df031), 
+		.K12_C8_W0(32'hbd5bb418), .K12_C8_W1(32'hbc1e926e), .K12_C8_W2(32'h3d7f145c), .K12_C8_W3(32'hbd8b088b), .K12_C8_W4(32'hbd043067), .K12_C8_W5(32'hbe10f64b), .K12_C8_W6(32'hbe22d403), .K12_C8_W7(32'hbd620c6d), .K12_C8_W8(32'hbd80d7e5), 
+		.K12_C9_W0(32'hbc819f80), .K12_C9_W1(32'hbcc4189c), .K12_C9_W2(32'h3b00cc5e), .K12_C9_W3(32'hbdf0399b), .K12_C9_W4(32'h3c51dfbd), .K12_C9_W5(32'h3d074c4f), .K12_C9_W6(32'hbb8c7ec5), .K12_C9_W7(32'h3dfc9f5d), .K12_C9_W8(32'h3cfacc52), 
+		.K12_C10_W0(32'h3d5bed88), .K12_C10_W1(32'h3d385540), .K12_C10_W2(32'hbe0aefb5), .K12_C10_W3(32'h3d7db47d), .K12_C10_W4(32'h3ddd891b), .K12_C10_W5(32'hbdd3c391), .K12_C10_W6(32'hbd9b3b2c), .K12_C10_W7(32'h3d245a6e), .K12_C10_W8(32'h3e0b878d), 
+		.K12_C11_W0(32'hbdfe9adb), .K12_C11_W1(32'hbe015d34), .K12_C11_W2(32'h3d697da2), .K12_C11_W3(32'h3cc7ab8a), .K12_C11_W4(32'hbd246bf9), .K12_C11_W5(32'h3e133a82), .K12_C11_W6(32'hbe207918), .K12_C11_W7(32'hbd0965b4), .K12_C11_W8(32'h3dcd2986), 
+		.K12_C12_W0(32'hbe061da4), .K12_C12_W1(32'h3d984270), .K12_C12_W2(32'hbe19821f), .K12_C12_W3(32'hbd812b27), .K12_C12_W4(32'hbe089a4f), .K12_C12_W5(32'h3df4534d), .K12_C12_W6(32'hbd1ee400), .K12_C12_W7(32'h3c385d9b), .K12_C12_W8(32'hbdbe9864), 
+		.K12_C13_W0(32'h3d63f950), .K12_C13_W1(32'hbddc624b), .K12_C13_W2(32'hbe04c838), .K12_C13_W3(32'h3d9f47f1), .K12_C13_W4(32'hbb89b66d), .K12_C13_W5(32'hbd4426ad), .K12_C13_W6(32'h3c44e997), .K12_C13_W7(32'h3ddf7fc9), .K12_C13_W8(32'h3d46fb06), 
+		.K12_C14_W0(32'h3d70868c), .K12_C14_W1(32'hbdc18a8a), .K12_C14_W2(32'hbd6bee04), .K12_C14_W3(32'h3df9764c), .K12_C14_W4(32'h3d8ed714), .K12_C14_W5(32'h3dc6dd6c), .K12_C14_W6(32'hbe492b50), .K12_C14_W7(32'h3db0b027), .K12_C14_W8(32'h3d93936d), 
+		.K12_C15_W0(32'h3e0320c2), .K12_C15_W1(32'hbe1d46a3), .K12_C15_W2(32'h3d5f56f9), .K12_C15_W3(32'hbe029586), .K12_C15_W4(32'h3dcb3b86), .K12_C15_W5(32'hbcbb6ae0), .K12_C15_W6(32'hbdef920e), .K12_C15_W7(32'hbdd8e93d), .K12_C15_W8(32'hbdacf32f), 
+		.K12_BIAS (32'hbc9f93de),
+
+		.K13_C0_W0(32'hbddd570e), .K13_C0_W1(32'h3d873895), .K13_C0_W2(32'hbdb1a708), .K13_C0_W3(32'h3d8ee82f), .K13_C0_W4(32'hbc0a9c02), .K13_C0_W5(32'hbc9f1fdb), .K13_C0_W6(32'h3df5f5f2), .K13_C0_W7(32'hbd046595), .K13_C0_W8(32'h3dafc0bb), 
+		.K13_C1_W0(32'hbd859cd5), .K13_C1_W1(32'h3df02257), .K13_C1_W2(32'hbbd22c53), .K13_C1_W3(32'hbd5fd08a), .K13_C1_W4(32'h3dfd68ac), .K13_C1_W5(32'h3d724242), .K13_C1_W6(32'hbbea65e2), .K13_C1_W7(32'h3e10dc1b), .K13_C1_W8(32'hbd415eaa), 
+		.K13_C2_W0(32'h3deacfb8), .K13_C2_W1(32'h3c4bfb85), .K13_C2_W2(32'hbcfba686), .K13_C2_W3(32'h3c7a279e), .K13_C2_W4(32'h3d876c6a), .K13_C2_W5(32'hbdbf6172), .K13_C2_W6(32'hbce3b551), .K13_C2_W7(32'hbddad272), .K13_C2_W8(32'hbdede6c7), 
+		.K13_C3_W0(32'h3d8f2ce6), .K13_C3_W1(32'h3c05b13a), .K13_C3_W2(32'hbcaf2f93), .K13_C3_W3(32'hbda06bad), .K13_C3_W4(32'hbbee0914), .K13_C3_W5(32'hbdbc7a7b), .K13_C3_W6(32'hbc17f769), .K13_C3_W7(32'hbdc90962), .K13_C3_W8(32'hbc9e04c5), 
+		.K13_C4_W0(32'h3c2ed522), .K13_C4_W1(32'h3d42baec), .K13_C4_W2(32'hbe0de2d9), .K13_C4_W3(32'h3d313e17), .K13_C4_W4(32'h3ca1c2a3), .K13_C4_W5(32'h3c43be42), .K13_C4_W6(32'h3da5b426), .K13_C4_W7(32'hbcded19c), .K13_C4_W8(32'h3e0906ed), 
+		.K13_C5_W0(32'h3ceb6efd), .K13_C5_W1(32'h3e0220a2), .K13_C5_W2(32'hbcaf6e43), .K13_C5_W3(32'h3d614021), .K13_C5_W4(32'h3e14f6bd), .K13_C5_W5(32'h3d66a832), .K13_C5_W6(32'hbe124770), .K13_C5_W7(32'hbe24d6c4), .K13_C5_W8(32'h3dc03471), 
+		.K13_C6_W0(32'hbdf11571), .K13_C6_W1(32'hbda138ae), .K13_C6_W2(32'hbe34a1b2), .K13_C6_W3(32'h3d962718), .K13_C6_W4(32'h3dbc3713), .K13_C6_W5(32'hbd5e7f3a), .K13_C6_W6(32'h3db79881), .K13_C6_W7(32'h3dfae063), .K13_C6_W8(32'hbda20fd4), 
+		.K13_C7_W0(32'h3dc4a88d), .K13_C7_W1(32'hbd7c02e4), .K13_C7_W2(32'hbc8833ec), .K13_C7_W3(32'hbdee3ef3), .K13_C7_W4(32'h3d85e7af), .K13_C7_W5(32'hbd3a7ab6), .K13_C7_W6(32'h3d0fcd00), .K13_C7_W7(32'hbd092d61), .K13_C7_W8(32'h3dd87fdc), 
+		.K13_C8_W0(32'h3e03392c), .K13_C8_W1(32'hbd671b08), .K13_C8_W2(32'hbd1ff241), .K13_C8_W3(32'h3d9d3741), .K13_C8_W4(32'hbd1341c4), .K13_C8_W5(32'h3d9073f1), .K13_C8_W6(32'h3b50a42f), .K13_C8_W7(32'hbdb79b70), .K13_C8_W8(32'h3d917ab4), 
+		.K13_C9_W0(32'hbcefef55), .K13_C9_W1(32'hbe1000fa), .K13_C9_W2(32'h3d62a7c9), .K13_C9_W3(32'h3d800d62), .K13_C9_W4(32'hbcb9aaa4), .K13_C9_W5(32'h3d7686e3), .K13_C9_W6(32'h3d18b418), .K13_C9_W7(32'hb9014546), .K13_C9_W8(32'hbe0e1943), 
+		.K13_C10_W0(32'h3db1a0cb), .K13_C10_W1(32'h3d9d06c8), .K13_C10_W2(32'h3dc20826), .K13_C10_W3(32'hbd10e94a), .K13_C10_W4(32'h3da0a6b0), .K13_C10_W5(32'h3d17926e), .K13_C10_W6(32'hbde2a292), .K13_C10_W7(32'h3d2a5a3f), .K13_C10_W8(32'h3de7e1e3), 
+		.K13_C11_W0(32'hbb6bcabc), .K13_C11_W1(32'h3bac7d41), .K13_C11_W2(32'hbdba89b7), .K13_C11_W3(32'hbdb511bd), .K13_C11_W4(32'h3cc6e50d), .K13_C11_W5(32'hbd1c5c37), .K13_C11_W6(32'h3dbae232), .K13_C11_W7(32'h3e100ecc), .K13_C11_W8(32'hb94586f6), 
+		.K13_C12_W0(32'h3d80e3a2), .K13_C12_W1(32'h3bd7cbdb), .K13_C12_W2(32'h3dfcc9c3), .K13_C12_W3(32'hbde54fdb), .K13_C12_W4(32'h3dd28f85), .K13_C12_W5(32'hbc36808f), .K13_C12_W6(32'h3d827b7e), .K13_C12_W7(32'hbbdd04aa), .K13_C12_W8(32'hbdca0209), 
+		.K13_C13_W0(32'hbe255c9b), .K13_C13_W1(32'hbd8316f4), .K13_C13_W2(32'hbd87b7d6), .K13_C13_W3(32'hbd74c72d), .K13_C13_W4(32'hbe0da369), .K13_C13_W5(32'hbe05b80f), .K13_C13_W6(32'hbcdd1247), .K13_C13_W7(32'h3cf66a93), .K13_C13_W8(32'hbd84275b), 
+		.K13_C14_W0(32'h3d8d7e70), .K13_C14_W1(32'hbc42141e), .K13_C14_W2(32'hbd31c45a), .K13_C14_W3(32'hbd8687fb), .K13_C14_W4(32'h3dfdad67), .K13_C14_W5(32'h3dfa0ad8), .K13_C14_W6(32'hbe18a133), .K13_C14_W7(32'hbdbeb089), .K13_C14_W8(32'hbde5f475), 
+		.K13_C15_W0(32'hbdc1ae2d), .K13_C15_W1(32'hbd41317f), .K13_C15_W2(32'hbc9a6ca4), .K13_C15_W3(32'h3e05dd77), .K13_C15_W4(32'hbe00714f), .K13_C15_W5(32'hbba302e9), .K13_C15_W6(32'hbc7fc407), .K13_C15_W7(32'hbd71afd5), .K13_C15_W8(32'hbdab4f64), 
+		.K13_BIAS (32'hbae45909),
+
+		.K14_C0_W0(32'hbe49a770), .K14_C0_W1(32'hbe56d20e), .K14_C0_W2(32'hbd47a636), .K14_C0_W3(32'hbe099aef), .K14_C0_W4(32'h3e03439d), .K14_C0_W5(32'h3cdc1b67), .K14_C0_W6(32'h3dca2ebf), .K14_C0_W7(32'hbc67e690), .K14_C0_W8(32'hbd28b482), 
+		.K14_C1_W0(32'h3c32f82f), .K14_C1_W1(32'hbe075c33), .K14_C1_W2(32'h3ce77688), .K14_C1_W3(32'h3d71ab95), .K14_C1_W4(32'hbd759c01), .K14_C1_W5(32'h3da76123), .K14_C1_W6(32'hbdf06efe), .K14_C1_W7(32'hbd9cef8c), .K14_C1_W8(32'hbe0b86c3), 
+		.K14_C2_W0(32'hbded1c3a), .K14_C2_W1(32'hbe0317aa), .K14_C2_W2(32'hbd03993a), .K14_C2_W3(32'h3dbdf47c), .K14_C2_W4(32'h3dc8b3f6), .K14_C2_W5(32'h3cfe3f04), .K14_C2_W6(32'hbd8e91a6), .K14_C2_W7(32'h3e326fb6), .K14_C2_W8(32'hbdbc158e), 
+		.K14_C3_W0(32'hbd0e1bc0), .K14_C3_W1(32'hbe2c5967), .K14_C3_W2(32'hbde6099e), .K14_C3_W3(32'h3e2491c6), .K14_C3_W4(32'hbd88d17f), .K14_C3_W5(32'h3e0d8566), .K14_C3_W6(32'hbca899cb), .K14_C3_W7(32'h3dc3682e), .K14_C3_W8(32'h3d31c653), 
+		.K14_C4_W0(32'h3dea660c), .K14_C4_W1(32'h3cd72ae8), .K14_C4_W2(32'hbd427ce2), .K14_C4_W3(32'h3dfc1242), .K14_C4_W4(32'hbd44425a), .K14_C4_W5(32'h3dc33222), .K14_C4_W6(32'h3dcdbb69), .K14_C4_W7(32'h3d8aa8b9), .K14_C4_W8(32'hbda73629), 
+		.K14_C5_W0(32'h3c772d4a), .K14_C5_W1(32'hbdada2ad), .K14_C5_W2(32'h3d99205a), .K14_C5_W3(32'h3d7fc1d6), .K14_C5_W4(32'h3c6d2c3a), .K14_C5_W5(32'hbba4fd66), .K14_C5_W6(32'h3bbfca98), .K14_C5_W7(32'h3dd81c42), .K14_C5_W8(32'h3e0b1a89), 
+		.K14_C6_W0(32'hbe5015a3), .K14_C6_W1(32'hbd57039d), .K14_C6_W2(32'hbe1a4429), .K14_C6_W3(32'hbdc6f814), .K14_C6_W4(32'hbd13601c), .K14_C6_W5(32'hbdb16dac), .K14_C6_W6(32'h3d361bf8), .K14_C6_W7(32'h3d426cf6), .K14_C6_W8(32'hbda43a52), 
+		.K14_C7_W0(32'h3def9c3d), .K14_C7_W1(32'h3dc11b61), .K14_C7_W2(32'h3e1224dc), .K14_C7_W3(32'h3e053821), .K14_C7_W4(32'h3d3e7d3e), .K14_C7_W5(32'hbe02bd23), .K14_C7_W6(32'hbc80dd26), .K14_C7_W7(32'h3d414cc7), .K14_C7_W8(32'hbdbc20b4), 
+		.K14_C8_W0(32'h3d1bd5f8), .K14_C8_W1(32'h3cb39f7a), .K14_C8_W2(32'h3d82670c), .K14_C8_W3(32'h3e20d86e), .K14_C8_W4(32'hbdefe239), .K14_C8_W5(32'h3d17df03), .K14_C8_W6(32'hbd8a65b3), .K14_C8_W7(32'h3d66ca0e), .K14_C8_W8(32'hbdba5436), 
+		.K14_C9_W0(32'hbd910fd8), .K14_C9_W1(32'hbe59635b), .K14_C9_W2(32'hbe4066ac), .K14_C9_W3(32'hbd595a23), .K14_C9_W4(32'hbe03c0b9), .K14_C9_W5(32'hbdb16dc6), .K14_C9_W6(32'h3e113756), .K14_C9_W7(32'hbd550c5d), .K14_C9_W8(32'h3b9ec6d7), 
+		.K14_C10_W0(32'hbd99fe20), .K14_C10_W1(32'hbe41acd2), .K14_C10_W2(32'hbe6183e2), .K14_C10_W3(32'hbdcce3b0), .K14_C10_W4(32'h3c2bac00), .K14_C10_W5(32'h3c12db20), .K14_C10_W6(32'h3dc961b5), .K14_C10_W7(32'h3cddeee2), .K14_C10_W8(32'h3d555b44), 
+		.K14_C11_W0(32'h3d9c1094), .K14_C11_W1(32'h3d48f3bf), .K14_C11_W2(32'hbda80a7c), .K14_C11_W3(32'hbdb04318), .K14_C11_W4(32'hbe0bb972), .K14_C11_W5(32'h3e1e8808), .K14_C11_W6(32'h3e2aee4a), .K14_C11_W7(32'hbda0e340), .K14_C11_W8(32'hbdf7a520), 
+		.K14_C12_W0(32'hbe24eed3), .K14_C12_W1(32'h3c964d45), .K14_C12_W2(32'hbdd52a95), .K14_C12_W3(32'h3df651b7), .K14_C12_W4(32'hbcde2a83), .K14_C12_W5(32'h3ba10a78), .K14_C12_W6(32'h3d2eb8d8), .K14_C12_W7(32'hbd532833), .K14_C12_W8(32'hbdb7add2), 
+		.K14_C13_W0(32'hbe57611d), .K14_C13_W1(32'h3d40729b), .K14_C13_W2(32'h3dbe0f65), .K14_C13_W3(32'h3cd13f19), .K14_C13_W4(32'h3df685b3), .K14_C13_W5(32'h3b196d38), .K14_C13_W6(32'h3dc9f6a2), .K14_C13_W7(32'hbde42429), .K14_C13_W8(32'hbd91c2c4), 
+		.K14_C14_W0(32'hbc19fe56), .K14_C14_W1(32'h3d89ba55), .K14_C14_W2(32'hbc9f5c46), .K14_C14_W3(32'h3e1989f6), .K14_C14_W4(32'h3dda60a9), .K14_C14_W5(32'hbcf4d451), .K14_C14_W6(32'h3dd98111), .K14_C14_W7(32'h3e0e586c), .K14_C14_W8(32'h3d812572), 
+		.K14_C15_W0(32'hbd56452c), .K14_C15_W1(32'h3b09a5c3), .K14_C15_W2(32'hbe07f987), .K14_C15_W3(32'hbd0a8ed2), .K14_C15_W4(32'hbc3ff259), .K14_C15_W5(32'hbe203a50), .K14_C15_W6(32'h3d0a862e), .K14_C15_W7(32'hbdf4acf6), .K14_C15_W8(32'h3cfb5516), 
+		.K14_BIAS (32'h3d1fe0d4),
+
+		.K15_C0_W0(32'h3d4f9f70), .K15_C0_W1(32'hbc8cf594), .K15_C0_W2(32'hbdb198f7), .K15_C0_W3(32'h3cfdcc69), .K15_C0_W4(32'hbae1d974), .K15_C0_W5(32'h3cf65b7a), .K15_C0_W6(32'hbdc041a9), .K15_C0_W7(32'hbdb0c169), .K15_C0_W8(32'h3da34d18), 
+		.K15_C1_W0(32'h3dddaa30), .K15_C1_W1(32'h3b499813), .K15_C1_W2(32'h3d1472ac), .K15_C1_W3(32'h3d671743), .K15_C1_W4(32'h3e02eb42), .K15_C1_W5(32'h3d0f0d36), .K15_C1_W6(32'h3d785ea2), .K15_C1_W7(32'hbd9446b8), .K15_C1_W8(32'hbe10efe3), 
+		.K15_C2_W0(32'hbbf482e0), .K15_C2_W1(32'hbcf683d8), .K15_C2_W2(32'hbdfa0bb5), .K15_C2_W3(32'hbd12c622), .K15_C2_W4(32'hbdbec80b), .K15_C2_W5(32'hbe12c105), .K15_C2_W6(32'hbd8dc188), .K15_C2_W7(32'hbd863461), .K15_C2_W8(32'h3b80bcc7), 
+		.K15_C3_W0(32'h3d768f70), .K15_C3_W1(32'h3d10d1de), .K15_C3_W2(32'hbe091347), .K15_C3_W3(32'hbe063158), .K15_C3_W4(32'hbd9eb260), .K15_C3_W5(32'hbc908545), .K15_C3_W6(32'h3d2a4a98), .K15_C3_W7(32'h3d836823), .K15_C3_W8(32'h3c789024), 
+		.K15_C4_W0(32'h3d74ea00), .K15_C4_W1(32'hbcbc3bd0), .K15_C4_W2(32'h3df8835c), .K15_C4_W3(32'hbda6da11), .K15_C4_W4(32'h3c714a70), .K15_C4_W5(32'h3d0e014c), .K15_C4_W6(32'hbd11ce62), .K15_C4_W7(32'h3cd28653), .K15_C4_W8(32'hbda9efbd), 
+		.K15_C5_W0(32'h3d9b8ee0), .K15_C5_W1(32'hbd042998), .K15_C5_W2(32'hbd3e54f8), .K15_C5_W3(32'h3dc94259), .K15_C5_W4(32'hbe1b0cd6), .K15_C5_W5(32'h3d31ff71), .K15_C5_W6(32'hbdb0de7f), .K15_C5_W7(32'hbd748f4f), .K15_C5_W8(32'hbdaa6514), 
+		.K15_C6_W0(32'hbd24bdd0), .K15_C6_W1(32'hbe018682), .K15_C6_W2(32'h3d8d1f27), .K15_C6_W3(32'hbdda2a10), .K15_C6_W4(32'hbe16f304), .K15_C6_W5(32'hbd9d84d8), .K15_C6_W6(32'h3dfc8e66), .K15_C6_W7(32'h3d78f496), .K15_C6_W8(32'hbda2ffc1), 
+		.K15_C7_W0(32'h3d709000), .K15_C7_W1(32'h3cee3bd0), .K15_C7_W2(32'hbd52b018), .K15_C7_W3(32'hbe036819), .K15_C7_W4(32'hbd0f4bd7), .K15_C7_W5(32'h3d6029a0), .K15_C7_W6(32'hbd9320b0), .K15_C7_W7(32'h3c1aaa6b), .K15_C7_W8(32'h3e0a7526), 
+		.K15_C8_W0(32'hbda0044d), .K15_C8_W1(32'h3e04e7d9), .K15_C8_W2(32'h3c27b73d), .K15_C8_W3(32'h3cf96105), .K15_C8_W4(32'h3ca3858a), .K15_C8_W5(32'hbd88d396), .K15_C8_W6(32'hbe0f0ea7), .K15_C8_W7(32'hbdedeae2), .K15_C8_W8(32'hbdefd64d), 
+		.K15_C9_W0(32'hbe0b4820), .K15_C9_W1(32'hbd3f5702), .K15_C9_W2(32'h3dcc349c), .K15_C9_W3(32'h3df06118), .K15_C9_W4(32'h3dd0144c), .K15_C9_W5(32'hbdb1e809), .K15_C9_W6(32'hbdd1e175), .K15_C9_W7(32'h3d836f8c), .K15_C9_W8(32'h3db6b6bc), 
+		.K15_C10_W0(32'h3d8e659c), .K15_C10_W1(32'hbbe9fb24), .K15_C10_W2(32'hbdd0ae54), .K15_C10_W3(32'hbe03b141), .K15_C10_W4(32'h3d1b0841), .K15_C10_W5(32'hbe1e82e5), .K15_C10_W6(32'hbd288b91), .K15_C10_W7(32'h3cbcda7e), .K15_C10_W8(32'h3d9e2db8), 
+		.K15_C11_W0(32'hbde4fe2e), .K15_C11_W1(32'hbe043010), .K15_C11_W2(32'h3d380d4f), .K15_C11_W3(32'hbe15b866), .K15_C11_W4(32'hbd53ff6c), .K15_C11_W5(32'hbd99c5a6), .K15_C11_W6(32'hbdb1f3e9), .K15_C11_W7(32'hbdf50b4b), .K15_C11_W8(32'hbac36ddc), 
+		.K15_C12_W0(32'hbd944ce0), .K15_C12_W1(32'hbda1ad26), .K15_C12_W2(32'h3dca23e6), .K15_C12_W3(32'hbd20855d), .K15_C12_W4(32'h3dd31873), .K15_C12_W5(32'hbe1b5f67), .K15_C12_W6(32'hbdf16dba), .K15_C12_W7(32'hbdfea59f), .K15_C12_W8(32'hbe140374), 
+		.K15_C13_W0(32'h3d1b56bc), .K15_C13_W1(32'h3d8b1c53), .K15_C13_W2(32'hbcec9ff6), .K15_C13_W3(32'hbc2d2460), .K15_C13_W4(32'hbdf25ff5), .K15_C13_W5(32'hbd886385), .K15_C13_W6(32'h3dc5f7ab), .K15_C13_W7(32'hbbac8a25), .K15_C13_W8(32'h3da5c629), 
+		.K15_C14_W0(32'hbe00ffd9), .K15_C14_W1(32'h3d5c6fd5), .K15_C14_W2(32'h3abcdbb8), .K15_C14_W3(32'hbdc2c18a), .K15_C14_W4(32'h3dbdb011), .K15_C14_W5(32'hbd448675), .K15_C14_W6(32'hbd1444b4), .K15_C14_W7(32'hbdbaa19b), .K15_C14_W8(32'hbd6653f6), 
+		.K15_C15_W0(32'hbb5e0400), .K15_C15_W1(32'hbe0a3df2), .K15_C15_W2(32'hbc48c270), .K15_C15_W3(32'hbd82080a), .K15_C15_W4(32'h3d1aace3), .K15_C15_W5(32'hbda02deb), .K15_C15_W6(32'h3ddc0965), .K15_C15_W7(32'hbdff5dd6), .K15_C15_W8(32'hbd2528d6), 
+		.K15_BIAS (32'hbcaffc61)
+		)
+		block5_conv3(
+		.clk(clk),
+		.resetn(resetn),
+		.data_valid_in(conv_valid_out_5_2),
+		.data_in_0(relu_out_5_2[0]),
+		.data_in_1(relu_out_5_2[1]),
+		.data_in_2(relu_out_5_2[2]),
+		.data_in_3(relu_out_5_2[3]),
+		.data_in_4(relu_out_5_2[4]),
+		.data_in_5(relu_out_5_2[5]),
+		.data_in_6(relu_out_5_2[6]),
+		.data_in_7(relu_out_5_2[7]),
+		.data_in_8(relu_out_5_2[8]),
+		.data_in_9(relu_out_5_2[9]),
+		.data_in_10(relu_out_5_2[10]),
+		.data_in_11(relu_out_5_2[11]),
+		.data_in_12(relu_out_5_2[12]),
+		.data_in_13(relu_out_5_2[13]),
+		.data_in_14(relu_out_5_2[14]),
+		.data_in_15(relu_out_5_2[15]),
+		.data_out_conv_0(conv_out_5_3[0]),
+		.data_out_conv_1(conv_out_5_3[1]),
+		.data_out_conv_2(conv_out_5_3[2]),
+		.data_out_conv_3(conv_out_5_3[3]),
+		.data_out_conv_4(conv_out_5_3[4]),
+		.data_out_conv_5(conv_out_5_3[5]),
+		.data_out_conv_6(conv_out_5_3[6]),
+		.data_out_conv_7(conv_out_5_3[7]),
+		.data_out_conv_8(conv_out_5_3[8]),
+		.data_out_conv_9(conv_out_5_3[9]),
+		.data_out_conv_10(conv_out_5_3[10]),
+		.data_out_conv_11(conv_out_5_3[11]),
+		.data_out_conv_12(conv_out_5_3[12]),
+		.data_out_conv_13(conv_out_5_3[13]),
+		.data_out_conv_14(conv_out_5_3[14]),
+		.data_out_conv_15(conv_out_5_3[15]),
+		.valid_out_pixel(conv_valid_out_5_3),
+		.done(done_conv_5_3)
+		);
+
+
+
+	generate
+    for (i = 0; i < CHANNEL_OUT; i=i+1) 
+    begin : relu_5_3 // needs CHANNEL_OUT relu
+
+        activate #(
+            .DATA_WIDTH(32)
+        )
+        relu (
+            .in(conv_out_5_3[i]),			// Edit here
+            .out(relu_out_5_3[i])
+        );
+    end
+    endgenerate
+
+
+	generate
+    for (i = 0; i < CHANNEL_OUT; i=i+1) 
+    begin : max_pool_5 // needs CHANNEL_OUT max_pooling		// Edit here - name
+
+        max_pooling #(
+            .DATA_WIDTH(32),
+            .WIDTH(WIDTH>>1),							// Edit here
+            .HEIGHT(HEIGHT>>1)							// Edit here
+        )
+        max_pool(
+            .clk(clk),
+			.ack(done_conv_5_3),					// Edit here
+            .resetn(resetn),
+            .valid_in(conv_valid_out_5_3),			// Edit here
+            .data_in(relu_out_5_3[i]),
+            .data_out(data_out_pool_5_3[i]),
+            .valid_out(valid_out_pool_5_3[i]),
+            .done(done_pool_5_3[i])
+        );
+    end
+    endgenerate
+
+	wire valid_out_fc;
+	wire [DATA_WIDTH-1:0] data_out_fc;
+
+	fully_connected_16 fc_16 (
+		.clk(clk),
+		.resetn(resetn),
+		.valid_in(done_pool_5_3[15]),
+		.data_in_0(data_out_pool_5_3[0]),
+		.data_in_1(data_out_pool_5_3[1]),
+		.data_in_2(data_out_pool_5_3[2]),
+		.data_in_3(data_out_pool_5_3[3]),
+		.data_in_4(data_out_pool_5_3[4]),
+		.data_in_5(data_out_pool_5_3[5]),
+		.data_in_6(data_out_pool_5_3[6]),
+		.data_in_7(data_out_pool_5_3[7]),
+		.data_in_8(data_out_pool_5_3[8]),
+		.data_in_9(data_out_pool_5_3[9]),
+		.data_in_10(data_out_pool_5_3[10]),
+		.data_in_11(data_out_pool_5_3[11]),
+		.data_in_12(data_out_pool_5_3[12]),
+		.data_in_13(data_out_pool_5_3[13]),
+		.data_in_14(data_out_pool_5_3[14]),
+		.data_in_15(data_out_pool_5_3[15]),
+		.data_out(data_out_fc),
+		.valid_out(valid_out_fc)
+	);
+
+
+	// wire image_class;
+	
+
+	sigmoid sigmoid_activate(
+    	.clk(clk),
+    	.resetn(resetn),
+    	.valid_in(valid_out_fc),
+    	.x(data_out_fc),
+		.f_x(data_out_sigmoid),
+    	.image_class(image_class),
+    	.valid_out(done_sigmoid)
+    );
+
 
 endmodule

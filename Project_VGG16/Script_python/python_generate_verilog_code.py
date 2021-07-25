@@ -53,8 +53,6 @@ def create_inst_block(num_kernel = 8, num_channel = 3, bias_name = '', weight_na
     accumulate_str += '''\n\n\tconv3d_{0}_kernel_{1}_channel_size_3 #('''.format(num_kernel, num_channel)
     accumulate_str += '''\n\t\t.DATA_WIDTH(32),.IMG_WIDTH(WIDTH),.IMG_HEIGHT(HEIGHT),'''
 
-    # Edit here
-    # bias_name = 'block1_conv1_bias.txt'
 
     with open('../Dataset/0_bias/' + bias_name) as f:
         if f.mode == 'r':
@@ -64,8 +62,7 @@ def create_inst_block(num_kernel = 8, num_channel = 3, bias_name = '', weight_na
     f.close()
 
     for kernel in range(num_kernel):
-        for channel in range(num_channel):      
-            # Edit here      
+        for channel in range(num_channel):
             w_name = weight_name.format(channel, kernel)            
             
             with open('../Dataset/1_weight/' + w_name) as f1:
@@ -85,7 +82,7 @@ def create_inst_block(num_kernel = 8, num_channel = 3, bias_name = '', weight_na
         else:
             accumulate_str += '''\n\t\t.K{0}_BIAS (32'h{1}),\n'''.format(kernel,data_bias[kernel][:-1])
 
-    accumulate_str += '''\n\t\t{0}('''.format(ins_name)   # Edit here
+    accumulate_str += '''\n\t\t{0}('''.format(ins_name)
 
 
     accumulate_str += '''\n\t\t.clk(clk),'''
@@ -387,7 +384,7 @@ def build_report():
     jinja2_template = Template(file_template)
     
 
-    file_name = 'block4_conv3.v'          # Edit here
+    file_name = 'block5_conv3.v'          # Edit here
     out_template = '../Data/6_template/results/' + file_name
 
     bias_name = file_name[:-2] + '_bias.txt'

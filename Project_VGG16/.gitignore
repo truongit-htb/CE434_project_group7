@@ -1,16 +1,15 @@
 Data/*.jpg
 # Data/4_data_out/*.jpg
-Data/4_data_out/
-Data/3_data_in/
-Data/5_image/
+# Data/4_data_out/
+# Data/3_data_in/
+# Data/5_image/
 Data/temp/
 
 
 
 
-Dataset/
+# Dataset/
 Dataset/Flower/
-Dataset/Weight_bias/
 
 
 
@@ -23,4 +22,5 @@ Script_python/python_testcode.py
 Script_tcl/results/
 Script_tcl/work/
 Script_tcl/transcript
+Script_tcl/wave_b4_to_5_to_sig.do
 
