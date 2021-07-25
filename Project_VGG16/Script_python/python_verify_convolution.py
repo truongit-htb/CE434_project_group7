@@ -371,7 +371,7 @@ def predict(x, threshold = 0.5):
 
 
 # Ham check function cua MODELSIM vs PYTHON
-def verify_function(out_Gx, sim, dense = False):
+def verify_function(out_Gx, sim, dense = False, img_class = 1):
     if dense == False:
         if (len(sim.shape) == 2):  # ------- Verify Anh dau vao 2D
             correct = 0
@@ -507,18 +507,23 @@ def verify_function(out_Gx, sim, dense = False):
                 #     print('{0}   \t{1}   \t{2}'.format(fault[i], dec2hex_fp(out_Gx[fault[i]]) , sim[fault[i]]))
             return FAULT_ARR
     else:
+        same = 0
         correct_pred = 0
-        # correct_sig = 0
         for n_img in range(len(out_Gx)):
             py_pred, py_sigmoid = out_Gx[n_img]
             sim_pred, sim_sigmoid = sim[n_img]
             error = abs(py_sigmoid - sim_sigmoid)
             if py_pred == sim_pred:
-                correct_pred += 1
+                same += 1
             if error < 2.0:
-                print('\n{0}\t sai so ket qua sigmoid PYTHON vs MODELSIM = {1}'.format(n_img, error))
+                print('\n{0}\t sai so sigmoid PYTHON vs MODELSIM = {1}'.format(n_img, error))
             else:
                 print('\n{0}\t SAI, sai so = {1}'.format(n_img, error))
+
+            if sim_pred == img_class:
+                correct_pred += 1
+            else:
+                print('{}\t FAIL predict'.format(n_img))
         
         fault = len(out_Gx) - correct_pred
         print('\nSO LAN DU DOAN SAI {}'.format(fault))
@@ -580,6 +585,7 @@ if __name__ == "__main__":
 
 
     NUM_IMG = 5     # Edit here
+    CLASS = 0       # Edit here 0 for daisy, 1 for sun flower
 
 
     OUT_ARR = []
@@ -778,7 +784,7 @@ if __name__ == "__main__":
         if dense:
             # for n_img in range(NUM_IMG):
             #     print('\nIMAGE\t', n_img)
-            fault = verify_function(OUT_ARR, SIM_ARR, dense)
+            fault = verify_function(OUT_ARR, SIM_ARR, dense, CLASS)
 
         else:
             for n_img in range(NUM_IMG):
