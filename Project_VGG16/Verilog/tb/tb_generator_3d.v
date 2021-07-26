@@ -1,9 +1,8 @@
 module tb_generator_3d (
     clk,
     resetn,
-    // num_data,
     // fifo write bus
-    // fifo_full,
+    fifo_full,              
     fifo_data_0,
     fifo_data_1,
     fifo_data_2,
@@ -15,38 +14,21 @@ module tb_generator_3d (
     fifo_data_6,
     fifo_data_7,
 
-    // fifo_data_8,
-    // fifo_data_9,
-    // fifo_data_10,
-    // fifo_data_11,
-    // fifo_data_12,
-    // fifo_data_13,
-    // fifo_data_14,
-    // fifo_data_15,
-
     fifo_wrreq
 );
     // paramenters
-    parameter DWIDTH = 8;
+    parameter DWIDTH = 32;
     parameter input_file_0 = "";
     parameter input_file_1 = "";
     parameter input_file_2 = "";
-    // EXTEND
+    // // EXTEND
     parameter input_file_3 = "";
     parameter input_file_4 = "";
     parameter input_file_5 = "";
     parameter input_file_6 = "";
     parameter input_file_7 = "";
 
-    // parameter input_file_8 = "";
-    // parameter input_file_9 = "";
-    // parameter input_file_10 = "";
-    // parameter input_file_11 = "";
-    // parameter input_file_12 = "";
-    // parameter input_file_13 = "";
-    // parameter input_file_14 = "";
-    // parameter input_file_15 = "";
-    //
+
     parameter WIDTH = 56;
     parameter HEIGHT = 56;
     parameter NUM_IMG = 1;
@@ -56,7 +38,7 @@ module tb_generator_3d (
     //portmap
     input clk;
     input resetn;
-    // input fifo_full;
+    input fifo_full;                        
     output [DWIDTH-1:0] fifo_data_0;
     output [DWIDTH-1:0] fifo_data_1;
     output [DWIDTH-1:0] fifo_data_2;
@@ -67,14 +49,6 @@ module tb_generator_3d (
     output [DWIDTH-1:0] fifo_data_6;
     output [DWIDTH-1:0] fifo_data_7;
 
-    // output [DWIDTH-1:0] fifo_data_8 ;
-    // output [DWIDTH-1:0] fifo_data_9 ;
-    // output [DWIDTH-1:0] fifo_data_10;
-    // output [DWIDTH-1:0] fifo_data_11;
-    // output [DWIDTH-1:0] fifo_data_12;
-    // output [DWIDTH-1:0] fifo_data_13;
-    // output [DWIDTH-1:0] fifo_data_14;
-    // output [DWIDTH-1:0] fifo_data_15;
 
     output reg fifo_wrreq;
     // output reg [7:0] num_data;
@@ -89,35 +63,17 @@ module tb_generator_3d (
     integer file_in_5;
     integer file_in_6;
     integer file_in_7; 
-
-    // integer file_in_8 ;
-    // integer file_in_9 ;
-    // integer file_in_10;
-    // integer file_in_11;
-    // integer file_in_12;
-    // integer file_in_13;
-    // integer file_in_14;
-    // integer file_in_15;  
     
     initial begin
         file_in_0 <= $fopen(input_file_0,"r"); // Read image file 
         file_in_1 <= $fopen(input_file_1,"r"); // Read image file    
         file_in_2 <= $fopen(input_file_2,"r"); // Read image file    
-        // EXTEND
+        // // EXTEND
         file_in_3 <= $fopen(input_file_3,"r"); // Read image file 
         file_in_4 <= $fopen(input_file_4,"r"); // Read image file    
         file_in_5 <= $fopen(input_file_5,"r"); // Read image file
         file_in_6 <= $fopen(input_file_6,"r"); // Read image file 
         file_in_7 <= $fopen(input_file_7,"r"); // Read image file 
-
-        // file_in_8  <= $fopen(input_file_8 ,"r"); // Read image file 
-        // file_in_9  <= $fopen(input_file_9 ,"r"); // Read image file    
-        // file_in_10 <= $fopen(input_file_10,"r"); // Read image file
-        // file_in_11 <= $fopen(input_file_11,"r"); // Read image file 
-        // file_in_12 <= $fopen(input_file_12,"r"); // Read image file 
-        // file_in_13 <= $fopen(input_file_13,"r"); // Read image file 
-        // file_in_14 <= $fopen(input_file_14,"r"); // Read image file    
-        // file_in_15 <= $fopen(input_file_15,"r"); // Read image file
     end 
 
     
@@ -136,34 +92,18 @@ module tb_generator_3d (
     reg [DWIDTH-1:0] data_channel_6;          // dung de doc gia tri pixel tu file
     reg [DWIDTH-1:0] data_channel_7;          // dung de doc gia tri pixel tu file
 
-    // reg [DWIDTH-1:0] data_channel_8 ;          // dung de doc gia tri pixel tu file
-    // reg [DWIDTH-1:0] data_channel_9 ;          // dung de doc gia tri pixel tu file
-    // reg [DWIDTH-1:0] data_channel_10;          // dung de doc gia tri pixel tu file
-    // reg [DWIDTH-1:0] data_channel_11;          // dung de doc gia tri pixel tu file
-    // reg [DWIDTH-1:0] data_channel_12;          // dung de doc gia tri pixel tu file
-    // reg [DWIDTH-1:0] data_channel_13;          // dung de doc gia tri pixel tu file
-    // reg [DWIDTH-1:0] data_channel_14;          // dung de doc gia tri pixel tu file
-    // reg [DWIDTH-1:0] data_channel_15;          // dung de doc gia tri pixel tu file
 
 
     reg [DWIDTH-1:0] data_read_0;             // dung de lay data tren cac channel           
     reg [DWIDTH-1:0] data_read_1;             // dung de lay data tren cac channel
     reg [DWIDTH-1:0] data_read_2;             // dung de lay data tren cac channel
-    // EXTEND
+    // // EXTEND
     reg [DWIDTH-1:0] data_read_3;             // dung de lay data tren cac channel           
     reg [DWIDTH-1:0] data_read_4;             // dung de lay data tren cac channel
     reg [DWIDTH-1:0] data_read_5;             // dung de lay data tren cac channel
     reg [DWIDTH-1:0] data_read_6;             // dung de lay data tren cac channel           
     reg [DWIDTH-1:0] data_read_7;             // dung de lay data tren cac channel
 
-    // reg [DWIDTH-1:0] data_read_8 ;             // dung de lay data tren cac channel           
-    // reg [DWIDTH-1:0] data_read_9 ;             // dung de lay data tren cac channel
-    // reg [DWIDTH-1:0] data_read_10;             // dung de lay data tren cac channel
-    // reg [DWIDTH-1:0] data_read_11;             // dung de lay data tren cac channel           
-    // reg [DWIDTH-1:0] data_read_12;             // dung de lay data tren cac channel
-    // reg [DWIDTH-1:0] data_read_13;             // dung de lay data tren cac channel           
-    // reg [DWIDTH-1:0] data_read_14;             // dung de lay data tren cac channel
-    // reg [DWIDTH-1:0] data_read_15;             // dung de lay data tren cac channel
 
     // reg [1:0] state;
 
@@ -171,21 +111,12 @@ module tb_generator_3d (
     assign fifo_data_0 = data_read_0;
     assign fifo_data_1 = data_read_1;
     assign fifo_data_2 = data_read_2;
-    // // EXTEND
+    // // // EXTEND
     assign fifo_data_3 = data_read_3;
     assign fifo_data_4 = data_read_4;
     assign fifo_data_5 = data_read_5;
     assign fifo_data_6 = data_read_6;
     assign fifo_data_7 = data_read_7;
-
-    // assign fifo_data_8  = data_read_8 ;
-    // assign fifo_data_9  = data_read_9 ;
-    // assign fifo_data_10 = data_read_10;
-    // assign fifo_data_11 = data_read_11;
-    // assign fifo_data_12 = data_read_12;
-    // assign fifo_data_13 = data_read_13;
-    // assign fifo_data_14 = data_read_14;
-    // assign fifo_data_15 = data_read_15;
 
 
     // // generate random value
@@ -198,25 +129,26 @@ module tb_generator_3d (
     // // assign data_valid_in = a[3] | a[1];
 
 
-    reg data_valid_in;
-    reg [10:0] counter;
-    always @(posedge clk or negedge resetn) 
-    begin
-        if (resetn == 1'b0)
-        begin
-            counter <= 10'b0;
-            data_valid_in <= 1'b0;
-        end
-        else
-        begin
-            counter <= counter + 1;
-            if (counter % 10 == 0)
-                data_valid_in <= 1'b0;
-            else
-                data_valid_in <= 1'b1;
-        end
-    end
-    // assign data_valid_in = 1'b1;
+    // reg data_valid_in;
+    // reg [10:0] counter;
+    // always @(posedge clk or negedge resetn) 
+    // begin
+    //     if (resetn == 1'b0)
+    //     begin
+    //         counter <= 10'b0;
+    //         data_valid_in <= 1'b0;
+    //     end
+    //     else
+    //     begin
+    //         counter <= counter + 1;
+    //         if (counter % 10 == 0)
+    //             data_valid_in <= 1'b0;
+    //         else
+    //             data_valid_in <= 1'b1;
+    //     end
+    // end
+    wire data_valid_in;
+    assign data_valid_in = 1'b1;
 
 
     always @(posedge clk or negedge resetn) begin
@@ -236,20 +168,11 @@ module tb_generator_3d (
             data_read_6 <= 0;
             data_read_7 <= 0;
 
-            // data_read_8  <= 0;
-            // data_read_9  <= 0;
-            // data_read_10 <= 0;
-            // data_read_11 <= 0;
-            // data_read_12 <= 0;
-            // data_read_13 <= 0;
-            // data_read_14 <= 0;
-            // data_read_15 <= 0;
-
             image_cnt <= 0;
         end
         else 
         begin
-            if (data_valid_in==1 /* && fifo_full == 0 */) 
+            if (data_valid_in==1 && fifo_full == 0 ) 
             begin
                 data_cnt <= data_cnt + 1;
                 s_data = $fscanf(file_in_0, "%h", data_channel_0);
@@ -263,22 +186,16 @@ module tb_generator_3d (
                 s_data = $fscanf(file_in_6, "%h", data_channel_6);
                 s_data = $fscanf(file_in_7, "%h", data_channel_7);
 
-                // s_data = $fscanf(file_in_8 , "%h", data_channel_8 );
-                // s_data = $fscanf(file_in_9 , "%h", data_channel_9 );
-                // s_data = $fscanf(file_in_10, "%h", data_channel_10);
-                // s_data = $fscanf(file_in_11, "%h", data_channel_11);
-                // s_data = $fscanf(file_in_12, "%h", data_channel_12);
-                // s_data = $fscanf(file_in_13, "%h", data_channel_13);
-                // s_data = $fscanf(file_in_14, "%h", data_channel_14);
-                // s_data = $fscanf(file_in_15, "%h", data_channel_15);
 
                 if (s_data) 
                 begin
-                    if(data_cnt < num_data /* * NUM_IMG*/)             // Edit here
+                    if(data_cnt < num_data /* * NUM_IMG*/)             
                     begin
-                        if ( image_cnt > NUM_IMG && data_cnt > (NUM_LAYER*(WIDTH+1)) )
+                        fifo_wrreq <= 1;
+                        //  && data_cnt > (NUM_LAYER*(WIDTH+1))
+                        if ( image_cnt > NUM_IMG + 4 )              // Edit here
                         begin
-                            fifo_wrreq <= 0;
+                            // fifo_wrreq <= 0;            // Comment here
                             // data_read <= data;
                             data_read_0 <= 0;
                             data_read_1 <= 0;
@@ -291,19 +208,11 @@ module tb_generator_3d (
                             data_read_6 <= 0;
                             data_read_7 <= 0;
 
-                            // data_read_8  <= 0;
-                            // data_read_9  <= 0;
-                            // data_read_10 <= 0;
-                            // data_read_11 <= 0;
-                            // data_read_12 <= 0;
-                            // data_read_13 <= 0;
-                            // data_read_14 <= 0;
-                            // data_read_15 <= 0;
                         end
                         else
                         begin
-                            fifo_wrreq <= 1;
-                            // data_read <= data;
+                            // fifo_wrreq <= 1;            // Comment here
+                            
                             data_read_0 <= data_channel_0;
                             data_read_1 <= data_channel_1;
                             data_read_2 <= data_channel_2;
@@ -315,32 +224,24 @@ module tb_generator_3d (
                             data_read_6 <= data_channel_6;
                             data_read_7 <= data_channel_7;
 
-                            // data_read_8  <= data_channel_8 ;
-                            // data_read_9  <= data_channel_9 ;
-                            // data_read_10 <= data_channel_10;
-                            // data_read_11 <= data_channel_11;
-                            // data_read_12 <= data_channel_12;
-                            // data_read_13 <= data_channel_13;
-                            // data_read_14 <= data_channel_14;
-                            // data_read_15 <= data_channel_15;
                         end
 
                     end
                     else
-                        // if(data_cnt == num_data /* NUM_IMG*/)            // Edit here
+                        // if(data_cnt == num_data /* NUM_IMG*/)            
                     begin
                         image_cnt <= image_cnt + 1;
                         data_cnt <= 1;
                         if (image_cnt < NUM_IMG)
-                            $display("%t \tSTART IMAGE = %d", $time, image_cnt + 1);
+                            $display("%t \tSTART IMAGE %d", $time, image_cnt + 1);
                         else
                             if (image_cnt == NUM_IMG) 
                             begin    
                                 $display("%t \tEND READ ALL %d IMAGE", $time, image_cnt);
-                                $display("%t \tSTART TEMP IMAGE = %d", $time, image_cnt + 1);
+                                $display("%t \tSTART TEMP IMAGE %d", $time, image_cnt + 1);
                             end
                             else
-                                $display("%t \tSTART TEMP IMAGE = %d", $time, image_cnt + 1);
+                                $display("%t \tSTART TEMP IMAGE %d", $time, image_cnt + 1);
 
 
                         // data_read <= data;
@@ -358,14 +259,6 @@ module tb_generator_3d (
                         data_read_6 <= data_channel_6;
                         data_read_7 <= data_channel_7;
 
-                        // data_read_8  <= data_channel_8 ;
-                        // data_read_9  <= data_channel_9 ;
-                        // data_read_10 <= data_channel_10;
-                        // data_read_11 <= data_channel_11;
-                        // data_read_12 <= data_channel_12;
-                        // data_read_13 <= data_channel_13;
-                        // data_read_14 <= data_channel_14;
-                        // data_read_15 <= data_channel_15;
                     end
                 end 
                 else 
@@ -383,14 +276,6 @@ module tb_generator_3d (
                     data_read_6 <= data_read_6;
                     data_read_7 <= data_read_7;
 
-                    // data_read_8  <= data_read_8 ;
-                    // data_read_9  <= data_read_9 ;
-                    // data_read_10 <= data_read_10;
-                    // data_read_11 <= data_read_11;
-                    // data_read_12 <= data_read_12;
-                    // data_read_13 <= data_read_13;
-                    // data_read_14 <= data_read_14;
-                    // data_read_15 <= data_read_15;
                 end 
             end 
             else 
@@ -409,14 +294,6 @@ module tb_generator_3d (
                 data_read_6 <= data_read_6;
                 data_read_7 <= data_read_7;
 
-                // data_read_8  <= data_read_8 ;
-                // data_read_9  <= data_read_9 ;
-                // data_read_10 <= data_read_10;
-                // data_read_11 <= data_read_11;
-                // data_read_12 <= data_read_12;
-                // data_read_13 <= data_read_13;
-                // data_read_14 <= data_read_14;
-                // data_read_15 <= data_read_15;
             end
         end
     end

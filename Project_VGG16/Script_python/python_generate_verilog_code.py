@@ -337,8 +337,8 @@ def create_inst_conv(form = 'single', num_kernel = 8, num_channel = 3):
 
 
 def build_report():
-    num_kernel = 16      # Edit here
-    num_channel = 16     # Edit here
+    num_kernel = 8      # Edit here
+    num_channel = 8     # Edit here
 
 
     ################### CREATE CONV SINGLE KERNEL ####################
@@ -384,7 +384,7 @@ def build_report():
     jinja2_template = Template(file_template)
     
 
-    file_name = 'block5_conv3.v'          # Edit here
+    file_name = 'block3_conv3.v'          # Edit here
     out_template = '../Data/6_template/results/' + file_name
 
     bias_name = file_name[:-2] + '_bias.txt'

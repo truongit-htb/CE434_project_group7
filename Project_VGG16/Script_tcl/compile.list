@@ -11,10 +11,10 @@
 #../Verilog/rtl/block1_conv1_to_maxpool.v
 
 #../Verilog/rtl/block1_conv1.v
-#../Verilog/rtl/conv3d_8_kernel_3_channel_size_3.v
+../Verilog/rtl/conv3d_8_kernel_3_channel_size_3.v
 
 #../Verilog/rtl/block1_conv2.v
-#../Verilog/rtl/conv3d_8_kernel_8_channel_size_3.v
+../Verilog/rtl/conv3d_8_kernel_8_channel_size_3.v
 
 #../Verilog/rtl/block4_conv1.v
 ../Verilog/rtl/conv3d_16_kernel_8_channel_size_3.v
@@ -22,7 +22,16 @@
 #../Verilog/rtl/block4_conv2.v
 ../Verilog/rtl/conv3d_16_kernel_16_channel_size_3.v
 
-../Verilog/rtl/block_demo.v
+#../Verilog/rtl/block_demo.v
+../Verilog/rtl/vip_top.v
+../Verilog/rtl/fifo_24b.v
+../Verilog/rtl/core.v
+../Verilog/rtl/vgg16_lite.v
+#../Verilog/rtl/vgg16.v
+
+
+
+
 
 
 
@@ -39,4 +48,22 @@
 ../Verilog/tb/tb_writer.v
 ../Verilog/tb/tb_generator_3d.v
 ../Verilog/tb/tb_writer_3d.v
-#../Verilog/tb/tb_fc.v
+
+../Verilog/tb/top_tb_0.v
+../Verilog/tb/top_tb_1.v
+../Verilog/tb/top_tb_2.v
+../Verilog/tb/top_tb_3.v
+../Verilog/tb/top_tb_4.v
+../Verilog/tb/top_tb_5.v
+../Verilog/tb/top_tb_6.v
+../Verilog/tb/top_tb_7.v
+
+
+
+
+
+
+# Altera list
+../Verilog/tb/altera/220model.v
+../Verilog/tb/altera/altera_mf.v
+../Verilog/tb/altera/sgate.v
