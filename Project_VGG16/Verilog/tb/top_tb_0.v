@@ -8,17 +8,17 @@ module top_tb_0;
     // parameter Image_Channel1 = "../Data/3_data_in/0_data/0_data_sun_001.txt";       // Edit index name here
     // parameter Image_Channel2 = "../Data/3_data_in/0_data/0_data_sun_002.txt";       // Edit index name here
     // // // EXTEND
-    parameter Image_Channel0 = "../Data/4_data_out/0_data/0_block2_conv2_sun_000.txt";
-    parameter Image_Channel1 = "../Data/4_data_out/0_data/0_block2_conv2_sun_001.txt";
-    parameter Image_Channel2 = "../Data/4_data_out/0_data/0_block2_conv2_sun_002.txt";
-    parameter Image_Channel3 = "../Data/4_data_out/0_data/0_block2_conv2_sun_003.txt";
-    parameter Image_Channel4 = "../Data/4_data_out/0_data/0_block2_conv2_sun_004.txt";
-    parameter Image_Channel5 = "../Data/4_data_out/0_data/0_block2_conv2_sun_005.txt";
-    parameter Image_Channel6 = "../Data/4_data_out/0_data/0_block2_conv2_sun_006.txt";
-    parameter Image_Channel7 = "../Data/4_data_out/0_data/0_block2_conv2_sun_007.txt";
+    parameter Image_Channel0 = "../Data/4_data_out/3_data/3_block3_conv3_sun_000.txt";
+    parameter Image_Channel1 = "../Data/4_data_out/3_data/3_block3_conv3_sun_001.txt";
+    parameter Image_Channel2 = "../Data/4_data_out/3_data/3_block3_conv3_sun_002.txt";
+    parameter Image_Channel3 = "../Data/4_data_out/3_data/3_block3_conv3_sun_003.txt";
+    parameter Image_Channel4 = "../Data/4_data_out/3_data/3_block3_conv3_sun_004.txt";
+    parameter Image_Channel5 = "../Data/4_data_out/3_data/3_block3_conv3_sun_005.txt";
+    parameter Image_Channel6 = "../Data/4_data_out/3_data/3_block3_conv3_sun_006.txt";
+    parameter Image_Channel7 = "../Data/4_data_out/3_data/3_block3_conv3_sun_007.txt";
 
 
-    parameter Outfile   = "../Data/4_data_out/0_data/0_data_sun.txt";               // Edit index name here
+    parameter Outfile   = "../Data/4_data_out/3_data/50_sun_img.txt";               // Edit index name here
 
 
     parameter k = 5;
@@ -75,10 +75,10 @@ module top_tb_0;
         .input_file_6(Image_Channel6),
         .input_file_7(Image_Channel7),
 
-        .WIDTH(`IMG_WIDTH),
-        .HEIGHT(`IMG_HEIGHT),
-        .NUM_IMG(`NUM_IMG),
-        .NUM_LAYER(10-1)           // Edit here with value = num_layer_conv - 1
+        .WIDTH(`IMG_WIDTH>>3),
+        .HEIGHT(`IMG_HEIGHT>>3),
+        .NUM_IMG(`NUM_IMG) //
+        // .NUM_LAYER(10-1)           // Edit here with value = num_layer_conv - 1
     ) generator (
         .clk(clk),
         .resetn(resetn),

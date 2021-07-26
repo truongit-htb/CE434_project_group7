@@ -589,8 +589,8 @@ module vgg16 #(
 
         max_pooling #(
             .DATA_WIDTH(32),
-            .WIDTH(WIDTH),
-            .HEIGHT(HEIGHT)
+            .WIDTH(WIDTH>>1),
+            .HEIGHT(HEIGHT>>1)
         )
         max_pool(
             .clk(clk),
@@ -950,8 +950,8 @@ module vgg16 #(
 
         max_pooling #(
             .DATA_WIDTH(32),
-            .WIDTH(WIDTH),
-            .HEIGHT(HEIGHT)
+            .WIDTH(WIDTH>>2),
+            .HEIGHT(HEIGHT>>2)
         )
         max_pool(
             .clk(clk),
@@ -1853,8 +1853,8 @@ module vgg16 #(
 
         max_pooling #(
             .DATA_WIDTH(32),
-            .WIDTH(WIDTH),
-            .HEIGHT(HEIGHT)
+            .WIDTH(WIDTH>>3),
+            .HEIGHT(HEIGHT>>3)
         )
         max_pool(
             .clk(clk),
@@ -2926,8 +2926,8 @@ module vgg16 #(
 
         max_pooling #(
             .DATA_WIDTH(32),
-            .WIDTH(WIDTH>>1),							// Edit here
-            .HEIGHT(HEIGHT>>1)							// Edit here
+            .WIDTH(WIDTH>>4),							// Edit here
+            .HEIGHT(HEIGHT>>4)							// Edit here
         )
         max_pool(
             .clk(clk),

@@ -8,17 +8,17 @@ module top_tb_4;            // Edit here
     // parameter Image_Channel1 = "../Data/3_data_in/4_data/4_data_sun_001.txt";       // Edit index name here
     // parameter Image_Channel2 = "../Data/3_data_in/4_data/4_data_sun_002.txt";       // Edit index name here
     // // // EXTEND
-    parameter Image_Channel0 = "../Data/4_data_out/4_data/4_block2_conv2_daisy_000.txt";
-    parameter Image_Channel1 = "../Data/4_data_out/4_data/4_block2_conv2_daisy_001.txt";
-    parameter Image_Channel2 = "../Data/4_data_out/4_data/4_block2_conv2_daisy_002.txt";
-    parameter Image_Channel3 = "../Data/4_data_out/4_data/4_block2_conv2_daisy_003.txt";
-    parameter Image_Channel4 = "../Data/4_data_out/4_data/4_block2_conv2_daisy_004.txt";
-    parameter Image_Channel5 = "../Data/4_data_out/4_data/4_block2_conv2_daisy_005.txt";
-    parameter Image_Channel6 = "../Data/4_data_out/4_data/4_block2_conv2_daisy_006.txt";
-    parameter Image_Channel7 = "../Data/4_data_out/4_data/4_block2_conv2_daisy_007.txt";
+    parameter Image_Channel0 = "../Data/4_data_out/7_data/7_block3_conv3_daisy_000.txt";
+    parameter Image_Channel1 = "../Data/4_data_out/7_data/7_block3_conv3_daisy_001.txt";
+    parameter Image_Channel2 = "../Data/4_data_out/7_data/7_block3_conv3_daisy_002.txt";
+    parameter Image_Channel3 = "../Data/4_data_out/7_data/7_block3_conv3_daisy_003.txt";
+    parameter Image_Channel4 = "../Data/4_data_out/7_data/7_block3_conv3_daisy_004.txt";
+    parameter Image_Channel5 = "../Data/4_data_out/7_data/7_block3_conv3_daisy_005.txt";
+    parameter Image_Channel6 = "../Data/4_data_out/7_data/7_block3_conv3_daisy_006.txt";
+    parameter Image_Channel7 = "../Data/4_data_out/7_data/7_block3_conv3_daisy_007.txt";
 
 
-    parameter Outfile   = "../Data/4_data_out/4_data/4_data_daisy.txt";               // Edit index name here
+    parameter Outfile   = "../Data/4_data_out/7_data/50_daisy_img.txt";                   // Edit index name here
 
 
     parameter k = 5;
@@ -75,10 +75,10 @@ module top_tb_4;            // Edit here
         .input_file_6(Image_Channel6),
         .input_file_7(Image_Channel7),
 
-        .WIDTH(`IMG_WIDTH),
-        .HEIGHT(`IMG_HEIGHT),
-        .NUM_IMG(`NUM_IMG),
-        .NUM_LAYER(10-1)           // Edit here with value = num_layer_conv - 1
+        .WIDTH(`IMG_WIDTH/8),
+        .HEIGHT(`IMG_HEIGHT/8),
+        .NUM_IMG(`NUM_IMG) //
+        // .NUM_LAYER(10-1)           // Edit here with value = num_layer_conv - 1
     ) generator (
         .clk(clk),
         .resetn(resetn),
@@ -95,6 +95,7 @@ module top_tb_4;            // Edit here
 
         .fifo_wrreq(data_wrreq)
     );
+
 
 
 
@@ -125,8 +126,8 @@ module top_tb_4;            // Edit here
 
     tb_writer #(
         .output_file(Outfile),
-        .WIDTH(`IMG_WIDTH>>5),           // Edit here for max-pooling
-        .HEIGHT(`IMG_HEIGHT>>5),         // Edit here for max-pooling
+        .WIDTH(`IMG_WIDTH/32),           // Edit here for max-pooling
+        .HEIGHT(`IMG_HEIGHT/32),         // Edit here for max-pooling
         .NUM_IMG(`NUM_IMG)
     ) writer(
         .clk(clk),

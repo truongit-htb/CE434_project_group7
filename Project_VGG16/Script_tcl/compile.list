@@ -26,7 +26,7 @@
 ../Verilog/rtl/vip_top.v
 ../Verilog/rtl/fifo_24b.v
 ../Verilog/rtl/core.v
-../Verilog/rtl/vgg16_lite.v
+../Verilog/rtl/vgg16_lite_2.v
 #../Verilog/rtl/vgg16.v
 
 

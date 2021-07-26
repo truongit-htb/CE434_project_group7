@@ -1,7 +1,7 @@
 # Luu y sua index TESTNAME va SEED
 TESTNAME=top_tb_4
 
-SEED=top_tb_4
+SEED=50_daisy_img
 echo "  Test seed = $SEED"
 
 
@@ -12,23 +12,21 @@ echo "Start Simulation"
 mkdir -p ./results/log/
 
 
-## SIMULATE WITH WAVEFORM
-vsim  -c -voptargs=+acc work.$TESTNAME \
--l ./results/log/$SEED.log \
--do "nolog -r /*; run -all " 
-
-#-wlf ./results/$SEED.wlf \
-#-do "log -ports -r -depth 5 /*; log -internal /$TESTNAME/generator/data_valid_in /$TESTNAME/generator/data_cnt /$TESTNAME/generator/image_cnt /$TESTNAME/writer/data_cnt;  run -all"
-#-do "log -r /*; run -all " 
-
-
-
-
-
-## WITHOUT WAVEFORM
+### SIMULATE WITH WAVEFORM
 #vsim  -c -voptargs=+acc work.$TESTNAME \
 #-l ./results/log/$SEED.log \
-#-do "nolog -r /*; run -all"
+#-wlf ./results/$SEED.wlf \
+#-do "log -ports -r -depth 6 /*; log -internal /$TESTNAME/generator/data_valid_in /$TESTNAME/generator/data_cnt /$TESTNAME/generator/image_cnt /$TESTNAME/writer/data_cnt;  run -all"
+
+
+
+
+
+
+# WITHOUT WAVEFORM
+vsim  -c -voptargs=+acc work.$TESTNAME \
+-l ./results/log/$SEED.log \
+-do "nolog -r /*; run -all"
 
 
 echo "Done Simulation"

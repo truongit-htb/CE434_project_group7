@@ -32,7 +32,7 @@ module tb_generator_3d (
     parameter WIDTH = 56;
     parameter HEIGHT = 56;
     parameter NUM_IMG = 1;
-    parameter NUM_LAYER = 1;
+    // parameter NUM_LAYER = 1;
     localparam num_data = WIDTH*HEIGHT;
 
     //portmap

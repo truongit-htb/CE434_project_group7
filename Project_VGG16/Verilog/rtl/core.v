@@ -75,7 +75,7 @@ module core (
     wire [DWIDTH-1:0] data_in_7 = ff_rdata[8*DWIDTH-1 : 7*DWIDTH];
 
     
-    vgg16_lite #(
+    vgg16_lite_2 #(
 		.DATA_WIDTH(32),
         .WIDTH(WIDTH),
         .HEIGHT(HEIGHT)

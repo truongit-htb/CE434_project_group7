@@ -102,7 +102,7 @@ if __name__ == "__main__":
     # file_name = '/dir_sun_image/sun_{0}.jpg'        # Edit here - dir to source image
     file_name = '/dir_daisy_image/daisy_{0}.jpg'        # Edit here - dir to source image
 
-    START = 90                                      # Edit index start
+    START = 50                                      # Edit index start
     FINISH = 99                                     # Edit index finish
     SET = 7                                         # Edit index dataset
 
