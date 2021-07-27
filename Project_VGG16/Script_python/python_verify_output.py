@@ -3,6 +3,8 @@ import numpy as np
 import ctypes
 import struct
 from tensorflow import keras
+from tensorflow.keras import backend as K
+import math
 
 
 # Ham tao ma tran numpy ngau nhien. VD: a = create_rand_matrix(1, (200, 200, 3))
@@ -198,7 +200,7 @@ def read_data_4conv_py(img_dim, file_name):
 
 
 # Ham doc data out CONV MODELSIM
-def read_data_4conv_sim(sim_dim, file_name, num_img = 1, dense = False):
+def read_data_4conv_sim(sim_dim, file_name, num_img = 1, dense = False, SIM_ARR = []):
     sim = np.zeros(sim_dim)
 
     if dense == False:
@@ -269,7 +271,7 @@ def read_data_4conv_sim(sim_dim, file_name, num_img = 1, dense = False):
             return SIM_ARR
     
     else:
-        SIM_ARR = []
+        
         with open(file_name) as f:
             if f.mode == 'r':
                 data = f.readlines()
@@ -625,6 +627,47 @@ def get_multi_image(i_start, i_finish, demo_images, demo_labels, file_name = '')
             demo_labels.append(1)
     
     return demo_images, demo_labels
+
+
+def check(y_true, y_pred):
+    TN = 0
+    FN = 0
+    TP = 0
+    FP = 0
+    for i in range(len(y_true)):
+        if y_true[i] == y_pred[i] and y_true[i] == 0:
+            TN += 1
+        if y_true[i] == y_pred[i] and y_true[i] == 1:
+            TP += 1
+        if y_true[i] != y_pred[i] and y_true[i] == 0:
+            FP += 1
+        if y_true[i] != y_pred[i] and y_true[i] == 1:
+            FN += 1
+    return TN, FN, TP, FP
+
+
+
+def recall_m(y_true, y_pred):
+    TN, FN, TP, FP = check(y_true, y_pred)
+        
+    recall = TP / (TP + FN)
+    return recall 
+
+def precision_m(y_true, y_pred):
+    TN, FN, TP, FP = check(y_true, y_pred)
+    
+    precision = TP / (TP + FP)
+
+    return precision 
+
+def f1_m(y_true, y_pred): 
+    precision, recall = precision_m(y_true, y_pred), recall_m(y_true, y_pred)
+    
+    return 2*((precision*recall)/(precision+recall))
+
+
+
+
 # ######################################################
 #                         MAIN 
 # ######################################################
@@ -639,10 +682,10 @@ if __name__ == "__main__":
     i_finish = 99
     img_name = '/dir_daisy_image/daisy_{}.jpg'
     demo_images, demo_labels = get_multi_image(i_start, i_finish, demo_images, demo_labels, img_name)
-    print(len(demo_images))
+    # print(len(demo_images))
     img_name = '/dir_sun_image/sun_{}.jpg'
     demo_images, demo_labels = get_multi_image(i_start, i_finish, demo_images, demo_labels, img_name)
-    print(len(demo_images))
+    # print(len(demo_images))
 
 
     data_demo = np.array(demo_images)
@@ -652,10 +695,9 @@ if __name__ == "__main__":
     threshold = 0.5
     y_demo_pred = np.where(demo > threshold, 1,0)
     
-    temp, count = np.unique(y_demo_pred, return_counts=True)
-    print(temp, count)
+    # temp, count = np.unique(y_demo_pred, return_counts=True)
+    # print(temp, count)
 
-    print(y_demo_pred.shape, demo.shape)
 
 
     # 
@@ -665,321 +707,51 @@ if __name__ == "__main__":
     NUM_IMG = 50     # Edit here
     CLASS = []       
 
-    # img_dim = (56, 56, 3)
-
-    # READ_MULTI = True
-    # for _ in range(2):
-    #     if _ == 1:
-    #         SET = 7         # Edit here and edit file_name below
-    #         file_name = '../Data/3_data_in/'+ str(SET) +'_data/' + str(SET) +'_data_daisy_00{0}.txt'     # Edit here
-    #     else:
-    #         SET = 3         # Edit here and edit file_name below
-    #         file_name = '../Data/3_data_in/'+ str(SET) +'_data/'+ str(SET) +'_data_sun_00{0}.txt'     # Edit here
-
-
-    
-
-    #     # SET = 7         # Edit here and edit file_name below
-    #     # IMG_ARR = []    
-    #     # # file_name = '../Data/3_data_in/'+ str(SET) +'_data/'+ str(SET) +'_data_sun_00{0}.txt'     # Edit here
-    #     # file_name = '../Data/3_data_in/'+ str(SET) +'_data/' + str(SET) +'_data_daisy_00{0}.txt'     # Edit here
-        
-    #     IMG_ARR = read_multi_data_4conv_py(img_dim, NUM_IMG, file_name)
-        
-
-
-        
-
-    #     for lap in range(NUM_IMG):        
-    #         # if lap == 0:
-    #         #     file_name = '/dir_daisy_image/daisy_{0}.jpg'.format(lap)
-    #         # elif lap == 1:
-    #         #     file_name = '/dir_sun_image/sun_{0}.jpg'.format(lap)
-    #         # elif lap == 2:
-    #         #     file_name = '/dir_sun_image/sun_{0}.jpg'.format(lap)
-    #         # elif lap == 3:
-    #         #     file_name = '/dir_daisy_image/daisy_{0}.jpg'.format(lap)
-    #         # elif lap == 4:
-    #         #     file_name = '/dir_sun_image/sun_{0}.jpg'.format(lap)
-    #         # else:
-    #         #     if lap % 2 == 0:
-    #         #         file_name = '/dir_daisy_image/daisy_{0}.jpg'.format(lap)
-    #         #     else:
-    #         #         file_name = '/dir_sun_image/sun_{0}.jpg'.format(lap)
-
-
-    #         # img = cv2.imread('../Dataset/Flower' + file_name)
-    #         # img = cv2.resize(img, (56, 56))
-    #         # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-    #         if 'daisy' in file_name:
-    #             CLASS.append(0)
-    #         else:
-    #             CLASS.append(1)
-
-
-    #             # file_name = '../Data/3_data_in/data_fp_sun_02_channel_00{0}.txt'
-
-    #         # file_name = '../Data/3_data_in/data_fp_sun_0'+ str(lap) +'_channel_00{0}.txt'
-    #         # file_name = '../Data/3_data_in/data_fp_daisy_0'+ str(lap) +'_channel_00{0}.txt'
-
-
-
-    #         img_dim = (56, 56, 3)
-            
-    #         if READ_MULTI:
-    #             img = IMG_ARR[lap]
-    #         else:
-    #             img = read_data_4conv_py(img_dim, file_name)
-
-
-    #         # ############ BUILD MODEL ############
-    #         # ############ BLOCK 1 ############
-    #         # # conv1
-    #         weight_name = 'block1_conv1_filter_{1}_channel_{0}.txt'
-    #         bias_name = 'block1_conv1_bias.txt'
-    #         out_Gx = conv3d_multi(img, weight_name = weight_name, bias_name = bias_name)
-    #         # print(out_Gx.shape)
-
-    #         # # conv2
-    #         weight_name = 'block1_conv2_filter_{1}_channel_{0}.txt'
-    #         bias_name = 'block1_conv2_bias.txt'
-    #         out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-    #         # print(out_Gx.shape)
-    #         # # conv2_relu
-    #         out_Gx = relu_activation(out_Gx)
-
-    #         # # max_pooling_0
-    #         out_Gx = max_pooling(out_Gx)
-    #         # print(out_Gx.shape)
-    #         # #################################
-
-
-    #         # ############ BLOCK 2 ############
-    #         # # conv1
-    #         weight_name = 'block2_conv1_filter_{1}_channel_{0}.txt'
-    #         bias_name = 'block2_conv1_bias.txt'
-    #         out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-    #         # print(out_Gx.shape)
-
-    #         # # conv2
-    #         weight_name = 'block2_conv2_filter_{1}_channel_{0}.txt'
-    #         bias_name = 'block2_conv2_bias.txt'
-    #         out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-    #         # print(out_Gx.shape)
-    #         # # conv2_relu
-    #         out_Gx = relu_activation(out_Gx)
-
-    #         # # max_pooling_0
-    #         out_Gx = max_pooling(out_Gx)
-    #         # print(out_Gx.shape)
-    #         # #################################
-
-
-    #         # ############ BLOCK 3 ############
-    #         # # conv1
-    #         weight_name = 'block3_conv1_filter_{1}_channel_{0}.txt'
-    #         bias_name = 'block3_conv1_bias.txt'
-    #         out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-    #         # print(out_Gx.shape)
-
-    #         # # conv2
-    #         weight_name = 'block3_conv2_filter_{1}_channel_{0}.txt'
-    #         bias_name = 'block3_conv2_bias.txt'
-    #         out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-    #         # print(out_Gx.shape)
-
-    #         # # conv3
-    #         weight_name = 'block3_conv3_filter_{1}_channel_{0}.txt'
-    #         bias_name = 'block3_conv3_bias.txt'
-    #         out_Gx = conv3d_multi(out_Gx, weight_name = weight_name, bias_name = bias_name)
-    #         # print(out_Gx.shape)
-    #         # # conv3_relu
-    #         out_Gx = relu_activation(out_Gx)
-
-    #         # # max_pooling_0
-    #         out_Gx = max_pooling(out_Gx)
-    #         # print(out_Gx.shape)
-    #         # #################################
-
-
-    #         # ############ BLOCK 4 ############
-    #         # # conv1
-    #         weight_name = 'block4_conv1_filter_{1}_channel_{0}.txt'
-    #         bias_name = 'block4_conv1_bias.txt'
-    #         out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-    #         # print(out_Gx.shape)
-
-    #         # # conv2
-    #         weight_name = 'block4_conv2_filter_{1}_channel_{0}.txt'
-    #         bias_name = 'block4_conv2_bias.txt'
-    #         out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-    #         # print(out_Gx.shape)
-
-    #         # # conv3
-    #         weight_name = 'block4_conv3_filter_{1}_channel_{0}.txt'
-    #         bias_name = 'block4_conv3_bias.txt'
-    #         out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-    #         # print(out_Gx.shape)
-
-    #         # conv3_relu
-    #         out_Gx = relu_activation(out_Gx)
-
-    #         # # max_pooling_0
-    #         out_Gx = max_pooling(out_Gx)
-    #         # print(out_Gx.shape)
-    #         # # # #################################
-
-
-    #         # ############ BLOCK 5 ############
-    #         # # conv1
-    #         weight_name = 'block5_conv1_filter_{1}_channel_{0}.txt'
-    #         bias_name = 'block5_conv1_bias.txt'
-    #         out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-    #         # print(out_Gx.shape)
-    #         # # conv1_relu
-    #         out_Gx = relu_activation(out_Gx)
-
-    #         # # conv2
-    #         weight_name = 'block5_conv2_filter_{1}_channel_{0}.txt'
-    #         bias_name = 'block5_conv2_bias.txt'
-    #         out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-    #         # print(out_Gx.shape)
-    #         # # conv2_relu
-    #         out_Gx = relu_activation(out_Gx)
-
-    #         # # conv3
-    #         weight_name = 'block5_conv3_filter_{1}_channel_{0}.txt'
-    #         bias_name = 'block5_conv3_bias.txt'
-    #         out_Gx = conv3d_multi(out_Gx, num_channel_out = 16, weight_name = weight_name, bias_name = bias_name)
-    #         # print(out_Gx.shape)
-    #         # # conv3_relu
-    #         out_Gx = relu_activation(out_Gx)
-
-    #         # # max_pooling_0
-    #         out_Gx = max_pooling(out_Gx)
-    #         # print(out_Gx.shape)
-    #         # #################################
-
-
-    #         dense = True
-    #         # ############ FLATTEN ############
-    #         out_Gx = flatten(out_Gx)
-    #         # print(out_Gx.shape)
-
-
-    #         # ############  DENSE  ############
-    #         weight_name = 'sigmoid_filter.txt'
-    #         bias_name = 'sigmoid_bias.txt'
-    #         out, out_fc = sigmoid_activation(out_Gx, weight_name = weight_name, bias_name = bias_name)
-
-
-    #         # ############ PREDICT ############
-    #         # print()
-    #         y_pred = predict(out)
-
-
-
-    #         if (dense):
-    #             OUT_ARR.append((y_pred, out))
-    #         else:
-    #             OUT_ARR.append(out_Gx)
-
-
 
     # ############ Read data out of MODELSIM ############
     file_name = '../Data/4_data_out/7_data/' +  '50_daisy_img.txt'    # Edit here
 
-    # file_name = '../Data/4_data_out/block4_to_5_to_sig_temp/' +  'sim_temp_block4_to_5_to_sig_sun_00{0}.txt'    # Edit here
-    # sim_dim = out_Gx.shape
     sim_dim = (1, 1, 16)
     
-    if NUM_IMG < 2:
-        sim = read_data_4conv_sim(sim_dim, file_name)
-    else:
-        dense = True
-        SIM_ARR = read_data_4conv_sim(sim_dim, file_name, NUM_IMG, dense)
+    dense = True
+    SIM_ARR = read_data_4conv_sim(sim_dim, file_name, NUM_IMG, dense)
 
-    temp = np.array(SIM_ARR)
-    print(temp.shape)
-    count = 0
-    for i in range(50):
-        if temp[i, 0] == y_demo_pred[i]:
-            count += 1
-        else:
-            print(i, 'saii')
-    print('so du doan dung', count)
-    # # ############ VERIFYING ############
-    # if NUM_IMG < 2:
-    #     fault = verify_function(out_Gx, sim)
+    file_name = '../Data/4_data_out/3_data/' +  '50_sun_img.txt'    # Edit here
+   
+    SIM_ARR = read_data_4conv_sim(sim_dim, file_name, NUM_IMG, dense)
 
-    #     print('\n\n==> Tong so pixel tinh sai: ', len(fault))
-    # else:
-    #     FAULT_ARR = []
-    #     if dense:
-    #         # for n_img in range(NUM_IMG):
-    #         #     print('\nIMAGE\t', n_img)
-    #         fault = verify_function(OUT_ARR, SIM_ARR, dense, CLASS)
-
-    #     else:
-    #         for n_img in range(NUM_IMG):
-    #             print('\nIMAGE\t', n_img)
-    #             fault = verify_function(OUT_ARR[n_img], SIM_ARR[n_img])
-
-    #             FAULT_ARR.append(fault)
-
-    #         num_fault = 0
-    #         for n_img in range(NUM_IMG):
-    #             for k in range(sim_dim[2]):
-    #                 num_fault += len(FAULT_ARR[n_img][k])
-    #         print('\n\n==> Tong so pixel tinh sai: ', num_fault)
-        
-
-
-    # # # ############ VISUALIZE ############
-    # # # visualize(out_Gx, sim)
-
-
-
-    # #------------------- Dung python tao data input cho modelsim #-------------------
-    # dim = out_Gx.shape
-
-    # # ------- Ghi file Anh dau vao 3D
+    sim = np.array(SIM_ARR)
     
+    mse = 0
+    TP_daisy = 0
+    FP_daisy = 0
+    for i in range(100):
+        mse += (sim[i, 1] - demo[i, 0])**2
 
-    # for k in range(dim[2]):
-
-    #     # if 'daisy' in file_name:
-    #     #     f_name = '{0}_block3_conv3_daisy_00{1}.txt'.format( SET, k)         # Edit here
-    #     # else: 
-    #     #     f_name = '{0}_block3_conv3_sun_00{1}.txt'.format( SET, k)           # Edit here
-
-
-    #     # f  = open('../Data/4_data_out/{0}_data/'.format(SET) + f_name, 'w')
-    #     f_name = 'b3_c3_{}.txt'.format(k)
-    #     f = open('../Data/4_data_out/8_data/' + f_name, 'w')
-
-    #     for lap in range(NUM_IMG):        
-    #         for i in range (dim[0]):
-    #             for j in range (dim[1]):
-    #                 r = OUT_ARR[lap][i, j, k]
-    #                 # f2.write(str(r) + '\n')
-    #                 s = dec2hex_fp(r)
-    #                 string = s + '\n'
-    #                 f.write(string)
-    #     f.close()
-    #     # f2.close()
-    #     print('File {0} has done!'.format(f_name))
-    # print('\nPLEASE UPDATE DIMENSION IN TESTBENCH & VERIFY: h = {0}, w = {1}'.format(dim[0], dim[1]))
+    print()
+    print('MSE score: ', round(mse/100, 6) )
 
 
-    # # -------------- Tao file dimension.v --------------
-    # file_name = 'dimension.v'
-    # f  = open('../Verilog/rtl/' + file_name, 'w')
-    # string = "`define IMG_HEIGHT {0}\n`define IMG_WIDTH {1}\n`define NUM_IMG {2}".format(dim[0], dim[1], NUM_IMG)
-    # f.write(string)
-    # f.close()
-    # print('\nFile {0} has done!'.format(file_name))
+    print()
+    print('\t\tHardware\tSoftware')
+    
+    p_sim = precision_m(y_demo[:], sim[:, 0])
+    p_py = precision_m(y_demo[:], y_demo_pred[:, 0])
+    print('Precision:\t{0}\t{1}'.format(round(p_sim, 6), round(p_py, 6)))
+
+
+
+    r_sim = recall_m(y_demo[:], sim[:, 0])
+    r_py = recall_m(y_demo[:], y_demo_pred[:, 0])
+    print('Recall:\t\t{0}\t\t{1}'.format(round(r_sim, 6), round(r_py, 6)))
+
+
+
+    f1_sim = f1_m(y_demo[:], sim[:, 0])
+    f1_py = f1_m(y_demo[:], y_demo_pred[:, 0])
+    print('F1 score:\t{0}\t{1}'.format( round(f1_sim, 6), round(f1_py, 6) ))
+
+    
 
 
 
